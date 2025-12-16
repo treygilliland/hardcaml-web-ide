@@ -8,13 +8,15 @@
  * - test: The test harness (test.ml)
  */
 
+import { counterExample } from "./counter";
+
 export interface HardcamlExample {
   /** Display name for the example */
   name: string;
   /** Short description of what the exercise teaches */
   description?: string;
   /** Difficulty level for students */
-  difficulty?: 'beginner' | 'intermediate' | 'advanced';
+  difficulty?: "beginner" | "intermediate" | "advanced";
   /** The main circuit implementation (circuit.ml) */
   circuit: string;
   /** The module interface (circuit.mli) */
@@ -23,10 +25,7 @@ export interface HardcamlExample {
   test: string;
 }
 
-export type ExampleKey = 'counter';
-
-// Import all examples
-import { counterExample } from './counter';
+export type ExampleKey = "counter";
 
 /**
  * All available examples in the IDE

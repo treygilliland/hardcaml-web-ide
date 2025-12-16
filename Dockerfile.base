@@ -1,0 +1,51 @@
+# Hardcaml base image with OxCaml 5.2 + Hardcaml toolchain
+# Build once: docker build -f Dockerfile.base -t hardcaml-base .
+
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    opam \
+    build-essential \
+    pkg-config \
+    libgmp-dev \
+    libffi-dev \
+    m4 \
+    git \
+    curl \
+    ca-certificates \
+    autoconf \
+    zlib1g-dev \
+    libssl-dev \
+    libev-dev \
+    libsqlite3-dev \
+    python3 \
+    python3-pip \
+    python3-venv \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN opam init --disable-sandboxing --bare -y
+
+RUN opam update --all && \
+    opam switch create 5.2.0+ox \
+      --repos ox=git+https://github.com/oxcaml/opam-repository.git,default
+
+RUN eval $(opam env --switch 5.2.0+ox) && \
+    opam install -y \
+      hardcaml \
+      hardcaml_waveterm \
+      hardcaml_test_harness \
+      ppx_hardcaml \
+      core \
+      core_unix \
+      ppx_jane \
+      dune \
+      re \
+      rope
+
+ENV OPAM_SWITCH_PREFIX=/root/.opam/5.2.0+ox
+ENV CAML_LD_LIBRARY_PATH=/root/.opam/5.2.0+ox/lib/stublibs:/root/.opam/5.2.0+ox/lib/ocaml/stublibs:/root/.opam/5.2.0+ox/lib/ocaml
+ENV OCAML_TOPLEVEL_PATH=/root/.opam/5.2.0+ox/lib/toplevel
+ENV PATH=/root/.opam/5.2.0+ox/bin:$PATH
+

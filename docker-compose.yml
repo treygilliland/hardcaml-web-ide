@@ -8,7 +8,6 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      # Mount examples for easy access
       - ./examples:/opt/examples:ro
     environment:
       - PYTHONUNBUFFERED=1

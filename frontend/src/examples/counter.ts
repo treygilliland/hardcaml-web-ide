@@ -1,4 +1,4 @@
-import type { HardcamlExample } from './index';
+import type { HardcamlExample } from "./examples";
 
 /**
  * Simple Counter Example

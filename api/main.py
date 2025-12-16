@@ -4,6 +4,7 @@ Hardcaml Web IDE - FastAPI Server
 Provides an API for compiling and running Hardcaml circuits with tests.
 """
 
+import logging
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -14,6 +15,8 @@ from pathlib import Path
 import time
 
 from compiler import compile_and_run, CompileResult
+
+logging.basicConfig(level=logging.INFO, format="%(name)s: %(message)s")
 
 app = FastAPI(
     title="Hardcaml Web IDE",
@@ -33,10 +36,10 @@ app.add_middleware(
 # Serve frontend - check multiple possible locations
 STATIC_DIR = Path("/app/static")
 if not STATIC_DIR.exists():
-    # Development fallback
     STATIC_DIR = Path(__file__).parent.parent / "frontend" / "dist"
-if not STATIC_DIR.exists():
-    STATIC_DIR = Path(__file__).parent.parent / "frontend"
+
+# Dev mode: no static files, frontend served by Vite
+DEV_MODE = not STATIC_DIR.exists() or not (STATIC_DIR / "index.html").exists()
 
 
 class CompileRequest(BaseModel):
@@ -68,17 +71,6 @@ class CompileResponse(BaseModel):
     stage: Optional[str] = None
     compile_time_ms: Optional[int] = None
     run_time_ms: Optional[int] = None
-
-
-@app.get("/")
-async def serve_frontend():
-    """Serve the frontend."""
-    return FileResponse(STATIC_DIR / "index.html")
-
-
-# Mount static assets (JS, CSS, etc.)
-# This must be after the specific routes so they take precedence
-app.mount("/assets", StaticFiles(directory=STATIC_DIR / "assets"), name="assets")
 
 
 @app.get("/health")
@@ -162,6 +154,15 @@ async def list_examples():
             }
         ]
     }
+
+
+# Serve frontend static files (production only)
+if not DEV_MODE:
+    app.mount("/assets", StaticFiles(directory=STATIC_DIR / "assets"), name="assets")
+    
+    @app.get("/")
+    async def serve_frontend():
+        return FileResponse(STATIC_DIR / "index.html")
 
 
 if __name__ == "__main__":

@@ -106,21 +106,29 @@ List available example circuits.
 
 ```
 hardcaml-web-ide/
-├── Dockerfile              # Multi-stage build with OxCaml + Hardcaml
-├── docker-compose.yml      # Local development setup
+├── Dockerfile              # Production multi-stage build
+├── Dockerfile.dev          # Development backend build
+├── docker-compose.yml      # Production setup
+├── docker-compose.dev.yml  # Development setup with hot reload
 ├── api/
 │   ├── main.py             # FastAPI server
 │   ├── compiler.py         # Compilation logic
 │   └── requirements.txt    # Python dependencies
-├── template/               # Base project structure
+├── frontend/               # React frontend
+│   ├── src/
+│   │   ├── api/            # API client
+│   │   ├── components/     # React components
+│   │   ├── examples/       # Example code definitions
+│   │   ├── hooks/          # Custom React hooks
+│   │   └── types/          # TypeScript types
+│   ├── vite.config.ts
+│   └── package.json
+├── template/               # OCaml project template
 │   ├── dune-project
 │   ├── src/
-│   │   └── dune
 │   └── test/
-│       └── dune
 └── examples/               # Example circuits
-    ├── counter/
-    └── day1_part1/
+    └── counter/
 ```
 
 ## Writing Circuits
@@ -215,20 +223,39 @@ let%expect_test "my test" =
 
 ## Development
 
-### Modifying the API
+### Development Mode with Hot Reloading
 
-The API code is mounted as a volume in development mode. Changes to files in `api/` will be reflected after restarting uvicorn.
+For frontend development with hot reloading:
 
 ```bash
-docker-compose restart
+# Build the dev backend image (first time only)
+docker compose -f docker-compose.dev.yml build
+
+# Start development servers
+docker compose -f docker-compose.dev.yml up
 ```
+
+This runs:
+
+- **Backend** at `http://localhost:8000` - Python API with OCaml compiler (auto-reloads on changes)
+- **Frontend** at `http://localhost:5173` - Vite dev server with HMR (hot module replacement)
+
+Edit files in `frontend/src/` and see changes instantly in the browser!
+
+### Modifying the API
+
+In dev mode, changes to `api/` files auto-reload thanks to uvicorn's `--reload` flag.
 
 ### Rebuilding the Docker Image
 
 If you modify the Dockerfile or template:
 
 ```bash
-docker-compose build --no-cache
+# Production image
+docker compose build --no-cache
+
+# Development image
+docker compose -f docker-compose.dev.yml build --no-cache
 ```
 
 ### Running Tests Locally

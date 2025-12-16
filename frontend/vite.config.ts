@@ -5,17 +5,35 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   server: {
-    // Proxy API calls to backend during development
+    // Enable HMR with polling for Docker
+    watch: {
+      usePolling: true,
+    },
+    // Proxy API calls to backend
+    // Uses "backend" hostname when running in Docker, localhost otherwise
     proxy: {
-      "/compile": "http://localhost:8000",
-      "/health": "http://localhost:8000",
-      "/examples": "http://localhost:8000",
+      "/compile": {
+        target: process.env.DOCKER_ENV
+          ? "http://backend:8000"
+          : "http://localhost:8000",
+        changeOrigin: true,
+      },
+      "/health": {
+        target: process.env.DOCKER_ENV
+          ? "http://backend:8000"
+          : "http://localhost:8000",
+        changeOrigin: true,
+      },
+      "/examples": {
+        target: process.env.DOCKER_ENV
+          ? "http://backend:8000"
+          : "http://localhost:8000",
+        changeOrigin: true,
+      },
     },
   },
   build: {
-    // Output to dist folder
     outDir: "dist",
-    // Generate source maps for debugging
     sourcemap: false,
   },
 });

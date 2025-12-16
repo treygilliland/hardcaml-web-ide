@@ -1,92 +1,47 @@
 import { useState } from "react";
 import { OcamlEditor } from "./components/OcamlEditor";
-import { examples, getExample, type ExampleKey } from "./examples";
+import { examples, getExample, type ExampleKey } from "./examples/examples";
+import { useEditorState } from "./hooks/useEditorState";
+import { compileCode } from "./api/compiler";
+import { TABS, type CompileResult } from "./types/types";
 import "./App.css";
 
-interface CompileResult {
-  success: boolean;
-  output?: string;
-  waveform?: string;
-  error_type?: string;
-  error_message?: string;
-  compile_time_ms?: number;
-  run_time_ms?: number;
-}
-
-type TabType = "circuit" | "interface" | "test";
-
 function App() {
-  const [activeTab, setActiveTab] = useState<TabType>("circuit");
-  const [circuit, setCircuit] = useState(examples.counter.circuit);
-  const [interface_, setInterface] = useState(examples.counter.interface);
-  const [test, setTest] = useState(examples.counter.test);
+  const {
+    activeTab,
+    setActiveTab,
+    files,
+    currentValue,
+    updateCurrentFile,
+    loadExample,
+  } = useEditorState(examples.counter);
+
   const [result, setResult] = useState<CompileResult | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const loadExample = (key: string) => {
+  const handleLoadExample = (key: string) => {
     const example = getExample(key);
     if (example) {
-      setCircuit(example.circuit);
-      setInterface(example.interface);
-      setTest(example.test);
+      loadExample(example);
       setResult(null);
     }
   };
 
-  const compile = async () => {
+  const handleCompile = async () => {
     setLoading(true);
     setResult(null);
 
-    try {
-      const response = await fetch("/compile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          files: {
-            "circuit.ml": circuit,
-            "circuit.mli": interface_,
-            "test.ml": test,
-          },
-          timeout_seconds: 60,
-        }),
-      });
-
-      const data: CompileResult = await response.json();
-      setResult(data);
-    } catch (error) {
-      setResult({
-        success: false,
-        error_type: "network_error",
-        error_message: error instanceof Error ? error.message : "Unknown error",
-      });
-    }
+    const data = await compileCode(files.circuit, files.interface, files.test);
+    setResult(data);
 
     setLoading(false);
   };
 
-  const getCurrentValue = () => {
-    switch (activeTab) {
-      case "circuit":
-        return circuit;
-      case "interface":
-        return interface_;
-      case "test":
-        return test;
-    }
-  };
-
-  const handleEditorChange = (value: string) => {
-    switch (activeTab) {
-      case "circuit":
-        setCircuit(value);
-        break;
-      case "interface":
-        setInterface(value);
-        break;
-      case "test":
-        setTest(value);
-        break;
-    }
+  const formatTiming = () => {
+    if (!result?.compile_time_ms) return null;
+    let text = `${result.compile_time_ms}ms compile`;
+    if (result.run_time_ms) text += ` + ${result.run_time_ms}ms run`;
+    return text;
   };
 
   return (
@@ -97,7 +52,7 @@ function App() {
         <div className="header-actions">
           <select
             className="example-selector"
-            onChange={(e) => loadExample(e.target.value)}
+            onChange={(e) => handleLoadExample(e.target.value)}
             defaultValue=""
           >
             <option value="" disabled>
@@ -109,24 +64,6 @@ function App() {
               </option>
             ))}
           </select>
-          <button
-            className="btn btn-primary"
-            onClick={compile}
-            disabled={loading}
-          >
-            {loading ? "⏳ Compiling..." : "▶ Run"}
-          </button>
-          {result && (
-            <span className={`status ${result.success ? "success" : "error"}`}>
-              {result.success ? "✓ Success" : "✗ Error"}
-            </span>
-          )}
-          {result?.compile_time_ms && (
-            <span className="timing">
-              {result.compile_time_ms}ms compile
-              {result.run_time_ms && ` + ${result.run_time_ms}ms run`}
-            </span>
-          )}
         </div>
       </header>
 
@@ -135,35 +72,35 @@ function App() {
         {/* Editor panel */}
         <div className="editor-panel">
           <div className="tabs">
-            <button
-              className={`tab ${activeTab === "circuit" ? "active" : ""}`}
-              onClick={() => setActiveTab("circuit")}
-            >
-              circuit.ml
-            </button>
-            <button
-              className={`tab ${activeTab === "interface" ? "active" : ""}`}
-              onClick={() => setActiveTab("interface")}
-            >
-              circuit.mli
-            </button>
-            <button
-              className={`tab ${activeTab === "test" ? "active" : ""}`}
-              onClick={() => setActiveTab("test")}
-            >
-              test.ml
-            </button>
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                className={`tab ${activeTab === tab.id ? "active" : ""}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
           <div className="editor-container">
             <OcamlEditor
               key={activeTab}
-              value={getCurrentValue()}
-              onChange={handleEditorChange}
+              value={currentValue}
+              onChange={updateCurrentFile}
             />
+          </div>
+          <div className="editor-toolbar">
+            <button
+              className="btn btn-run"
+              onClick={handleCompile}
+              disabled={loading}
+            >
+              {loading ? "⏳ Compiling..." : "▶ Run"}
+            </button>
           </div>
         </div>
 
-        {/* Output panel - split into two rows */}
+        {/* Output panel */}
         <div className="output-panel">
           {/* Waveform section */}
           <div className="output-section waveform-section">
@@ -183,6 +120,20 @@ function App() {
           <div className="output-section output-log-section">
             <div className="section-header">
               <span className="section-title">📝 Output</span>
+              <div className="section-status">
+                {result && (
+                  <span
+                    className={`status-badge ${
+                      result.success ? "success" : "error"
+                    }`}
+                  >
+                    {result.success ? "✓ Success" : "✗ Error"}
+                  </span>
+                )}
+                {formatTiming() && (
+                  <span className="timing-badge">{formatTiming()}</span>
+                )}
+              </div>
             </div>
             <div className="output-content">
               {result?.success && result?.output && (

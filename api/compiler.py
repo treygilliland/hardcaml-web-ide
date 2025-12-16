@@ -4,6 +4,7 @@ Hardcaml Compiler Module
 Handles compilation and execution of Hardcaml circuits in a sandboxed environment.
 """
 
+import logging
 import os
 import shutil
 import subprocess
@@ -13,6 +14,8 @@ import uuid
 from dataclasses import dataclass
 from typing import Optional
 from pathlib import Path
+
+log = logging.getLogger(__name__)
 
 
 @dataclass
@@ -205,51 +208,41 @@ def compile_and_run(
     
     1. Create isolated build directory
     2. Set up project with user files
-    3. Run dune build
-    4. Run dune runtest
-    5. Parse and return results
+    3. Run dune build @runtest
+    4. Parse and return results
     """
     build_dir = None
+    total_start = time.time()
     
     try:
         # Create build directory
+        t0 = time.time()
         build_dir = create_build_dir()
+        log.info(f"[timing] create_build_dir: {int((time.time() - t0) * 1000)}ms")
         
-        # Set up project
+        # Set up project (copy template + write user files)
+        t0 = time.time()
         setup_project(build_dir, files)
+        log.info(f"[timing] setup_project: {int((time.time() - t0) * 1000)}ms")
         
-        # Compile
-        compile_start = time.time()
+        # Build and run tests
+        t0 = time.time()
         returncode, stdout, stderr = run_command(
-            ["dune", "build"],
+            ["dune", "build", "@runtest", "--force", "--auto-promote"],
             cwd=build_dir,
             timeout=timeout_seconds
         )
-        compile_time = int((time.time() - compile_start) * 1000)
+        dune_time = int((time.time() - t0) * 1000)
+        log.info(f"[timing] dune build @runtest: {dune_time}ms")
         
-        if returncode != 0:
-            error_type, error_message = parse_error(stderr)
-            return CompileResult(
-                success=False,
-                error_type=error_type,
-                error_message=error_message,
-                stage="compile",
-                compile_time_ms=compile_time
-            )
-        
-        # Run tests
-        run_start = time.time()
-        returncode, stdout, stderr = run_command(
-            ["dune", "runtest", "--force", "--auto-promote"],
-            cwd=build_dir,
-            timeout=timeout_seconds
-        )
-        run_time = int((time.time() - run_start) * 1000)
-        
-        # Parse output - check both stdout and stderr for waveform data
-        # (dune outputs expect test diffs to stderr)
+        # Parse output
+        t0 = time.time()
         combined_output = stdout + "\n" + stderr
         output, waveform = parse_output(combined_output)
+        log.info(f"[timing] parse_output: {int((time.time() - t0) * 1000)}ms")
+        
+        total_time = int((time.time() - total_start) * 1000)
+        log.info(f"[timing] total (before cleanup): {total_time}ms")
         
         # If we got a waveform, consider it a success even if expect test "failed"
         # (the "failure" is just that the expected output didn't match)
@@ -258,30 +251,31 @@ def compile_and_run(
                 success=True,
                 output=output,
                 waveform=waveform,
-                compile_time_ms=compile_time,
-                run_time_ms=run_time
+                compile_time_ms=dune_time,
+                run_time_ms=None
             )
         
         if returncode != 0:
-            # Actual test failure (no waveform produced)
+            # Check if it's a compile error or test failure
             error_type, error_message = parse_error(stderr)
+            stage = "compile" if "Error:" in stderr and "File" in stderr else "test"
             return CompileResult(
                 success=False,
                 output=output if output else None,
                 waveform=None,
                 error_type=error_type,
                 error_message=error_message,
-                stage="test",
-                compile_time_ms=compile_time,
-                run_time_ms=run_time
+                stage=stage,
+                compile_time_ms=dune_time,
+                run_time_ms=None
             )
         
         return CompileResult(
             success=True,
             output=output,
             waveform=waveform,
-            compile_time_ms=compile_time,
-            run_time_ms=run_time
+            compile_time_ms=dune_time,
+            run_time_ms=None
         )
         
     except Exception as e:
@@ -295,7 +289,9 @@ def compile_and_run(
     finally:
         # Cleanup build directory
         if build_dir and build_dir.exists():
+            t0 = time.time()
             try:
                 shutil.rmtree(build_dir)
             except Exception:
                 pass  # Best effort cleanup
+            log.info(f"[timing] cleanup: {int((time.time() - t0) * 1000)}ms")
