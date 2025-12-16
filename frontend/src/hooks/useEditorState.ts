@@ -10,6 +10,7 @@ export interface EditorFiles {
   circuit: string;
   interface: string;
   test: string;
+  input: string;
 }
 
 export interface UseEditorStateReturn {
@@ -25,6 +26,8 @@ export interface UseEditorStateReturn {
   updateCurrentFile: (value: string) => void;
   /** Load an example into the editor */
   loadExample: (example: HardcamlExample) => void;
+  /** Whether the current example has input data */
+  hasInput: boolean;
 }
 
 /**
@@ -38,16 +41,22 @@ export function useEditorState(
     circuit: initialExample.circuit,
     interface: initialExample.interface,
     test: initialExample.test,
+    input: initialExample.input ?? "",
   });
+  const [hasInput, setHasInput] = useState<boolean>(!!initialExample.input);
 
-  const currentValue =
-    files[activeTab === "interface" ? "interface" : activeTab];
+  const getFileKey = (tab: TabType): keyof EditorFiles => {
+    if (tab === "interface") return "interface";
+    return tab;
+  };
+
+  const currentValue = files[getFileKey(activeTab)];
 
   const updateCurrentFile = useCallback(
     (value: string) => {
       setFiles((prev) => ({
         ...prev,
-        [activeTab === "interface" ? "interface" : activeTab]: value,
+        [getFileKey(activeTab)]: value,
       }));
     },
     [activeTab]
@@ -58,7 +67,10 @@ export function useEditorState(
       circuit: example.circuit,
       interface: example.interface,
       test: example.test,
+      input: example.input ?? "",
     });
+    setHasInput(!!example.input);
+    setActiveTab("circuit");
   }, []);
 
   return {
@@ -68,5 +80,6 @@ export function useEditorState(
     currentValue,
     updateCurrentFile,
     loadExample,
+    hasInput,
   };
 }

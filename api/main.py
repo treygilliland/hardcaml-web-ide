@@ -66,6 +66,7 @@ class CompileResponse(BaseModel):
     success: bool
     output: Optional[str] = None
     waveform: Optional[str] = None
+    waveform_vcd: Optional[str] = None
     error_type: Optional[str] = None
     error_message: Optional[str] = None
     stage: Optional[str] = None
@@ -116,6 +117,7 @@ async def compile_code(request: CompileRequest):
                 success=True,
                 output=result.output,
                 waveform=result.waveform,
+                waveform_vcd=result.waveform_vcd,
                 compile_time_ms=result.compile_time_ms,
                 run_time_ms=result.run_time_ms
             )

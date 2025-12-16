@@ -7,22 +7,41 @@ import type { CompileResult, CompileRequest } from "../types/types";
 const API_BASE = "";
 
 /**
+ * Inject input data into the test file by replacing the INPUT_DATA placeholder
+ * The placeholder {|INPUT_DATA|} uses OCaml's quoted string syntax, so we need
+ * to preserve the delimiters and only replace the inner content.
+ */
+function injectInputData(test: string, input: string): string {
+  // Replace only INPUT_DATA, keeping the {| and |} delimiters intact
+  return test.replace("INPUT_DATA", input);
+}
+
+/**
  * Compile and run HardCaml code
  */
 export async function compileCode(
   circuit: string,
   interface_: string,
   test: string,
+  input?: string,
   timeoutSeconds = 60
 ): Promise<CompileResult> {
+  // Inject input data into the test file if provided
+  const processedTest = input ? injectInputData(test, input) : test;
+
   const request: CompileRequest = {
     files: {
       "circuit.ml": circuit,
       "circuit.mli": interface_,
-      "test.ml": test,
+      "test.ml": processedTest,
     },
     timeout_seconds: timeoutSeconds,
   };
+
+  // Add input.txt if provided
+  if (input) {
+    request.files["input.txt"] = input;
+  }
 
   try {
     const response = await fetch(`${API_BASE}/compile`, {

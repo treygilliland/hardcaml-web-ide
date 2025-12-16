@@ -9,6 +9,7 @@ export interface CompileResult {
   success: boolean;
   output?: string;
   waveform?: string;
+  waveform_vcd?: string;
   error_type?: string;
   error_message?: string;
   compile_time_ms?: number;
@@ -23,6 +24,7 @@ export interface CompileRequest {
     "circuit.ml": string;
     "circuit.mli": string;
     "test.ml": string;
+    "input.txt"?: string;
   };
   timeout_seconds?: number;
 }
@@ -30,7 +32,7 @@ export interface CompileRequest {
 /**
  * Editor tab types
  */
-export type TabType = "circuit" | "interface" | "test";
+export type TabType = "circuit" | "interface" | "test" | "input";
 
 /**
  * Tab configuration for the editor
@@ -46,3 +48,9 @@ export const TABS: TabConfig[] = [
   { id: "interface", label: "circuit.mli", filename: "circuit.mli" },
   { id: "test", label: "test.ml", filename: "test.ml" },
 ];
+
+export const INPUT_TAB: TabConfig = {
+  id: "input",
+  label: "input.txt",
+  filename: "input.txt",
+};

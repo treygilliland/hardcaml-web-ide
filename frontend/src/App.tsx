@@ -1,10 +1,19 @@
 import { useState } from "react";
 import { OcamlEditor } from "./components/OcamlEditor";
-import { examples, getExample, type ExampleKey } from "./examples/examples";
+import {
+  examples,
+  getExample,
+  getExamplesByCategory,
+  categoryLabels,
+  type ExampleCategory,
+  type ExampleKey,
+} from "./examples/examples";
 import { useEditorState } from "./hooks/useEditorState";
 import { compileCode } from "./api/compiler";
-import { TABS, type CompileResult } from "./types/types";
+import { TABS, INPUT_TAB, type CompileResult } from "./types/types";
 import "./App.css";
+
+const DEFAULT_EXAMPLE: ExampleKey = "counter";
 
 function App() {
   const {
@@ -14,14 +23,20 @@ function App() {
     currentValue,
     updateCurrentFile,
     loadExample,
-  } = useEditorState(examples.counter);
+    hasInput,
+  } = useEditorState(examples[DEFAULT_EXAMPLE]);
 
+  const examplesByCategory = getExamplesByCategory();
+
+  const [currentExampleKey, setCurrentExampleKey] =
+    useState<ExampleKey>(DEFAULT_EXAMPLE);
   const [result, setResult] = useState<CompileResult | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleLoadExample = (key: string) => {
     const example = getExample(key);
     if (example) {
+      setCurrentExampleKey(key as ExampleKey);
       loadExample(example);
       setResult(null);
     }
@@ -31,7 +46,12 @@ function App() {
     setLoading(true);
     setResult(null);
 
-    const data = await compileCode(files.circuit, files.interface, files.test);
+    const data = await compileCode(
+      files.circuit,
+      files.interface,
+      files.test,
+      hasInput ? files.input : undefined
+    );
     setResult(data);
 
     setLoading(false);
@@ -44,6 +64,19 @@ function App() {
     return text;
   };
 
+  const handleDownloadVcd = () => {
+    if (!result?.waveform_vcd) return;
+    const blob = new Blob([result.waveform_vcd], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "waveform.vcd";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="app">
       {/* Header */}
@@ -53,16 +86,19 @@ function App() {
           <select
             className="example-selector"
             onChange={(e) => handleLoadExample(e.target.value)}
-            defaultValue=""
+            value={currentExampleKey}
           >
-            <option value="" disabled>
-              Load Example...
-            </option>
-            {(Object.keys(examples) as ExampleKey[]).map((key) => (
-              <option key={key} value={key}>
-                {examples[key].name}
-              </option>
-            ))}
+            {(Object.keys(categoryLabels) as ExampleCategory[]).map(
+              (category) => (
+                <optgroup key={category} label={categoryLabels[category]}>
+                  {examplesByCategory[category].map(({ key, example }) => (
+                    <option key={key} value={key}>
+                      {example.name}
+                    </option>
+                  ))}
+                </optgroup>
+              )
+            )}
           </select>
         </div>
       </header>
@@ -81,6 +117,15 @@ function App() {
                 {tab.label}
               </button>
             ))}
+            {hasInput && (
+              <button
+                key={INPUT_TAB.id}
+                className={`tab ${activeTab === INPUT_TAB.id ? "active" : ""}`}
+                onClick={() => setActiveTab(INPUT_TAB.id)}
+              >
+                {INPUT_TAB.label}
+              </button>
+            )}
           </div>
           <div className="editor-container">
             <OcamlEditor
@@ -106,6 +151,15 @@ function App() {
           <div className="output-section waveform-section">
             <div className="section-header">
               <span className="section-title">📊 Waveform</span>
+              {result?.waveform_vcd && (
+                <button
+                  className="btn btn-download"
+                  onClick={handleDownloadVcd}
+                  title="Download VCD file for use in GTKWave or other waveform viewers"
+                >
+                  ⬇ Download VCD
+                </button>
+              )}
             </div>
             <div className="waveform-content">
               {result?.waveform || (

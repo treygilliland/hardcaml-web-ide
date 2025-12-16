@@ -70,6 +70,18 @@
   background: var(--color-run-hover);
 }
 
+.btn-download {
+  background: var(--color-accent);
+  color: var(--color-text-white);
+  padding: 4px 12px;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.btn-download:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
 /* Main Content */
 .main-content {
   flex: 1;

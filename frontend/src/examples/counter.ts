@@ -2,7 +2,7 @@ import type { HardcamlExample } from "./examples";
 
 /**
  * Simple Counter Example
- * 
+ *
  * A basic 8-bit counter that increments when enabled.
  * This is a good starting point for learning HardCaml's:
  * - Module interface pattern (I/O records)
@@ -11,10 +11,12 @@ import type { HardcamlExample } from "./examples";
  * - Hierarchical design patterns
  */
 export const counterExample: HardcamlExample = {
-  name: 'Simple Counter',
-  description: 'An 8-bit counter that increments on each clock cycle when enabled',
-  difficulty: 'beginner',
-  
+  name: "Simple Counter",
+  description:
+    "An 8-bit counter that increments on each clock cycle when enabled",
+  difficulty: "beginner",
+  category: "hardcaml",
+
   circuit: `open! Core
 open! Hardcaml
 open! Signal
@@ -89,17 +91,21 @@ let run_testbench (sim : Harness.Sim.t) =
   cycle ()
 ;;
 
+let print_waves_and_save_vcd waves =
+  print_endline "===WAVEFORM_START===";
+  Waveform.print ~display_width:100 ~wave_width:2 waves;
+  print_endline "===WAVEFORM_END===";
+  (* Save VCD to file for the backend to read *)
+  Waveform.Serialize.marshall_vcd waves "/tmp/waveform.vcd"
+;;
+
 let%expect_test "Counter test" =
   Harness.run_advanced
     ~waves_config:Waves_config.no_waves
     ~create:Circuit.hierarchical
     ~trace:\`All_named
-    ~print_waves_after_test:(fun waves ->
-      print_endline "===WAVEFORM_START===";
-      Waveform.print ~display_width:100 ~wave_width:2 waves;
-      print_endline "===WAVEFORM_END===")
+    ~print_waves_after_test:print_waves_and_save_vcd
     run_testbench;
   [%expect {| |}]
 ;;`,
 };
-
