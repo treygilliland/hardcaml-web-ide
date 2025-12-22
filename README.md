@@ -2,149 +2,116 @@
 
 A web-based IDE for compiling and running [Hardcaml](https://github.com/janestreet/hardcaml) circuits with waveform visualization.
 
-## Overview
-
-This project provides a Docker-based API that:
-
-- Accepts Hardcaml circuit code and test files
-- Compiles them using the OxCaml 5.2 + Hardcaml toolchain
-- Runs tests and captures waveform output
-- Returns ASCII waveforms and test results
-
 ## Quick Start
 
-### Prerequisites
-
-- Docker and Docker Compose installed
-- ~4GB disk space for the Docker image (OCaml toolchain is large)
-
-### Build and Run
-
 ```bash
-cd aoc/fpga/hardcaml-web-ide
+# Build base image (first time, ~10-20 min)
+make base
 
-# Build the Docker image (takes 10-20 minutes first time)
-docker compose build
+# Production mode
+make up
 
-# Start the server
-docker compose up
+# Development mode (hot reload)
+make dev
 ```
 
-The API will be available at `http://localhost:8000`.
-
-### Test the API
-
-```bash
-# Health check
-
-# Compile a circuit (see examples below)
-curl -X POST http://localhost:8000/compile \
-  -H "Content-Type: application/json" \
-  -d @examples/counter/request.json
-```
-
-## API Reference
-
-### `GET /health`
-
-Health check endpoint.
-
-**Response:**
-
-```json
-{
-  "status": "healthy",
-  "service": "hardcaml-web-ide"
-}
-```
-
-### `POST /compile`
-
-Compile and run Hardcaml code.
-
-**Request:**
-
-```json
-{
-  "files": {
-    "circuit.ml": "open! Core\nopen! Hardcaml...",
-    "circuit.mli": "(* optional interface *)",
-    "test.ml": "open! Core..."
-  },
-  "timeout_seconds": 30
-}
-```
-
-**Response (success):**
-
-```json
-{
-  "success": true,
-  "output": "(Result (count 15))",
-  "waveform": "┌Signals──────────┐┌Waves────────────┐\n...",
-  "compile_time_ms": 1200,
-  "run_time_ms": 50
-}
-```
-
-**Response (error):**
-
-```json
-{
-  "success": false,
-  "error_type": "compile_error",
-  "error_message": "File \"circuit.ml\", line 5...",
-  "stage": "compile"
-}
-```
-
-### `GET /examples`
-
-List available example circuits.
+- **Production**: `http://localhost:8000`
+- **Development**: Frontend at `http://localhost:5173`, API at `http://localhost:8000`
 
 ## Project Structure
 
 ```
 hardcaml-web-ide/
+├── api/                    # FastAPI backend
+│   ├── main.py
+│   └── compiler.py
+├── frontend/               # React + Vite frontend
+│   └── src/
+│       └── examples/
+│           └── hardcaml-examples.ts  # Loads OCaml via ?raw imports
+├── hardcaml/               # OCaml sources
+│   ├── examples/           # Example circuits (.ml, .mli, test.ml)
+│   │   ├── counter/
+│   │   ├── fibonacci/
+│   │   ├── day1_part1/
+│   │   └── day1_part2/
+│   └── build-cache/        # Pre-built dune project for fast compilation
 ├── Dockerfile              # Production multi-stage build
-├── Dockerfile.dev          # Development backend build
-├── docker-compose.yml      # Production setup
-├── docker-compose.dev.yml  # Development setup with hot reload
-├── api/
-│   ├── main.py             # FastAPI server
-│   ├── compiler.py         # Compilation logic
-│   └── requirements.txt    # Python dependencies
-├── frontend/               # React frontend
-│   ├── src/
-│   │   ├── api/            # API client
-│   │   ├── components/     # React components
-│   │   ├── examples/       # Example code definitions
-│   │   ├── hooks/          # Custom React hooks
-│   │   └── types/          # TypeScript types
-│   ├── vite.config.ts
-│   └── package.json
-├── template/               # OCaml project template
-│   ├── dune-project
-│   ├── src/
-│   └── test/
-└── examples/               # Example circuits
-    └── counter/
+├── Dockerfile.dev          # Development backend
+├── docker-compose.yml      # Production
+└── docker-compose.dev.yml  # Development
 ```
 
-## Writing Circuits
+## Development vs Production
 
-### File Structure
+### Production (`make up` / `docker-compose.yml`)
 
-Your circuit needs at minimum two files:
+Single container serving both API and static frontend. **Requires rebuild for any changes.**
 
-1. **circuit.ml** - The circuit implementation
-2. **test.ml** - Test file with expect tests
+### Development (`make dev` / `docker-compose.dev.yml`)
 
-Optionally, you can include:
+Two containers with hot reload capabilities:
 
-- **circuit.mli** - Interface file
+| Component               | What's Mounted             | Hot Reload?                                                    |
+| ----------------------- | -------------------------- | -------------------------------------------------------------- |
+| `api/`                  | Volume mounted             | Yes (uvicorn --reload)                                         |
+| `frontend/`             | Volume mounted             | Yes (Vite HMR)                                                 |
+| `hardcaml/`             | Volume mounted to frontend | Yes (Vite watches)                                             |
+| `hardcaml/build-cache/` | Copied at build            | No - requires `docker compose -f docker-compose.dev.yml build` |
 
-### Circuit Template
+**When to rebuild dev:**
+
+- Changes to `hardcaml/build-cache/` (dune config, test harness setup)
+- Changes to `Dockerfile.dev` or `Dockerfile.base`
+- New Python dependencies in `api/requirements.txt`
+
+## Adding Examples
+
+1. Create OCaml files in `hardcaml/examples/<name>/`:
+
+   - `circuit.ml` - Implementation
+   - `circuit.mli` - Interface
+   - `test.ml` - Test with empty `[%expect {| |}]`
+   - `input.txt` - Optional input data
+
+2. Add imports and export in `frontend/src/examples/hardcaml-examples.ts`:
+
+```typescript
+import myCircuit from "@hardcaml/examples/<name>/circuit.ml?raw";
+import myInterface from "@hardcaml/examples/<name>/circuit.mli?raw";
+import myTest from "@hardcaml/examples/<name>/test.ml?raw";
+
+export const myExample: HardcamlExample = {
+  name: "My Example",
+  category: "hardcaml",
+  circuit: myCircuit,
+  interface: myInterface,
+  test: myTest,
+};
+```
+
+3. Add to the `examples` record in the same file
+
+## API Reference
+
+### `POST /compile`
+
+```json
+{
+  "files": {
+    "circuit.ml": "...",
+    "circuit.mli": "...",
+    "test.ml": "..."
+  },
+  "timeout_seconds": 30
+}
+```
+
+### `GET /health`
+
+Returns `{"status": "healthy"}`.
+
+## Circuit Template
 
 ```ocaml
 (* circuit.ml *)
@@ -153,24 +120,18 @@ open! Hardcaml
 open! Signal
 
 module I = struct
-  type 'a t =
-    { clock : 'a
-    ; clear : 'a
-    ; (* your inputs here *)
-    }
+  type 'a t = { clock : 'a; clear : 'a; (* inputs *) }
   [@@deriving hardcaml]
 end
 
 module O = struct
-  type 'a t =
-    { (* your outputs here *)
-    }
+  type 'a t = { (* outputs *) }
   [@@deriving hardcaml]
 end
 
-let create scope (inputs : _ I.t) : _ O.t =
-  let spec = Reg_spec.create ~clock:inputs.clock ~clear:inputs.clear () in
-  (* your circuit logic here *)
+let create scope (i : _ I.t) : _ O.t =
+  let spec = Reg_spec.create ~clock:i.clock ~clear:i.clear () in
+  (* circuit logic *)
   { (* outputs *) }
 ;;
 
@@ -180,7 +141,7 @@ let hierarchical scope =
 ;;
 ```
 
-### Test Template
+## Test Template
 
 ```ocaml
 (* test.ml *)
@@ -195,103 +156,34 @@ let run_testbench (sim : Harness.Sim.t) =
   let inputs = Cyclesim.inputs sim in
   let outputs = Cyclesim.outputs sim in
   let cycle () = Cyclesim.cycle sim in
-
-  (* Your test logic here *)
-  inputs.clear := Bits.vdd;
-  cycle ();
-  inputs.clear := Bits.gnd;
-
-  (* Print results *)
-  print_s [%message "Result" (* your values *)];
+  (* test logic *)
+  print_s [%message "Result" (* values *)];
   cycle ()
 ;;
 
-let%expect_test "my test" =
+let print_waves_and_save_vcd waves =
+  print_endline "===WAVEFORM_START===";
+  Waveform.print ~display_width:100 ~wave_width:2 waves;
+  print_endline "===WAVEFORM_END===";
+  Waveform.Serialize.marshall_vcd waves "/tmp/waveform.vcd"
+;;
+
+let%expect_test "test" =
   Harness.run_advanced
     ~waves_config:Waves_config.no_waves
     ~create:Circuit.hierarchical
     ~trace:`All_named
-    ~print_waves_after_test:(fun waves ->
-      Waveform.print
-        ~display_width:120
-        ~wave_width:2
-        waves)
+    ~print_waves_after_test:print_waves_and_save_vcd
     run_testbench;
-  [%expect {| (* expected output *) |}]
+  [%expect {| |}]
 ;;
 ```
 
-## Development
-
-### Development Mode with Hot Reloading
-
-For frontend development with hot reloading:
-
-```bash
-# Build the dev backend image (first time only)
-docker compose -f docker-compose.dev.yml build
-
-# Start development servers
-docker compose -f docker-compose.dev.yml up
-```
-
-This runs:
-
-- **Backend** at `http://localhost:8000` - Python API with OCaml compiler (auto-reloads on changes)
-- **Frontend** at `http://localhost:5173` - Vite dev server with HMR (hot module replacement)
-
-Edit files in `frontend/src/` and see changes instantly in the browser!
-
-### Modifying the API
-
-In dev mode, changes to `api/` files auto-reload thanks to uvicorn's `--reload` flag.
-
-### Rebuilding the Docker Image
-
-If you modify the Dockerfile or template:
-
-```bash
-# Production image
-docker compose build --no-cache
-
-# Development image
-docker compose -f docker-compose.dev.yml build --no-cache
-```
-
-### Running Tests Locally
-
-If you have the OCaml toolchain installed locally (see `../README.md`):
-
-```bash
-cd examples/counter
-# Copy files to template and run
-```
-
-## Toolchain Details
-
-This project uses:
+## Toolchain
 
 - **OxCaml 5.2** - Jane Street's OCaml distribution
 - **Hardcaml** - Hardware design library
 - **Hardcaml_waveterm** - Waveform visualization
 - **Hardcaml_test_harness** - Testing utilities
 
-The Docker image pre-installs all dependencies and pre-compiles the template project, so user builds only compile their code (~2-5 seconds instead of ~30 seconds).
-
-## Troubleshooting
-
-### Build takes too long
-
-The first Docker build downloads and compiles the entire OCaml toolchain. Subsequent builds use Docker layer caching.
-
-### Out of memory during build
-
-The OCaml compiler needs significant memory. Ensure Docker has at least 4GB RAM allocated.
-
-### Test timeout
-
-Increase the `timeout_seconds` parameter in your request. Complex circuits may need more time.
-
-## License
-
-MIT
+The Docker image pre-compiles dependencies in the build cache, so user builds take ~2-5 seconds.

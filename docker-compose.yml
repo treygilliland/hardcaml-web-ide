@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   hardcaml-web-ide:
     build:
@@ -8,7 +6,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./examples:/opt/examples:ro
+      - ./hardcaml/examples:/opt/examples:ro
     environment:
       - PYTHONUNBUFFERED=1
     # Resource limits for safety

@@ -32,8 +32,8 @@ class CompileResult:
     run_time_ms: Optional[int] = None
 
 
-# Template directory (pre-built in Docker image)
-TEMPLATE_DIR = Path("/opt/template")
+# Build cache directory (pre-built in Docker image for fast compilation)
+BUILD_CACHE_DIR = Path("/opt/build-cache")
 
 # Markers for parsing output
 WAVEFORM_START = "===WAVEFORM_START==="
@@ -52,11 +52,11 @@ def setup_project(build_dir: Path, files: dict[str, str]) -> None:
     """
     Set up the project structure with user files.
     
-    Copies the template and injects user files.
+    Copies the build cache and injects user files.
     """
-    # Copy template structure
-    if TEMPLATE_DIR.exists():
-        shutil.copytree(TEMPLATE_DIR, build_dir, dirs_exist_ok=True)
+    # Copy build cache structure
+    if BUILD_CACHE_DIR.exists():
+        shutil.copytree(BUILD_CACHE_DIR, build_dir, dirs_exist_ok=True)
     else:
         # Fallback: create structure from scratch (for local development)
         (build_dir / "src").mkdir(exist_ok=True)
@@ -235,7 +235,7 @@ def compile_and_run(
         build_dir = create_build_dir()
         log.info(f"[timing] create_build_dir: {int((time.time() - t0) * 1000)}ms")
         
-        # Set up project (copy template + write user files)
+        # Set up project (copy build cache + write user files)
         t0 = time.time()
         setup_project(build_dir, files)
         log.info(f"[timing] setup_project: {int((time.time() - t0) * 1000)}ms")

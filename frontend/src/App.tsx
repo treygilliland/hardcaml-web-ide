@@ -7,7 +7,7 @@ import {
   categoryLabels,
   type ExampleCategory,
   type ExampleKey,
-} from "./examples/examples";
+} from "./examples/hardcaml-examples";
 import { useEditorState } from "./hooks/useEditorState";
 import { compileCode } from "./api/compiler";
 import { TABS, INPUT_TAB, type CompileResult } from "./types/types";

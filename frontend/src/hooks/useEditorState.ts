@@ -4,7 +4,7 @@
 
 import { useState, useCallback } from "react";
 import type { TabType } from "../types/types";
-import type { HardcamlExample } from "../examples/examples";
+import type { HardcamlExample } from "../examples/hardcaml-examples";
 
 export interface EditorFiles {
   circuit: string;

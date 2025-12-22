@@ -4,9 +4,9 @@
 ARG BASE_IMAGE=hardcaml-base
 FROM ${BASE_IMAGE}
 
-# Copy and pre-build template project including test infrastructure
-COPY template/ /opt/template/
-RUN cd /opt/template && dune build @runtest --force 2>/dev/null || true
+# Copy and pre-build dune project to warm cache
+COPY hardcaml/build-cache/ /opt/build-cache/
+RUN cd /opt/build-cache && dune build @runtest --force 2>/dev/null || true
 
 # Install Python dependencies
 COPY api/requirements.txt /app/requirements.txt

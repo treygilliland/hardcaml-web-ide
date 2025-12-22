@@ -1,13 +1,23 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      "@hardcaml": path.resolve(__dirname, "../hardcaml"),
+    },
+  },
   server: {
     // Enable HMR with polling for Docker
     watch: {
       usePolling: true,
+    },
+    // Allow serving files from hardcaml directory
+    fs: {
+      allow: [".", "../hardcaml"],
     },
     // Proxy API calls to backend
     // Uses "backend" hostname when running in Docker, localhost otherwise

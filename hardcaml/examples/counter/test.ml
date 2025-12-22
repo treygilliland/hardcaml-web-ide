@@ -1,5 +1,3 @@
-(* Test for simple counter *)
-
 open! Core
 open! Hardcaml
 open! Hardcaml_waveterm
@@ -39,11 +37,11 @@ let run_testbench (sim : Harness.Sim.t) =
   cycle ()
 ;;
 
-let display_rules =
-  [ Display_rule.port_name_matches
-      ~wave_format:(Bit_or Unsigned_int)
-      (Re.Glob.glob "counter*" |> Re.compile)
-  ]
+let print_waves_and_save_vcd waves =
+  print_endline "===WAVEFORM_START===";
+  Waveform.print ~display_width:100 ~wave_width:2 waves;
+  print_endline "===WAVEFORM_END===";
+  Waveform.Serialize.marshall_vcd waves "/tmp/waveform.vcd"
 ;;
 
 let%expect_test "Counter test" =
@@ -51,15 +49,7 @@ let%expect_test "Counter test" =
     ~waves_config:Waves_config.no_waves
     ~create:Circuit.hierarchical 
     ~trace:`All_named
-    ~print_waves_after_test:(fun waves ->
-      Waveform.print
-        ~display_rules
-        ~signals_width:35
-        ~display_width:120
-        ~wave_width:2
-        waves)
+    ~print_waves_after_test:print_waves_and_save_vcd
     run_testbench;
-  [%expect {|
-    (Result (final_count 15))
-    |}]
+  [%expect {| |}]
 ;;

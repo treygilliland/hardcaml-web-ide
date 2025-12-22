@@ -1,6 +1,6 @@
-.PHONY: base dev up build down logs clean
+.PHONY: base dev up build build-dev build-prod build-all down logs clean
 
-base:
+build-base:
 	docker build -f Dockerfile.base -t hardcaml-base .
 
 dev: base
@@ -9,10 +9,16 @@ dev: base
 up: base
 	docker compose up --build
 
-build: base
+build-dev: base
+	docker compose -f docker-compose.dev.yml build
+
+build-prod: base
 	docker compose build
 
+build: build-base build-dev build-prod
+
 down:
+	docker compose -f docker-compose.dev.yml down
 	docker compose down
 
 logs:
