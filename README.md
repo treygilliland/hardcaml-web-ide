@@ -6,17 +6,17 @@ A web-based IDE for compiling and running [Hardcaml](https://github.com/janestre
 
 ```bash
 # Build base image (first time, ~10-20 min)
-make base
-
-# Production mode
-make up
+make build-base
 
 # Development mode (hot reload)
 make dev
+
+# Run tests
+make test
 ```
 
-- **Production**: `http://localhost:8000`
 - **Development**: Frontend at `http://localhost:5173`, API at `http://localhost:8000`
+- **Production**: `make up` → Both at `http://localhost:8000`
 
 ## Project Structure
 
@@ -24,73 +24,139 @@ make dev
 hardcaml-web-ide/
 ├── api/                    # FastAPI backend
 │   ├── main.py
-│   └── compiler.py
+│   ├── compiler.py
+│   ├── test_runner.py      # Direct dune test runner
+│   ├── pyproject.toml      # Python deps
+│   └── tests/
+│       ├── examples.py     # Manifest for tests to run
+│       └── test_examples.py
 ├── frontend/               # React + Vite frontend
-│   └── src/
-│       └── examples/
-│           └── hardcaml-examples.ts  # Loads OCaml via ?raw imports
-├── hardcaml/               # OCaml sources
-│   ├── examples/           # Example circuits (.ml, .mli, test.ml)
+│   └── src/examples/
+│       └── hardcaml-examples.ts
+├── hardcaml/
+│   ├── examples/           # Example circuits
 │   │   ├── counter/
 │   │   ├── fibonacci/
-│   │   ├── day1_part1/
-│   │   └── day1_part2/
-│   └── build-cache/        # Pre-built dune project for fast compilation
-├── Dockerfile              # Production multi-stage build
-├── Dockerfile.dev          # Development backend
-├── docker-compose.yml      # Production
-└── docker-compose.dev.yml  # Development
+│   │   ├── n2t_solutions/  # N2T reference implementations
+│   │   └── ...
+│   └── build-cache/        # Pre-built dune project
+├── Dockerfile              # Production
+├── Dockerfile.dev          # Development
+└── Makefile
 ```
 
-## Development vs Production
+## Testing
 
-### Production (`make up` / `docker-compose.yml`)
+Two-tier testing validates both OCaml code and API integration:
 
-Single container serving both API and static frontend. **Requires rebuild for any changes.**
+```bash
+make test          # Run both (~30s)
+make test-dune     # All 19 examples via dune (~5s)
+make test-api      # Key examples via FastAPI TestClient (~25s)
+```
 
-### Development (`make dev` / `docker-compose.dev.yml`)
+### Test Architecture
 
-Two containers with hot reload capabilities:
+| Tier | Command          | Examples                     | What it tests                               |
+| ---- | ---------------- | ---------------------------- | ------------------------------------------- |
+| Dune | `make test-dune` | All 19                       | OCaml code via `compiler.compile_and_run()` |
+| API  | `make test-api`  | counter, n2t_mux, day1_part1 | Full API flow via TestClient                |
 
-| Component               | What's Mounted             | Hot Reload?                                                    |
-| ----------------------- | -------------------------- | -------------------------------------------------------------- |
-| `api/`                  | Volume mounted             | Yes (uvicorn --reload)                                         |
-| `frontend/`             | Volume mounted             | Yes (Vite HMR)                                                 |
-| `hardcaml/`             | Volume mounted to frontend | Yes (Vite watches)                                             |
-| `hardcaml/build-cache/` | Copied at build            | No - requires `docker compose -f docker-compose.dev.yml build` |
+Both run inside Docker. Use `test-dune` for comprehensive OCaml validation, `test-api` for API smoke tests.
 
-**When to rebuild dev:**
+### Adding Examples to Tests
 
-- Changes to `hardcaml/build-cache/` (dune config, test harness setup)
+**Dune tests** (`api/tests/examples.py`):
+
+- Add to `STANDARD_EXAMPLES` for `hardcaml/examples/<name>/` structure
+- Add to `N2T_CHIPS` for N2T solutions
+
+**API tests** (`api/tests/test_examples.py`):
+
+- Add example ID to the `@pytest.mark.parametrize` list
+
+## Python Dependencies
+
+Uses [uv](https://docs.astral.sh/uv/) for dependency management:
+
+```bash
+cd api
+uv sync                    # Install main deps
+uv sync --extra test       # Include test deps
+uv run pytest tests/ -v    # Run tests
+uv add <package>           # Add dependency
+uv lock                    # Regenerate lockfile
+```
+
+Dependencies defined in `api/pyproject.toml` with `test` optional group.
+
+## Development
+
+### Hot Reload
+
+| Component               | Mounted | Hot Reload       |
+| ----------------------- | ------- | ---------------- |
+| `api/`                  | Yes     | uvicorn --reload |
+| `frontend/`             | Yes     | Vite HMR         |
+| `hardcaml/examples/`    | Yes     | Vite watches     |
+| `hardcaml/build-cache/` | No      | Requires rebuild |
+
+### When to Rebuild
+
+```bash
+docker compose -f docker-compose.dev.yml build backend
+```
+
+- Changes to `hardcaml/build-cache/`
 - Changes to `Dockerfile.dev` or `Dockerfile.base`
-- New Python dependencies in `api/requirements.txt`
+- Changes to `api/pyproject.toml` or `api/uv.lock`
 
 ## Adding Examples
 
-1. Create OCaml files in `hardcaml/examples/<name>/`:
+### 1. Create OCaml Files
 
-   - `circuit.ml` - Implementation
-   - `circuit.mli` - Interface
-   - `test.ml` - Test with empty `[%expect {| |}]`
-   - `input.txt` - Optional input data
+Create `hardcaml/examples/<name>/` with:
 
-2. Add imports and export in `frontend/src/examples/hardcaml-examples.ts`:
+| File          | Required | Description                                                      |
+| ------------- | -------- | ---------------------------------------------------------------- | --- | ---------------------------------------- |
+| `circuit.ml`  | Yes      | Implementation with `I`, `O` modules and `hierarchical` function |
+| `circuit.mli` | Yes      | Interface file                                                   |
+| `test.ml`     | Yes      | Test with `[%expect {                                            |     | }]`and`===WAVEFORM_START/END===` markers |
+| `input.txt`   | No       | Input data (replaces `INPUT_DATA` placeholder in test.ml)        |
+
+### 2. Register in Frontend
+
+Add to `frontend/src/examples/hardcaml-examples.ts`:
 
 ```typescript
 import myCircuit from "@hardcaml/examples/<name>/circuit.ml?raw";
 import myInterface from "@hardcaml/examples/<name>/circuit.mli?raw";
 import myTest from "@hardcaml/examples/<name>/test.ml?raw";
 
-export const myExample: HardcamlExample = {
+const myExample: HardcamlExample = {
   name: "My Example",
-  category: "hardcaml",
+  category: "hardcaml", // or "advent", "n2t", "n2t_solutions"
   circuit: myCircuit,
   interface: myInterface,
   test: myTest,
 };
+
+// Add to examples record
+export const examples: Record<ExampleKey, HardcamlExample> = {
+  // ...existing
+  my_example: myExample,
+};
 ```
 
-3. Add to the `examples` record in the same file
+### 3. Add to Test Manifest
+
+For examples that should pass tests, add to `api/tests/examples.py`:
+
+```python
+STANDARD_EXAMPLES = ["counter", "fibonacci", ..., "my_example"]
+```
+
+Run `make test-dune` to verify the example passes.
 
 ## API Reference
 

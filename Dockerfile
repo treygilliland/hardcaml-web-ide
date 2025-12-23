@@ -5,7 +5,7 @@
 ARG BASE_IMAGE=hardcaml-base
 
 # --- Frontend build stage ---
-FROM node:20-alpine AS frontend-builder
+FROM node:24-alpine AS frontend-builder
 
 WORKDIR /frontend
 COPY frontend/package*.json ./
@@ -21,9 +21,13 @@ FROM ${BASE_IMAGE}
 COPY hardcaml/build-cache/ /opt/build-cache/
 RUN cd /opt/build-cache && dune build @runtest --force 2>/dev/null || true
 
+# Install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin:$PATH"
+
 # Install Python dependencies
-COPY api/requirements.txt /app/requirements.txt
-RUN pip3 install --break-system-packages -r /app/requirements.txt
+COPY api/pyproject.toml api/uv.lock /app/
+RUN cd /app && uv sync --frozen --no-dev
 
 # Copy API code
 COPY api/ /app/
@@ -35,4 +39,4 @@ WORKDIR /app
 
 EXPOSE 8000
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
