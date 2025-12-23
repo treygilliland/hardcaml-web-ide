@@ -146,7 +146,9 @@ export function ExampleSelector({
                         onClick={() => handleSelect(key)}
                         type="button"
                       >
-                        <span className="example-item-name">{example.name}</span>
+                        <span className="example-item-name">
+                          {example.name}
+                        </span>
                         {example.difficulty && (
                           <span
                             className={`example-item-difficulty ${example.difficulty}`}
@@ -166,4 +168,3 @@ export function ExampleSelector({
     </div>
   );
 }
-

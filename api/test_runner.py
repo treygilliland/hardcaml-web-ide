@@ -24,9 +24,9 @@ from tests.examples import get_all_testable_examples, get_example_by_id
 def run_example(example, verbose: bool = False) -> bool:
     """Run a single example and return True if it passes."""
     if verbose:
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Running: {example.id}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
     result = compile_and_run(files=example.files, timeout_seconds=60)
 
@@ -52,12 +52,14 @@ def main():
         help="Specific example IDs to run (default: all)",
     )
     parser.add_argument(
-        "-v", "--verbose",
+        "-v",
+        "--verbose",
         action="store_true",
         help="Verbose output",
     )
     parser.add_argument(
-        "-l", "--list",
+        "-l",
+        "--list",
         action="store_true",
         help="List available examples",
     )
@@ -88,15 +90,14 @@ def main():
             failed += 1
             failed_examples.append(example.id)
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"Results: {passed} passed, {failed} failed")
     if failed_examples:
         print(f"Failed: {', '.join(failed_examples)}")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     return 0 if failed == 0 else 1
 
 
 if __name__ == "__main__":
     sys.exit(main())
-

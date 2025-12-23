@@ -1,10 +1,13 @@
 /**
- * Custom hook for managing editor state
+ * Custom hook for managing editor state with localStorage persistence
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import type { TabType } from "../types/types";
-import type { HardcamlExample } from "../examples/hardcaml-examples";
+import type { HardcamlExample, ExampleKey } from "../examples/hardcaml-examples";
+
+const STORAGE_PREFIX = "hardcaml-ide";
+const SAVE_DEBOUNCE_MS = 500;
 
 export interface EditorFiles {
   circuit: string;
@@ -19,42 +22,110 @@ export interface EditorFilenames {
 }
 
 export interface UseEditorStateReturn {
-  /** Currently active tab */
   activeTab: TabType;
-  /** Set the active tab */
   setActiveTab: (tab: TabType) => void;
-  /** All editor file contents */
   files: EditorFiles;
-  /** Filenames for circuit and interface */
   filenames: EditorFilenames;
-  /** Get the current file content based on active tab */
   currentValue: string;
-  /** Update the current file content */
   updateCurrentFile: (value: string) => void;
-  /** Load an example into the editor */
-  loadExample: (example: HardcamlExample) => void;
-  /** Whether the current example has input data */
+  loadExample: (example: HardcamlExample, key: ExampleKey) => void;
   hasInput: boolean;
+  hasChanges: boolean;
+  resetToTemplate: () => void;
+  resetAll: () => void;
 }
 
-/**
- * Hook to manage the multi-file editor state
- */
+function getStorageKey(exampleKey: ExampleKey): string {
+  return `${STORAGE_PREFIX}:${exampleKey}`;
+}
+
+function getSavedFiles(exampleKey: ExampleKey): EditorFiles | null {
+  try {
+    const stored = localStorage.getItem(getStorageKey(exampleKey));
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveFiles(exampleKey: ExampleKey, files: EditorFiles): void {
+  try {
+    localStorage.setItem(getStorageKey(exampleKey), JSON.stringify(files));
+  } catch {
+    // localStorage full or unavailable
+  }
+}
+
+function clearSavedFiles(exampleKey: ExampleKey): void {
+  localStorage.removeItem(getStorageKey(exampleKey));
+}
+
+function clearAllSavedFiles(): void {
+  Object.keys(localStorage)
+    .filter((k) => k.startsWith(STORAGE_PREFIX))
+    .forEach((k) => localStorage.removeItem(k));
+}
+
+function filesEqual(a: EditorFiles, b: EditorFiles): boolean {
+  return (
+    a.circuit === b.circuit &&
+    a.interface === b.interface &&
+    a.test === b.test &&
+    a.input === b.input
+  );
+}
+
+function getTemplateFiles(example: HardcamlExample): EditorFiles {
+  return {
+    circuit: example.circuit,
+    interface: example.interface,
+    test: example.test,
+    input: example.input ?? "",
+  };
+}
+
 export function useEditorState(
-  initialExample: HardcamlExample
+  initialExample: HardcamlExample,
+  initialKey: ExampleKey
 ): UseEditorStateReturn {
+  const [exampleKey, setExampleKey] = useState<ExampleKey>(initialKey);
+  const [template, setTemplate] = useState<EditorFiles>(() =>
+    getTemplateFiles(initialExample)
+  );
   const [activeTab, setActiveTab] = useState<TabType>("circuit");
-  const [files, setFiles] = useState<EditorFiles>({
-    circuit: initialExample.circuit,
-    interface: initialExample.interface,
-    test: initialExample.test,
-    input: initialExample.input ?? "",
+  const [files, setFiles] = useState<EditorFiles>(() => {
+    const saved = getSavedFiles(initialKey);
+    return saved ?? getTemplateFiles(initialExample);
   });
   const [filenames, setFilenames] = useState<EditorFilenames>({
     circuit: initialExample.circuitFilename ?? "circuit.ml",
     interface: initialExample.interfaceFilename ?? "circuit.mli",
   });
   const [hasInput, setHasInput] = useState<boolean>(!!initialExample.input);
+
+  const saveTimeoutRef = useRef<number | null>(null);
+
+  // Debounced save to localStorage
+  useEffect(() => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    saveTimeoutRef.current = window.setTimeout(() => {
+      if (!filesEqual(files, template)) {
+        saveFiles(exampleKey, files);
+      } else {
+        clearSavedFiles(exampleKey);
+      }
+    }, SAVE_DEBOUNCE_MS);
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [files, exampleKey, template]);
+
+  const hasChanges = !filesEqual(files, template);
 
   const getFileKey = (tab: TabType): keyof EditorFiles => {
     if (tab === "interface") return "interface";
@@ -73,13 +144,13 @@ export function useEditorState(
     [activeTab]
   );
 
-  const loadExample = useCallback((example: HardcamlExample) => {
-    setFiles({
-      circuit: example.circuit,
-      interface: example.interface,
-      test: example.test,
-      input: example.input ?? "",
-    });
+  const loadExample = useCallback((example: HardcamlExample, key: ExampleKey) => {
+    const templateFiles = getTemplateFiles(example);
+    const saved = getSavedFiles(key);
+
+    setExampleKey(key);
+    setTemplate(templateFiles);
+    setFiles(saved ?? templateFiles);
     setFilenames({
       circuit: example.circuitFilename ?? "circuit.ml",
       interface: example.interfaceFilename ?? "circuit.mli",
@@ -87,6 +158,16 @@ export function useEditorState(
     setHasInput(!!example.input);
     setActiveTab("circuit");
   }, []);
+
+  const resetToTemplate = useCallback(() => {
+    clearSavedFiles(exampleKey);
+    setFiles(template);
+  }, [exampleKey, template]);
+
+  const resetAll = useCallback(() => {
+    clearAllSavedFiles();
+    setFiles(template);
+  }, [template]);
 
   return {
     activeTab,
@@ -97,5 +178,8 @@ export function useEditorState(
     updateCurrentFile,
     loadExample,
     hasInput,
+    hasChanges,
+    resetToTemplate,
+    resetAll,
   };
 }
