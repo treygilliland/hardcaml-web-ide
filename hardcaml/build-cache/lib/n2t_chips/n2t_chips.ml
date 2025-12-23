@@ -18,6 +18,11 @@ module Mux4way16 = Mux4way16
 module Mux8way16 = Mux8way16
 module Dmux4way = Dmux4way
 module Dmux8way = Dmux8way
+module Halfadder = Halfadder
+module Fulladder = Fulladder
+module Add16 = Add16
+module Inc16 = Inc16
+module Alu = Alu
 
 (* Convenience functions for concise chip instantiation.
    Usage: let open N2t_chips in not_ scope sel *)
@@ -46,3 +51,15 @@ let dmux4way_ scope inp sel =
 let dmux8way_ scope inp sel =
   let o = Dmux8way.create scope { Dmux8way.I.inp; sel } in
   o.a, o.b, o.c, o.d, o.e, o.f, o.g, o.h
+
+let halfadder_ scope a b =
+  let o = Halfadder.create scope { Halfadder.I.a; b } in
+  o.sum, o.carry
+let fulladder_ scope a b c =
+  let o = Fulladder.create scope { Fulladder.I.a; b; c } in
+  o.sum, o.carry
+let add16_ scope a b = (Add16.create scope { Add16.I.a; b }).out
+let inc16_ scope inp = (Inc16.create scope { Inc16.I.inp }).out
+let alu_ scope x y zx nx zy ny f no =
+  let o = Alu.create scope { Alu.I.x; y; zx; nx; zy; ny; f; no } in
+  o.out, o.zr, o.ng

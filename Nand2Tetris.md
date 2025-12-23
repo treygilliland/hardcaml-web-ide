@@ -68,24 +68,29 @@ let not_a = N2t_chips.not_ scope i.a
 
 All helpers take a `scope` parameter to preserve hierarchy in waveforms. Available helpers:
 
-| Function     | Signature                                                     |
-| ------------ | ------------------------------------------------------------- |
-| `nand_`      | `scope -> a -> b -> out`                                      |
-| `not_`       | `scope -> a -> out`                                           |
-| `and_`       | `scope -> a -> b -> out`                                      |
-| `or_`        | `scope -> a -> b -> out`                                      |
-| `xor_`       | `scope -> a -> b -> out`                                      |
-| `mux_`       | `scope -> a -> b -> sel -> out`                               |
-| `dmux_`      | `scope -> inp -> sel -> (a, b)`                               |
-| `not16_`     | `scope -> a -> out`                                           |
-| `and16_`     | `scope -> a -> b -> out`                                      |
-| `or16_`      | `scope -> a -> b -> out`                                      |
-| `mux16_`     | `scope -> a -> b -> sel -> out`                               |
-| `or8way_`    | `scope -> a -> out`                                           |
-| `mux4way16_` | `scope -> a -> b -> c -> d -> sel -> out`                     |
-| `mux8way16_` | `scope -> a -> b -> c -> d -> e -> f -> g -> h -> sel -> out` |
-| `dmux4way_`  | `scope -> inp -> sel -> (a, b, c, d)`                         |
-| `dmux8way_`  | `scope -> inp -> sel -> (a, b, c, d, e, f, g, h)`             |
+| Function     | Signature                                                             |
+| ------------ | --------------------------------------------------------------------- |
+| `nand_`      | `scope -> a -> b -> out`                                              |
+| `not_`       | `scope -> a -> out`                                                   |
+| `and_`       | `scope -> a -> b -> out`                                              |
+| `or_`        | `scope -> a -> b -> out`                                              |
+| `xor_`       | `scope -> a -> b -> out`                                              |
+| `mux_`       | `scope -> a -> b -> sel -> out`                                       |
+| `dmux_`      | `scope -> inp -> sel -> (a, b)`                                       |
+| `not16_`     | `scope -> a -> out`                                                   |
+| `and16_`     | `scope -> a -> b -> out`                                              |
+| `or16_`      | `scope -> a -> b -> out`                                              |
+| `mux16_`     | `scope -> a -> b -> sel -> out`                                       |
+| `or8way_`    | `scope -> a -> out`                                                   |
+| `mux4way16_` | `scope -> a -> b -> c -> d -> sel -> out`                             |
+| `mux8way16_` | `scope -> a -> b -> c -> d -> e -> f -> g -> h -> sel -> out`         |
+| `dmux4way_`  | `scope -> inp -> sel -> (a, b, c, d)`                                 |
+| `dmux8way_`  | `scope -> inp -> sel -> (a, b, c, d, e, f, g, h)`                     |
+| `halfadder_` | `scope -> a -> b -> (sum, carry)`                                     |
+| `fulladder_` | `scope -> a -> b -> c -> (sum, carry)`                                |
+| `add16_`     | `scope -> a -> b -> out`                                              |
+| `inc16_`     | `scope -> inp -> out`                                                 |
+| `alu_`       | `scope -> x -> y -> zx -> nx -> zy -> ny -> f -> no -> (out, zr, ng)` |
 
 ## Mux Convention
 
@@ -96,12 +101,30 @@ All helpers take a `scope` parameter to preserve hierarchy in waveforms. Availab
 | N2T                          | out = a   | out = b    |
 | Hardcaml `mux2 sel high low` | out = low | out = high |
 
-So in our library implementation:
+### In Library Implementations (using `mux2` directly)
+
+When using Hardcaml's `mux2` directly, swap the arguments:
 
 ```ocaml
-(* mux2 sel high low -> we pass (sel, b, a) to get N2T behavior *)
-{ out = mux2 i.sel i.b i.a }
+(* N2T: Mux16(a=x, b=zero, sel=zx) -> if zx=0 then x, if zx=1 then zero *)
+(* Hardcaml: mux2 sel high low -> mux2 zx zero x *)
+let x1 = mux2 i.zx (zero 16) i.x in
 ```
+
+### In Solutions (using `mux16_` helper)
+
+The `mux16_` helper follows N2T convention, so use natural argument order:
+
+```ocaml
+(* N2T: Mux16(a=x, b=zero, sel=zx) *)
+(* Helper: mux16_ scope a b sel *)
+let x1 = mux16_ scope i.x (zero 16) i.zx in
+```
+
+**Common mistake:** Swapping `a` and `b` in `mux16_` calls. Double-check against the HDL:
+
+- `Mux16(a=x, b=false, sel=zx)` → `mux16_ scope i.x (zero 16) i.zx`
+- `Mux16(a=fand, b=fadd, sel=f)` → `mux16_ scope f_and f_add i.f`
 
 ## File Organization
 
@@ -150,6 +173,49 @@ This means:
    ```
 4. Run to see test results and waveform
 5. View "Nand2Tetris Solutions" to see reference implementation
+
+## Project 2: Arithmetic Chips
+
+Project 2 introduces arithmetic chips that build on Project 1 gates:
+
+| Chip      | Description                           | Key Implementation Notes                 |
+| --------- | ------------------------------------- | ---------------------------------------- |
+| HalfAdder | sum + carry of 2 bits                 | `sum = a XOR b`, `carry = a AND b`       |
+| FullAdder | sum + carry of 3 bits                 | Chain two HalfAdders + OR for carry      |
+| Add16     | 16-bit addition                       | HalfAdder for bit 0, FullAdders for 1-15 |
+| Inc16     | Increment by 1                        | `Add16(a=in, b=1)`                       |
+| ALU       | Arithmetic Logic Unit with 6 controls | See detailed notes below                 |
+
+### ALU Implementation
+
+The ALU has 6 control bits that are applied in sequence:
+
+```
+1. if zx then x = 0        (zero x)
+2. if nx then x = !x       (negate x)
+3. if zy then y = 0        (zero y)
+4. if ny then y = !y       (negate y)
+5. if f  then out = x + y  else out = x & y
+6. if no then out = !out   (negate output)
+```
+
+Output flags:
+
+- `zr = 1` if `out == 0` (use Or8Way on both halves, then Or, then Not)
+- `ng = 1` if `out < 0` (just the MSB, i.e., `msb out`)
+
+**Library vs Solution approach:**
+
+```ocaml
+(* Library: uses Hardcaml primitives directly *)
+let x1 = mux2 i.zx (zero 16) i.x in       (* note: mux2 has swapped args *)
+let zr = out2 ==: (zero 16) in            (* equality comparison *)
+
+(* Solution: uses N2t_chips helpers *)
+let x1 = mux16_ scope i.x (zero 16) i.zx in  (* natural N2T order *)
+let or_lo = or8way_ scope (select out2 ~high:7 ~low:0) in
+let zr = not_ scope (or_ scope or_lo or_hi) in
+```
 
 ## Hardcaml Gotchas
 
@@ -202,3 +268,4 @@ let ab, cd = N2t_chips.dmux_ scope i.inp sel1 in
 6. Add stub to `examples/n2t/chipname.ml`
 7. Add solution to `examples/n2t_solutions/chipname.ml`
 8. Update `frontend/src/examples/hardcaml-examples.ts` with imports and entries
+9. Add chip name to `api/tests/examples.py` `N2T_CHIPS` list for test coverage

@@ -21,6 +21,11 @@ module Mux4way16 = Mux4way16
 module Mux8way16 = Mux8way16
 module Dmux4way = Dmux4way
 module Dmux8way = Dmux8way
+module Halfadder = Halfadder
+module Fulladder = Fulladder
+module Add16 = Add16
+module Inc16 = Inc16
+module Alu = Alu
 
 (** {1 Helper Functions}
     
@@ -44,3 +49,9 @@ val mux4way16_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Sign
 val mux8way16_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
 val dmux4way_ : Scope.t -> Signal.t -> Signal.t -> Signal.t * Signal.t * Signal.t * Signal.t
 val dmux8way_ : Scope.t -> Signal.t -> Signal.t -> Signal.t * Signal.t * Signal.t * Signal.t * Signal.t * Signal.t * Signal.t * Signal.t
+
+val halfadder_ : Scope.t -> Signal.t -> Signal.t -> Signal.t * Signal.t
+val fulladder_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t * Signal.t
+val add16_ : Scope.t -> Signal.t -> Signal.t -> Signal.t
+val inc16_ : Scope.t -> Signal.t -> Signal.t
+val alu_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t * Signal.t * Signal.t

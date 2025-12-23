@@ -41,6 +41,11 @@ import n2tMux4way16Stub from "@hardcaml/examples/n2t/mux4way16.ml?raw";
 import n2tMux8way16Stub from "@hardcaml/examples/n2t/mux8way16.ml?raw";
 import n2tDmux4wayStub from "@hardcaml/examples/n2t/dmux4way.ml?raw";
 import n2tDmux8wayStub from "@hardcaml/examples/n2t/dmux8way.ml?raw";
+import n2tHalfadderStub from "@hardcaml/examples/n2t/halfadder.ml?raw";
+import n2tFulladderStub from "@hardcaml/examples/n2t/fulladder.ml?raw";
+import n2tAdd16Stub from "@hardcaml/examples/n2t/add16.ml?raw";
+import n2tInc16Stub from "@hardcaml/examples/n2t/inc16.ml?raw";
+import n2tAluStub from "@hardcaml/examples/n2t/alu.ml?raw";
 
 // N2T Reference implementations (user-runnable solutions)
 import n2tNotImpl from "@hardcaml/examples/n2t_solutions/not.ml?raw";
@@ -58,6 +63,11 @@ import n2tMux4way16Impl from "@hardcaml/examples/n2t_solutions/mux4way16.ml?raw"
 import n2tMux8way16Impl from "@hardcaml/examples/n2t_solutions/mux8way16.ml?raw";
 import n2tDmux4wayImpl from "@hardcaml/examples/n2t_solutions/dmux4way.ml?raw";
 import n2tDmux8wayImpl from "@hardcaml/examples/n2t_solutions/dmux8way.ml?raw";
+import n2tHalfadderImpl from "@hardcaml/examples/n2t_solutions/halfadder.ml?raw";
+import n2tFulladderImpl from "@hardcaml/examples/n2t_solutions/fulladder.ml?raw";
+import n2tAdd16Impl from "@hardcaml/examples/n2t_solutions/add16.ml?raw";
+import n2tInc16Impl from "@hardcaml/examples/n2t_solutions/inc16.ml?raw";
+import n2tAluImpl from "@hardcaml/examples/n2t_solutions/alu.ml?raw";
 
 // N2T interfaces and tests from lib/n2t_chips/
 import n2tNotInterface from "@hardcaml/build-cache/lib/n2t_chips/not.mli?raw";
@@ -90,6 +100,16 @@ import n2tDmux4wayInterface from "@hardcaml/build-cache/lib/n2t_chips/dmux4way.m
 import n2tDmux4wayTest from "@hardcaml/build-cache/lib/n2t_chips/dmux4way_test.ml?raw";
 import n2tDmux8wayInterface from "@hardcaml/build-cache/lib/n2t_chips/dmux8way.mli?raw";
 import n2tDmux8wayTest from "@hardcaml/build-cache/lib/n2t_chips/dmux8way_test.ml?raw";
+import n2tHalfadderInterface from "@hardcaml/build-cache/lib/n2t_chips/halfadder.mli?raw";
+import n2tHalfadderTest from "@hardcaml/build-cache/lib/n2t_chips/halfadder_test.ml?raw";
+import n2tFulladderInterface from "@hardcaml/build-cache/lib/n2t_chips/fulladder.mli?raw";
+import n2tFulladderTest from "@hardcaml/build-cache/lib/n2t_chips/fulladder_test.ml?raw";
+import n2tAdd16Interface from "@hardcaml/build-cache/lib/n2t_chips/add16.mli?raw";
+import n2tAdd16Test from "@hardcaml/build-cache/lib/n2t_chips/add16_test.ml?raw";
+import n2tInc16Interface from "@hardcaml/build-cache/lib/n2t_chips/inc16.mli?raw";
+import n2tInc16Test from "@hardcaml/build-cache/lib/n2t_chips/inc16_test.ml?raw";
+import n2tAluInterface from "@hardcaml/build-cache/lib/n2t_chips/alu.mli?raw";
+import n2tAluTest from "@hardcaml/build-cache/lib/n2t_chips/alu_test.ml?raw";
 
 // Types
 
@@ -145,6 +165,11 @@ export type ExampleKey =
   | "n2t_mux8way16"
   | "n2t_dmux4way"
   | "n2t_dmux8way"
+  | "n2t_halfadder"
+  | "n2t_fulladder"
+  | "n2t_add16"
+  | "n2t_inc16"
+  | "n2t_alu"
   | "n2t_not_solution"
   | "n2t_and_solution"
   | "n2t_or_solution"
@@ -159,7 +184,12 @@ export type ExampleKey =
   | "n2t_mux4way16_solution"
   | "n2t_mux8way16_solution"
   | "n2t_dmux4way_solution"
-  | "n2t_dmux8way_solution";
+  | "n2t_dmux8way_solution"
+  | "n2t_halfadder_solution"
+  | "n2t_fulladder_solution"
+  | "n2t_add16_solution"
+  | "n2t_inc16_solution"
+  | "n2t_alu_solution";
 
 // Example definitions
 
@@ -391,6 +421,66 @@ const n2tDmux8wayExample: HardcamlExample = {
   test: n2tDmux8wayTest,
 };
 
+const n2tHalfadderExample: HardcamlExample = {
+  name: "Half Adder",
+  description: "Computes sum and carry of two bits",
+  difficulty: "beginner",
+  category: "n2t",
+  circuit: n2tHalfadderStub,
+  circuitFilename: "halfadder.ml",
+  interface: n2tHalfadderInterface,
+  interfaceFilename: "halfadder.mli",
+  test: n2tHalfadderTest,
+};
+
+const n2tFulladderExample: HardcamlExample = {
+  name: "Full Adder",
+  description: "Computes sum and carry of three bits",
+  difficulty: "beginner",
+  category: "n2t",
+  circuit: n2tFulladderStub,
+  circuitFilename: "fulladder.ml",
+  interface: n2tFulladderInterface,
+  interfaceFilename: "fulladder.mli",
+  test: n2tFulladderTest,
+};
+
+const n2tAdd16Example: HardcamlExample = {
+  name: "Add16",
+  description: "16-bit adder",
+  difficulty: "intermediate",
+  category: "n2t",
+  circuit: n2tAdd16Stub,
+  circuitFilename: "add16.ml",
+  interface: n2tAdd16Interface,
+  interfaceFilename: "add16.mli",
+  test: n2tAdd16Test,
+};
+
+const n2tInc16Example: HardcamlExample = {
+  name: "Inc16",
+  description: "16-bit incrementer (out = in + 1)",
+  difficulty: "beginner",
+  category: "n2t",
+  circuit: n2tInc16Stub,
+  circuitFilename: "inc16.ml",
+  interface: n2tInc16Interface,
+  interfaceFilename: "inc16.mli",
+  test: n2tInc16Test,
+};
+
+const n2tAluExample: HardcamlExample = {
+  name: "ALU",
+  description: "Arithmetic Logic Unit with 6 control bits",
+  difficulty: "advanced",
+  category: "n2t",
+  circuit: n2tAluStub,
+  circuitFilename: "alu.ml",
+  interface: n2tAluInterface,
+  interfaceFilename: "alu.mli",
+  test: n2tAluTest,
+};
+
 // N2T Solutions (reference implementations)
 
 const n2tNotSolutionExample: HardcamlExample = {
@@ -573,6 +663,66 @@ const n2tDmux8waySolutionExample: HardcamlExample = {
   test: n2tDmux8wayTest,
 };
 
+const n2tHalfadderSolutionExample: HardcamlExample = {
+  name: "Half Adder",
+  description: "Reference implementation of half adder",
+  difficulty: "beginner",
+  category: "n2t_solutions",
+  circuit: n2tHalfadderImpl,
+  circuitFilename: "halfadder.ml",
+  interface: n2tHalfadderInterface,
+  interfaceFilename: "halfadder.mli",
+  test: n2tHalfadderTest,
+};
+
+const n2tFulladderSolutionExample: HardcamlExample = {
+  name: "Full Adder",
+  description: "Reference implementation of full adder",
+  difficulty: "beginner",
+  category: "n2t_solutions",
+  circuit: n2tFulladderImpl,
+  circuitFilename: "fulladder.ml",
+  interface: n2tFulladderInterface,
+  interfaceFilename: "fulladder.mli",
+  test: n2tFulladderTest,
+};
+
+const n2tAdd16SolutionExample: HardcamlExample = {
+  name: "Add16",
+  description: "Reference implementation of 16-bit adder",
+  difficulty: "intermediate",
+  category: "n2t_solutions",
+  circuit: n2tAdd16Impl,
+  circuitFilename: "add16.ml",
+  interface: n2tAdd16Interface,
+  interfaceFilename: "add16.mli",
+  test: n2tAdd16Test,
+};
+
+const n2tInc16SolutionExample: HardcamlExample = {
+  name: "Inc16",
+  description: "Reference implementation of 16-bit incrementer",
+  difficulty: "beginner",
+  category: "n2t_solutions",
+  circuit: n2tInc16Impl,
+  circuitFilename: "inc16.ml",
+  interface: n2tInc16Interface,
+  interfaceFilename: "inc16.mli",
+  test: n2tInc16Test,
+};
+
+const n2tAluSolutionExample: HardcamlExample = {
+  name: "ALU",
+  description: "Reference implementation of ALU",
+  difficulty: "advanced",
+  category: "n2t_solutions",
+  circuit: n2tAluImpl,
+  circuitFilename: "alu.ml",
+  interface: n2tAluInterface,
+  interfaceFilename: "alu.mli",
+  test: n2tAluTest,
+};
+
 // Registry and helpers
 
 export const examples: Record<ExampleKey, HardcamlExample> = {
@@ -595,6 +745,11 @@ export const examples: Record<ExampleKey, HardcamlExample> = {
   n2t_mux8way16: n2tMux8way16Example,
   n2t_dmux4way: n2tDmux4wayExample,
   n2t_dmux8way: n2tDmux8wayExample,
+  n2t_halfadder: n2tHalfadderExample,
+  n2t_fulladder: n2tFulladderExample,
+  n2t_add16: n2tAdd16Example,
+  n2t_inc16: n2tInc16Example,
+  n2t_alu: n2tAluExample,
   n2t_not_solution: n2tNotSolutionExample,
   n2t_and_solution: n2tAndSolutionExample,
   n2t_or_solution: n2tOrSolutionExample,
@@ -610,6 +765,11 @@ export const examples: Record<ExampleKey, HardcamlExample> = {
   n2t_mux8way16_solution: n2tMux8way16SolutionExample,
   n2t_dmux4way_solution: n2tDmux4waySolutionExample,
   n2t_dmux8way_solution: n2tDmux8waySolutionExample,
+  n2t_halfadder_solution: n2tHalfadderSolutionExample,
+  n2t_fulladder_solution: n2tFulladderSolutionExample,
+  n2t_add16_solution: n2tAdd16SolutionExample,
+  n2t_inc16_solution: n2tInc16SolutionExample,
+  n2t_alu_solution: n2tAluSolutionExample,
 };
 
 export const getExampleKeys = (): ExampleKey[] => {

@@ -17,17 +17,17 @@ RUN npm run build
 # --- Runtime stage ---
 FROM ${BASE_IMAGE}
 
-# Copy and pre-build dune project to warm cache
-COPY hardcaml/build-cache/ /opt/build-cache/
-RUN cd /opt/build-cache && dune build @runtest --force 2>/dev/null || true
-
 # Install uv
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 ENV PATH="/root/.local/bin:$PATH"
 
-# Install Python dependencies
+# Install Python dependencies (before hardcaml for better caching)
 COPY api/pyproject.toml api/uv.lock /app/
 RUN cd /app && uv sync --frozen --no-dev
+
+# Copy and pre-build dune project to warm cache
+COPY hardcaml/build-cache/ /opt/build-cache/
+RUN cd /opt/build-cache && dune build @runtest --force 2>/dev/null || true
 
 # Copy API code
 COPY api/ /app/

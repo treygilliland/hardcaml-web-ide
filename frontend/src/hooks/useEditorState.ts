@@ -4,7 +4,10 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import type { TabType } from "../types/types";
-import type { HardcamlExample, ExampleKey } from "../examples/hardcaml-examples";
+import type {
+  HardcamlExample,
+  ExampleKey,
+} from "../examples/hardcaml-examples";
 
 const STORAGE_PREFIX = "hardcaml-ide";
 const SAVE_DEBOUNCE_MS = 500;
@@ -144,20 +147,23 @@ export function useEditorState(
     [activeTab]
   );
 
-  const loadExample = useCallback((example: HardcamlExample, key: ExampleKey) => {
-    const templateFiles = getTemplateFiles(example);
-    const saved = getSavedFiles(key);
+  const loadExample = useCallback(
+    (example: HardcamlExample, key: ExampleKey) => {
+      const templateFiles = getTemplateFiles(example);
+      const saved = getSavedFiles(key);
 
-    setExampleKey(key);
-    setTemplate(templateFiles);
-    setFiles(saved ?? templateFiles);
-    setFilenames({
-      circuit: example.circuitFilename ?? "circuit.ml",
-      interface: example.interfaceFilename ?? "circuit.mli",
-    });
-    setHasInput(!!example.input);
-    setActiveTab("circuit");
-  }, []);
+      setExampleKey(key);
+      setTemplate(templateFiles);
+      setFiles(saved ?? templateFiles);
+      setFilenames({
+        circuit: example.circuitFilename ?? "circuit.ml",
+        interface: example.interfaceFilename ?? "circuit.mli",
+      });
+      setHasInput(!!example.input);
+      setActiveTab("circuit");
+    },
+    []
+  );
 
   const resetToTemplate = useCallback(() => {
     clearSavedFiles(exampleKey);

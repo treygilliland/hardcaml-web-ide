@@ -67,6 +67,7 @@ def load_n2t_solution(chip_name: str) -> Example:
 
 
 N2T_CHIPS = [
+    # Project 1: Boolean Logic
     "not",
     "and",
     "or",
@@ -82,6 +83,12 @@ N2T_CHIPS = [
     "mux8way16",
     "dmux4way",
     "dmux8way",
+    # Project 2: Boolean Arithmetic
+    "halfadder",
+    "fulladder",
+    "add16",
+    "inc16",
+    "alu",
 ]
 
 STANDARD_EXAMPLES = ["counter", "fibonacci", "day1_part1", "day1_part2"]

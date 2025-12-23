@@ -1,6 +1,6 @@
 (library
  (name n2t_chips)
  (libraries core hardcaml)
- (modules :standard \ not_test and_test or_test xor_test mux_test dmux_test not16_test and16_test or16_test mux16_test or8way_test mux4way16_test mux8way16_test dmux4way_test dmux8way_test)
+ (modules :standard \ not_test and_test or_test xor_test mux_test dmux_test not16_test and16_test or16_test mux16_test or8way_test mux4way16_test mux8way16_test dmux4way_test dmux8way_test halfadder_test fulladder_test add16_test inc16_test alu_test)
  (preprocess
   (pps ppx_hardcaml ppx_jane)))

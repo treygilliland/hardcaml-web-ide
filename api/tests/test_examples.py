@@ -17,7 +17,7 @@ def client():
         yield client
 
 
-@pytest.mark.parametrize("example_id", ["counter", "n2t_mux", "day1_part1"])
+@pytest.mark.parametrize("example_id", ["counter", "n2t_mux", "n2t_alu", "day1_part1"])
 def test_example_compiles_and_passes(client: TestClient, example_id: str):
     """Smoke test: key examples compile and pass through the API."""
     example = get_example_by_id(example_id)
