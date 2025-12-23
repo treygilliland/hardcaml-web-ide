@@ -79,7 +79,10 @@ function App() {
     if (!result) return null;
 
     // Check for test results
-    if (result.tests_passed !== undefined || result.tests_failed !== undefined) {
+    if (
+      result.tests_passed !== undefined ||
+      result.tests_failed !== undefined
+    ) {
       const passed = result.tests_passed ?? 0;
       const failed = result.tests_failed ?? 0;
       const total = passed + failed;
@@ -232,9 +235,12 @@ function App() {
                 <div className="result-output">{result.output}</div>
               )}
               {/* Show error message for compile errors or other failures */}
-              {result && !result.success && result.error_message && result.stage === "compile" && (
-                <div className="error-message">{result.error_message}</div>
-              )}
+              {result &&
+                !result.success &&
+                result.error_message &&
+                result.stage === "compile" && (
+                  <div className="error-message">{result.error_message}</div>
+                )}
               {!result && (
                 <span className="placeholder">
                   Run your code to see the output...

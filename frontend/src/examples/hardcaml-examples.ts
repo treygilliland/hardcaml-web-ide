@@ -32,6 +32,15 @@ import n2tOrStub from "@hardcaml/examples/n2t/or.ml?raw";
 import n2tXorStub from "@hardcaml/examples/n2t/xor.ml?raw";
 import n2tMuxStub from "@hardcaml/examples/n2t/mux.ml?raw";
 import n2tDmuxStub from "@hardcaml/examples/n2t/dmux.ml?raw";
+import n2tNot16Stub from "@hardcaml/examples/n2t/not16.ml?raw";
+import n2tAnd16Stub from "@hardcaml/examples/n2t/and16.ml?raw";
+import n2tOr16Stub from "@hardcaml/examples/n2t/or16.ml?raw";
+import n2tMux16Stub from "@hardcaml/examples/n2t/mux16.ml?raw";
+import n2tOr8wayStub from "@hardcaml/examples/n2t/or8way.ml?raw";
+import n2tMux4way16Stub from "@hardcaml/examples/n2t/mux4way16.ml?raw";
+import n2tMux8way16Stub from "@hardcaml/examples/n2t/mux8way16.ml?raw";
+import n2tDmux4wayStub from "@hardcaml/examples/n2t/dmux4way.ml?raw";
+import n2tDmux8wayStub from "@hardcaml/examples/n2t/dmux8way.ml?raw";
 
 // N2T Reference implementations (user-runnable solutions)
 import n2tNotImpl from "@hardcaml/examples/n2t_solutions/not.ml?raw";
@@ -40,6 +49,15 @@ import n2tOrImpl from "@hardcaml/examples/n2t_solutions/or.ml?raw";
 import n2tXorImpl from "@hardcaml/examples/n2t_solutions/xor.ml?raw";
 import n2tMuxImpl from "@hardcaml/examples/n2t_solutions/mux.ml?raw";
 import n2tDmuxImpl from "@hardcaml/examples/n2t_solutions/dmux.ml?raw";
+import n2tNot16Impl from "@hardcaml/examples/n2t_solutions/not16.ml?raw";
+import n2tAnd16Impl from "@hardcaml/examples/n2t_solutions/and16.ml?raw";
+import n2tOr16Impl from "@hardcaml/examples/n2t_solutions/or16.ml?raw";
+import n2tMux16Impl from "@hardcaml/examples/n2t_solutions/mux16.ml?raw";
+import n2tOr8wayImpl from "@hardcaml/examples/n2t_solutions/or8way.ml?raw";
+import n2tMux4way16Impl from "@hardcaml/examples/n2t_solutions/mux4way16.ml?raw";
+import n2tMux8way16Impl from "@hardcaml/examples/n2t_solutions/mux8way16.ml?raw";
+import n2tDmux4wayImpl from "@hardcaml/examples/n2t_solutions/dmux4way.ml?raw";
+import n2tDmux8wayImpl from "@hardcaml/examples/n2t_solutions/dmux8way.ml?raw";
 
 // N2T interfaces and tests from lib/n2t_chips/
 import n2tNotInterface from "@hardcaml/build-cache/lib/n2t_chips/not.mli?raw";
@@ -54,6 +72,24 @@ import n2tMuxInterface from "@hardcaml/build-cache/lib/n2t_chips/mux.mli?raw";
 import n2tMuxTest from "@hardcaml/build-cache/lib/n2t_chips/mux_test.ml?raw";
 import n2tDmuxInterface from "@hardcaml/build-cache/lib/n2t_chips/dmux.mli?raw";
 import n2tDmuxTest from "@hardcaml/build-cache/lib/n2t_chips/dmux_test.ml?raw";
+import n2tNot16Interface from "@hardcaml/build-cache/lib/n2t_chips/not16.mli?raw";
+import n2tNot16Test from "@hardcaml/build-cache/lib/n2t_chips/not16_test.ml?raw";
+import n2tAnd16Interface from "@hardcaml/build-cache/lib/n2t_chips/and16.mli?raw";
+import n2tAnd16Test from "@hardcaml/build-cache/lib/n2t_chips/and16_test.ml?raw";
+import n2tOr16Interface from "@hardcaml/build-cache/lib/n2t_chips/or16.mli?raw";
+import n2tOr16Test from "@hardcaml/build-cache/lib/n2t_chips/or16_test.ml?raw";
+import n2tMux16Interface from "@hardcaml/build-cache/lib/n2t_chips/mux16.mli?raw";
+import n2tMux16Test from "@hardcaml/build-cache/lib/n2t_chips/mux16_test.ml?raw";
+import n2tOr8wayInterface from "@hardcaml/build-cache/lib/n2t_chips/or8way.mli?raw";
+import n2tOr8wayTest from "@hardcaml/build-cache/lib/n2t_chips/or8way_test.ml?raw";
+import n2tMux4way16Interface from "@hardcaml/build-cache/lib/n2t_chips/mux4way16.mli?raw";
+import n2tMux4way16Test from "@hardcaml/build-cache/lib/n2t_chips/mux4way16_test.ml?raw";
+import n2tMux8way16Interface from "@hardcaml/build-cache/lib/n2t_chips/mux8way16.mli?raw";
+import n2tMux8way16Test from "@hardcaml/build-cache/lib/n2t_chips/mux8way16_test.ml?raw";
+import n2tDmux4wayInterface from "@hardcaml/build-cache/lib/n2t_chips/dmux4way.mli?raw";
+import n2tDmux4wayTest from "@hardcaml/build-cache/lib/n2t_chips/dmux4way_test.ml?raw";
+import n2tDmux8wayInterface from "@hardcaml/build-cache/lib/n2t_chips/dmux8way.mli?raw";
+import n2tDmux8wayTest from "@hardcaml/build-cache/lib/n2t_chips/dmux8way_test.ml?raw";
 
 // Types
 
@@ -100,12 +136,30 @@ export type ExampleKey =
   | "n2t_xor"
   | "n2t_mux"
   | "n2t_dmux"
+  | "n2t_not16"
+  | "n2t_and16"
+  | "n2t_or16"
+  | "n2t_mux16"
+  | "n2t_or8way"
+  | "n2t_mux4way16"
+  | "n2t_mux8way16"
+  | "n2t_dmux4way"
+  | "n2t_dmux8way"
   | "n2t_not_solution"
   | "n2t_and_solution"
   | "n2t_or_solution"
   | "n2t_xor_solution"
   | "n2t_mux_solution"
-  | "n2t_dmux_solution";
+  | "n2t_dmux_solution"
+  | "n2t_not16_solution"
+  | "n2t_and16_solution"
+  | "n2t_or16_solution"
+  | "n2t_mux16_solution"
+  | "n2t_or8way_solution"
+  | "n2t_mux4way16_solution"
+  | "n2t_mux8way16_solution"
+  | "n2t_dmux4way_solution"
+  | "n2t_dmux8way_solution";
 
 // Example definitions
 
@@ -163,9 +217,9 @@ const n2tNotExample: HardcamlExample = {
   difficulty: "beginner",
   category: "n2t",
   circuit: n2tNotStub,
-  circuitFilename: "Not.ml",
+  circuitFilename: "not.ml",
   interface: n2tNotInterface,
-  interfaceFilename: "Not.mli",
+  interfaceFilename: "not.mli",
   test: n2tNotTest,
 };
 
@@ -175,9 +229,9 @@ const n2tAndExample: HardcamlExample = {
   difficulty: "beginner",
   category: "n2t",
   circuit: n2tAndStub,
-  circuitFilename: "And.ml",
+  circuitFilename: "and.ml",
   interface: n2tAndInterface,
-  interfaceFilename: "And.mli",
+  interfaceFilename: "and.mli",
   test: n2tAndTest,
 };
 
@@ -187,9 +241,9 @@ const n2tOrExample: HardcamlExample = {
   difficulty: "beginner",
   category: "n2t",
   circuit: n2tOrStub,
-  circuitFilename: "Or.ml",
+  circuitFilename: "or.ml",
   interface: n2tOrInterface,
-  interfaceFilename: "Or.mli",
+  interfaceFilename: "or.mli",
   test: n2tOrTest,
 };
 
@@ -199,9 +253,9 @@ const n2tXorExample: HardcamlExample = {
   difficulty: "intermediate",
   category: "n2t",
   circuit: n2tXorStub,
-  circuitFilename: "Xor.ml",
+  circuitFilename: "xor.ml",
   interface: n2tXorInterface,
-  interfaceFilename: "Xor.mli",
+  interfaceFilename: "xor.mli",
   test: n2tXorTest,
 };
 
@@ -211,9 +265,9 @@ const n2tMuxExample: HardcamlExample = {
   difficulty: "intermediate",
   category: "n2t",
   circuit: n2tMuxStub,
-  circuitFilename: "Mux.ml",
+  circuitFilename: "mux.ml",
   interface: n2tMuxInterface,
-  interfaceFilename: "Mux.mli",
+  interfaceFilename: "mux.mli",
   test: n2tMuxTest,
 };
 
@@ -223,10 +277,118 @@ const n2tDmuxExample: HardcamlExample = {
   difficulty: "intermediate",
   category: "n2t",
   circuit: n2tDmuxStub,
-  circuitFilename: "Dmux.ml",
+  circuitFilename: "dmux.ml",
   interface: n2tDmuxInterface,
-  interfaceFilename: "Dmux.mli",
+  interfaceFilename: "dmux.mli",
   test: n2tDmuxTest,
+};
+
+const n2tNot16Example: HardcamlExample = {
+  name: "Not16",
+  description: "16-bit bitwise NOT gate",
+  difficulty: "beginner",
+  category: "n2t",
+  circuit: n2tNot16Stub,
+  circuitFilename: "not16.ml",
+  interface: n2tNot16Interface,
+  interfaceFilename: "not16.mli",
+  test: n2tNot16Test,
+};
+
+const n2tAnd16Example: HardcamlExample = {
+  name: "And16",
+  description: "16-bit bitwise AND gate",
+  difficulty: "beginner",
+  category: "n2t",
+  circuit: n2tAnd16Stub,
+  circuitFilename: "and16.ml",
+  interface: n2tAnd16Interface,
+  interfaceFilename: "and16.mli",
+  test: n2tAnd16Test,
+};
+
+const n2tOr16Example: HardcamlExample = {
+  name: "Or16",
+  description: "16-bit bitwise OR gate",
+  difficulty: "beginner",
+  category: "n2t",
+  circuit: n2tOr16Stub,
+  circuitFilename: "or16.ml",
+  interface: n2tOr16Interface,
+  interfaceFilename: "or16.mli",
+  test: n2tOr16Test,
+};
+
+const n2tMux16Example: HardcamlExample = {
+  name: "Mux16",
+  description: "16-bit multiplexor",
+  difficulty: "beginner",
+  category: "n2t",
+  circuit: n2tMux16Stub,
+  circuitFilename: "mux16.ml",
+  interface: n2tMux16Interface,
+  interfaceFilename: "mux16.mli",
+  test: n2tMux16Test,
+};
+
+const n2tOr8wayExample: HardcamlExample = {
+  name: "Or8Way",
+  description: "8-way OR gate",
+  difficulty: "intermediate",
+  category: "n2t",
+  circuit: n2tOr8wayStub,
+  circuitFilename: "or8way.ml",
+  interface: n2tOr8wayInterface,
+  interfaceFilename: "or8way.mli",
+  test: n2tOr8wayTest,
+};
+
+const n2tMux4way16Example: HardcamlExample = {
+  name: "Mux4Way16",
+  description: "4-way 16-bit multiplexor",
+  difficulty: "intermediate",
+  category: "n2t",
+  circuit: n2tMux4way16Stub,
+  circuitFilename: "mux4way16.ml",
+  interface: n2tMux4way16Interface,
+  interfaceFilename: "mux4way16.mli",
+  test: n2tMux4way16Test,
+};
+
+const n2tMux8way16Example: HardcamlExample = {
+  name: "Mux8Way16",
+  description: "8-way 16-bit multiplexor",
+  difficulty: "intermediate",
+  category: "n2t",
+  circuit: n2tMux8way16Stub,
+  circuitFilename: "mux8way16.ml",
+  interface: n2tMux8way16Interface,
+  interfaceFilename: "mux8way16.mli",
+  test: n2tMux8way16Test,
+};
+
+const n2tDmux4wayExample: HardcamlExample = {
+  name: "DMux4Way",
+  description: "4-way demultiplexor",
+  difficulty: "intermediate",
+  category: "n2t",
+  circuit: n2tDmux4wayStub,
+  circuitFilename: "dmux4way.ml",
+  interface: n2tDmux4wayInterface,
+  interfaceFilename: "dmux4way.mli",
+  test: n2tDmux4wayTest,
+};
+
+const n2tDmux8wayExample: HardcamlExample = {
+  name: "DMux8Way",
+  description: "8-way demultiplexor",
+  difficulty: "intermediate",
+  category: "n2t",
+  circuit: n2tDmux8wayStub,
+  circuitFilename: "dmux8way.ml",
+  interface: n2tDmux8wayInterface,
+  interfaceFilename: "dmux8way.mli",
+  test: n2tDmux8wayTest,
 };
 
 // N2T Solutions (reference implementations)
@@ -237,9 +399,9 @@ const n2tNotSolutionExample: HardcamlExample = {
   difficulty: "beginner",
   category: "n2t_solutions",
   circuit: n2tNotImpl,
-  circuitFilename: "Not.ml",
+  circuitFilename: "not.ml",
   interface: n2tNotInterface,
-  interfaceFilename: "Not.mli",
+  interfaceFilename: "not.mli",
   test: n2tNotTest,
 };
 
@@ -249,9 +411,9 @@ const n2tAndSolutionExample: HardcamlExample = {
   difficulty: "beginner",
   category: "n2t_solutions",
   circuit: n2tAndImpl,
-  circuitFilename: "And.ml",
+  circuitFilename: "and.ml",
   interface: n2tAndInterface,
-  interfaceFilename: "And.mli",
+  interfaceFilename: "and.mli",
   test: n2tAndTest,
 };
 
@@ -261,9 +423,9 @@ const n2tOrSolutionExample: HardcamlExample = {
   difficulty: "beginner",
   category: "n2t_solutions",
   circuit: n2tOrImpl,
-  circuitFilename: "Or.ml",
+  circuitFilename: "or.ml",
   interface: n2tOrInterface,
-  interfaceFilename: "Or.mli",
+  interfaceFilename: "or.mli",
   test: n2tOrTest,
 };
 
@@ -273,9 +435,9 @@ const n2tXorSolutionExample: HardcamlExample = {
   difficulty: "intermediate",
   category: "n2t_solutions",
   circuit: n2tXorImpl,
-  circuitFilename: "Xor.ml",
+  circuitFilename: "xor.ml",
   interface: n2tXorInterface,
-  interfaceFilename: "Xor.mli",
+  interfaceFilename: "xor.mli",
   test: n2tXorTest,
 };
 
@@ -285,9 +447,9 @@ const n2tMuxSolutionExample: HardcamlExample = {
   difficulty: "intermediate",
   category: "n2t_solutions",
   circuit: n2tMuxImpl,
-  circuitFilename: "Mux.ml",
+  circuitFilename: "mux.ml",
   interface: n2tMuxInterface,
-  interfaceFilename: "Mux.mli",
+  interfaceFilename: "mux.mli",
   test: n2tMuxTest,
 };
 
@@ -297,10 +459,118 @@ const n2tDmuxSolutionExample: HardcamlExample = {
   difficulty: "intermediate",
   category: "n2t_solutions",
   circuit: n2tDmuxImpl,
-  circuitFilename: "Dmux.ml",
+  circuitFilename: "dmux.ml",
   interface: n2tDmuxInterface,
-  interfaceFilename: "Dmux.mli",
+  interfaceFilename: "dmux.mli",
   test: n2tDmuxTest,
+};
+
+const n2tNot16SolutionExample: HardcamlExample = {
+  name: "Not16",
+  description: "Reference implementation of 16-bit NOT gate",
+  difficulty: "beginner",
+  category: "n2t_solutions",
+  circuit: n2tNot16Impl,
+  circuitFilename: "not16.ml",
+  interface: n2tNot16Interface,
+  interfaceFilename: "not16.mli",
+  test: n2tNot16Test,
+};
+
+const n2tAnd16SolutionExample: HardcamlExample = {
+  name: "And16",
+  description: "Reference implementation of 16-bit AND gate",
+  difficulty: "beginner",
+  category: "n2t_solutions",
+  circuit: n2tAnd16Impl,
+  circuitFilename: "and16.ml",
+  interface: n2tAnd16Interface,
+  interfaceFilename: "and16.mli",
+  test: n2tAnd16Test,
+};
+
+const n2tOr16SolutionExample: HardcamlExample = {
+  name: "Or16",
+  description: "Reference implementation of 16-bit OR gate",
+  difficulty: "beginner",
+  category: "n2t_solutions",
+  circuit: n2tOr16Impl,
+  circuitFilename: "or16.ml",
+  interface: n2tOr16Interface,
+  interfaceFilename: "or16.mli",
+  test: n2tOr16Test,
+};
+
+const n2tMux16SolutionExample: HardcamlExample = {
+  name: "Mux16",
+  description: "Reference implementation of 16-bit multiplexor",
+  difficulty: "beginner",
+  category: "n2t_solutions",
+  circuit: n2tMux16Impl,
+  circuitFilename: "mux16.ml",
+  interface: n2tMux16Interface,
+  interfaceFilename: "mux16.mli",
+  test: n2tMux16Test,
+};
+
+const n2tOr8waySolutionExample: HardcamlExample = {
+  name: "Or8Way",
+  description: "Reference implementation of 8-way OR gate",
+  difficulty: "intermediate",
+  category: "n2t_solutions",
+  circuit: n2tOr8wayImpl,
+  circuitFilename: "or8way.ml",
+  interface: n2tOr8wayInterface,
+  interfaceFilename: "or8way.mli",
+  test: n2tOr8wayTest,
+};
+
+const n2tMux4way16SolutionExample: HardcamlExample = {
+  name: "Mux4Way16",
+  description: "Reference implementation of 4-way 16-bit multiplexor",
+  difficulty: "intermediate",
+  category: "n2t_solutions",
+  circuit: n2tMux4way16Impl,
+  circuitFilename: "mux4way16.ml",
+  interface: n2tMux4way16Interface,
+  interfaceFilename: "mux4way16.mli",
+  test: n2tMux4way16Test,
+};
+
+const n2tMux8way16SolutionExample: HardcamlExample = {
+  name: "Mux8Way16",
+  description: "Reference implementation of 8-way 16-bit multiplexor",
+  difficulty: "intermediate",
+  category: "n2t_solutions",
+  circuit: n2tMux8way16Impl,
+  circuitFilename: "mux8way16.ml",
+  interface: n2tMux8way16Interface,
+  interfaceFilename: "mux8way16.mli",
+  test: n2tMux8way16Test,
+};
+
+const n2tDmux4waySolutionExample: HardcamlExample = {
+  name: "DMux4Way",
+  description: "Reference implementation of 4-way demultiplexor",
+  difficulty: "intermediate",
+  category: "n2t_solutions",
+  circuit: n2tDmux4wayImpl,
+  circuitFilename: "dmux4way.ml",
+  interface: n2tDmux4wayInterface,
+  interfaceFilename: "dmux4way.mli",
+  test: n2tDmux4wayTest,
+};
+
+const n2tDmux8waySolutionExample: HardcamlExample = {
+  name: "DMux8Way",
+  description: "Reference implementation of 8-way demultiplexor",
+  difficulty: "intermediate",
+  category: "n2t_solutions",
+  circuit: n2tDmux8wayImpl,
+  circuitFilename: "dmux8way.ml",
+  interface: n2tDmux8wayInterface,
+  interfaceFilename: "dmux8way.mli",
+  test: n2tDmux8wayTest,
 };
 
 // Registry and helpers
@@ -316,12 +586,30 @@ export const examples: Record<ExampleKey, HardcamlExample> = {
   n2t_xor: n2tXorExample,
   n2t_mux: n2tMuxExample,
   n2t_dmux: n2tDmuxExample,
+  n2t_not16: n2tNot16Example,
+  n2t_and16: n2tAnd16Example,
+  n2t_or16: n2tOr16Example,
+  n2t_mux16: n2tMux16Example,
+  n2t_or8way: n2tOr8wayExample,
+  n2t_mux4way16: n2tMux4way16Example,
+  n2t_mux8way16: n2tMux8way16Example,
+  n2t_dmux4way: n2tDmux4wayExample,
+  n2t_dmux8way: n2tDmux8wayExample,
   n2t_not_solution: n2tNotSolutionExample,
   n2t_and_solution: n2tAndSolutionExample,
   n2t_or_solution: n2tOrSolutionExample,
   n2t_xor_solution: n2tXorSolutionExample,
   n2t_mux_solution: n2tMuxSolutionExample,
   n2t_dmux_solution: n2tDmuxSolutionExample,
+  n2t_not16_solution: n2tNot16SolutionExample,
+  n2t_and16_solution: n2tAnd16SolutionExample,
+  n2t_or16_solution: n2tOr16SolutionExample,
+  n2t_mux16_solution: n2tMux16SolutionExample,
+  n2t_or8way_solution: n2tOr8waySolutionExample,
+  n2t_mux4way16_solution: n2tMux4way16SolutionExample,
+  n2t_mux8way16_solution: n2tMux8way16SolutionExample,
+  n2t_dmux4way_solution: n2tDmux4waySolutionExample,
+  n2t_dmux8way_solution: n2tDmux8waySolutionExample,
 };
 
 export const getExampleKeys = (): ExampleKey[] => {

@@ -68,15 +68,24 @@ let not_a = N2t_chips.not_ scope i.a
 
 All helpers take a `scope` parameter to preserve hierarchy in waveforms. Available helpers:
 
-| Function | Signature                       |
-| -------- | ------------------------------- |
-| `nand_`  | `scope -> a -> b -> out`        |
-| `not_`   | `scope -> a -> out`             |
-| `and_`   | `scope -> a -> b -> out`        |
-| `or_`    | `scope -> a -> b -> out`        |
-| `xor_`   | `scope -> a -> b -> out`        |
-| `mux_`   | `scope -> a -> b -> sel -> out` |
-| `dmux_`  | `scope -> inp -> sel -> (a, b)` |
+| Function     | Signature                                                     |
+| ------------ | ------------------------------------------------------------- |
+| `nand_`      | `scope -> a -> b -> out`                                      |
+| `not_`       | `scope -> a -> out`                                           |
+| `and_`       | `scope -> a -> b -> out`                                      |
+| `or_`        | `scope -> a -> b -> out`                                      |
+| `xor_`       | `scope -> a -> b -> out`                                      |
+| `mux_`       | `scope -> a -> b -> sel -> out`                               |
+| `dmux_`      | `scope -> inp -> sel -> (a, b)`                               |
+| `not16_`     | `scope -> a -> out`                                           |
+| `and16_`     | `scope -> a -> b -> out`                                      |
+| `or16_`      | `scope -> a -> b -> out`                                      |
+| `mux16_`     | `scope -> a -> b -> sel -> out`                               |
+| `or8way_`    | `scope -> a -> out`                                           |
+| `mux4way16_` | `scope -> a -> b -> c -> d -> sel -> out`                     |
+| `mux8way16_` | `scope -> a -> b -> c -> d -> e -> f -> g -> h -> sel -> out` |
+| `dmux4way_`  | `scope -> inp -> sel -> (a, b, c, d)`                         |
+| `dmux8way_`  | `scope -> inp -> sel -> (a, b, c, d, e, f, g, h)`             |
 
 ## Mux Convention
 
@@ -141,6 +150,47 @@ This means:
    ```
 4. Run to see test results and waveform
 5. View "Nand2Tetris Solutions" to see reference implementation
+
+## Hardcaml Gotchas
+
+### Labeled Arguments
+
+Hardcaml's `bit` and `select` functions require labeled arguments:
+
+```ocaml
+(* Wrong - will cause "labels omitted" errors *)
+let sel0 = bit i.sel 0 in
+let sel01 = select i.sel 1 0 in
+
+(* Correct - use labeled arguments *)
+let sel0 = bit i.sel ~pos:0 in
+let sel01 = select i.sel ~high:1 ~low:0 in
+```
+
+### Module Naming from Filenames
+
+OCaml module names are derived from filenames with the first letter capitalized:
+
+| Filename       | Module Name |
+| -------------- | ----------- |
+| `not.ml`       | `Not`       |
+| `dmux8way.ml`  | `Dmux8way`  |
+| `mux4way16.ml` | `Mux4way16` |
+
+All N2T chip filenames use lowercase (e.g., `not.ml`, `dmux8way.ml`) which creates modules with the first letter capitalized (`Not`, `Dmux8way`).
+
+### Using N2t_chips Helpers
+
+When using `N2t_chips` helpers in solutions, prefer explicit module qualification for robustness:
+
+```ocaml
+(* Works but can be fragile *)
+let open N2t_chips in
+let ab, cd = dmux_ scope i.inp sel1 in
+
+(* More explicit and robust *)
+let ab, cd = N2t_chips.dmux_ scope i.inp sel1 in
+```
 
 ## Adding New Chips
 
