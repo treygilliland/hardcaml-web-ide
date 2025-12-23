@@ -5,6 +5,7 @@
    hardcaml 
    hardcaml_waveterm
    hardcaml_test_harness
+   n2t
    user_circuit)
  (inline_tests)
  (preprocess

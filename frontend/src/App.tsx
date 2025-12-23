@@ -20,6 +20,7 @@ function App() {
     activeTab,
     setActiveTab,
     files,
+    filenames,
     currentValue,
     updateCurrentFile,
     loadExample,
@@ -46,15 +47,25 @@ function App() {
     setLoading(true);
     setResult(null);
 
-    const data = await compileCode(
-      files.circuit,
-      files.interface,
-      files.test,
-      hasInput ? files.input : undefined
-    );
+    const data = await compileCode({
+      circuit: files.circuit,
+      interface: files.interface,
+      test: files.test,
+      input: hasInput ? files.input : undefined,
+      circuitFilename: filenames.circuit,
+      interfaceFilename: filenames.interface,
+    });
     setResult(data);
 
     setLoading(false);
+  };
+
+  const getTabLabel = (tabId: string): string => {
+    if (tabId === "circuit") return filenames.circuit;
+    if (tabId === "interface") return filenames.interface;
+    if (tabId === "test") return "test.ml";
+    if (tabId === "input") return "input.txt";
+    return tabId;
   };
 
   const formatTiming = () => {
@@ -62,6 +73,40 @@ function App() {
     let text = `${result.compile_time_ms}ms compile`;
     if (result.run_time_ms) text += ` + ${result.run_time_ms}ms run`;
     return text;
+  };
+
+  const getStatusBadge = () => {
+    if (!result) return null;
+
+    // Check for test results
+    if (result.tests_passed !== undefined || result.tests_failed !== undefined) {
+      const passed = result.tests_passed ?? 0;
+      const failed = result.tests_failed ?? 0;
+      const total = passed + failed;
+
+      if (failed > 0) {
+        return (
+          <span className="status-badge error">
+            ✗ {failed}/{total} tests failed
+          </span>
+        );
+      } else if (passed > 0) {
+        return (
+          <span className="status-badge success">
+            ✓ {passed}/{total} tests passed
+          </span>
+        );
+      }
+    }
+
+    // Fallback to simple success/error
+    if (result.success) {
+      return <span className="status-badge success">✓ Success</span>;
+    } else if (result.stage === "compile") {
+      return <span className="status-badge error">✗ Compile Error</span>;
+    } else {
+      return <span className="status-badge error">✗ Error</span>;
+    }
   };
 
   const handleDownloadVcd = () => {
@@ -114,7 +159,7 @@ function App() {
                 className={`tab ${activeTab === tab.id ? "active" : ""}`}
                 onClick={() => setActiveTab(tab.id)}
               >
-                {tab.label}
+                {getTabLabel(tab.id)}
               </button>
             ))}
             {hasInput && (
@@ -123,7 +168,7 @@ function App() {
                 className={`tab ${activeTab === INPUT_TAB.id ? "active" : ""}`}
                 onClick={() => setActiveTab(INPUT_TAB.id)}
               >
-                {INPUT_TAB.label}
+                {getTabLabel(INPUT_TAB.id)}
               </button>
             )}
           </div>
@@ -175,25 +220,19 @@ function App() {
             <div className="section-header">
               <span className="section-title">📝 Output</span>
               <div className="section-status">
-                {result && (
-                  <span
-                    className={`status-badge ${
-                      result.success ? "success" : "error"
-                    }`}
-                  >
-                    {result.success ? "✓ Success" : "✗ Error"}
-                  </span>
-                )}
+                {getStatusBadge()}
                 {formatTiming() && (
                   <span className="timing-badge">{formatTiming()}</span>
                 )}
               </div>
             </div>
             <div className="output-content">
-              {result?.success && result?.output && (
+              {/* Show test output when available */}
+              {result?.output && (
                 <div className="result-output">{result.output}</div>
               )}
-              {result && !result.success && result.error_message && (
+              {/* Show error message for compile errors or other failures */}
+              {result && !result.success && result.error_message && result.stage === "compile" && (
                 <div className="error-message">{result.error_message}</div>
               )}
               {!result && (

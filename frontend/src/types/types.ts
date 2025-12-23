@@ -12,20 +12,18 @@ export interface CompileResult {
   waveform_vcd?: string;
   error_type?: string;
   error_message?: string;
+  stage?: string;
   compile_time_ms?: number;
   run_time_ms?: number;
+  tests_passed?: number;
+  tests_failed?: number;
 }
 
 /**
  * Files sent to the compiler
  */
 export interface CompileRequest {
-  files: {
-    "circuit.ml": string;
-    "circuit.mli": string;
-    "test.ml": string;
-    "input.txt"?: string;
-  };
+  files: Record<string, string>;
   timeout_seconds?: number;
 }
 

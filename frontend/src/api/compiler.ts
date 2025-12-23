@@ -16,23 +16,39 @@ function injectInputData(test: string, input: string): string {
   return test.replace("INPUT_DATA", input);
 }
 
+export interface CompileOptions {
+  circuit: string;
+  interface: string;
+  test: string;
+  input?: string;
+  circuitFilename?: string;
+  interfaceFilename?: string;
+  timeoutSeconds?: number;
+}
+
 /**
  * Compile and run HardCaml code
  */
 export async function compileCode(
-  circuit: string,
-  interface_: string,
-  test: string,
-  input?: string,
-  timeoutSeconds = 60
+  options: CompileOptions
 ): Promise<CompileResult> {
+  const {
+    circuit,
+    interface: interface_,
+    test,
+    input,
+    circuitFilename = "circuit.ml",
+    interfaceFilename = "circuit.mli",
+    timeoutSeconds = 60,
+  } = options;
+
   // Inject input data into the test file if provided
   const processedTest = input ? injectInputData(test, input) : test;
 
   const request: CompileRequest = {
     files: {
-      "circuit.ml": circuit,
-      "circuit.mli": interface_,
+      [circuitFilename]: circuit,
+      [interfaceFilename]: interface_,
       "test.ml": processedTest,
     },
     timeout_seconds: timeoutSeconds,

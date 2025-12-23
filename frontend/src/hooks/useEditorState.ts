@@ -13,6 +13,11 @@ export interface EditorFiles {
   input: string;
 }
 
+export interface EditorFilenames {
+  circuit: string;
+  interface: string;
+}
+
 export interface UseEditorStateReturn {
   /** Currently active tab */
   activeTab: TabType;
@@ -20,6 +25,8 @@ export interface UseEditorStateReturn {
   setActiveTab: (tab: TabType) => void;
   /** All editor file contents */
   files: EditorFiles;
+  /** Filenames for circuit and interface */
+  filenames: EditorFilenames;
   /** Get the current file content based on active tab */
   currentValue: string;
   /** Update the current file content */
@@ -42,6 +49,10 @@ export function useEditorState(
     interface: initialExample.interface,
     test: initialExample.test,
     input: initialExample.input ?? "",
+  });
+  const [filenames, setFilenames] = useState<EditorFilenames>({
+    circuit: initialExample.circuitFilename ?? "circuit.ml",
+    interface: initialExample.interfaceFilename ?? "circuit.mli",
   });
   const [hasInput, setHasInput] = useState<boolean>(!!initialExample.input);
 
@@ -69,6 +80,10 @@ export function useEditorState(
       test: example.test,
       input: example.input ?? "",
     });
+    setFilenames({
+      circuit: example.circuitFilename ?? "circuit.ml",
+      interface: example.interfaceFilename ?? "circuit.mli",
+    });
     setHasInput(!!example.input);
     setActiveTab("circuit");
   }, []);
@@ -77,6 +92,7 @@ export function useEditorState(
     activeTab,
     setActiveTab,
     files,
+    filenames,
     currentValue,
     updateCurrentFile,
     loadExample,

@@ -25,13 +25,39 @@ import day1Part2Interface from "@hardcaml/examples/day1_part2/circuit.mli?raw";
 import day1Part2Test from "@hardcaml/examples/day1_part2/test.ml?raw";
 import day1Part2Input from "@hardcaml/examples/day1_part2/input.txt?raw";
 
+// N2T Project 1: Boolean Logic
+import n2tNotCircuit from "@hardcaml/examples/n2t/not/Not.ml?raw";
+import n2tNotInterface from "@hardcaml/examples/n2t/not/Not.mli?raw";
+import n2tNotTest from "@hardcaml/examples/n2t/not/test.ml?raw";
+
+import n2tAndCircuit from "@hardcaml/examples/n2t/and/And.ml?raw";
+import n2tAndInterface from "@hardcaml/examples/n2t/and/And.mli?raw";
+import n2tAndTest from "@hardcaml/examples/n2t/and/test.ml?raw";
+
+import n2tOrCircuit from "@hardcaml/examples/n2t/or/Or.ml?raw";
+import n2tOrInterface from "@hardcaml/examples/n2t/or/Or.mli?raw";
+import n2tOrTest from "@hardcaml/examples/n2t/or/test.ml?raw";
+
+import n2tXorCircuit from "@hardcaml/examples/n2t/xor/Xor.ml?raw";
+import n2tXorInterface from "@hardcaml/examples/n2t/xor/Xor.mli?raw";
+import n2tXorTest from "@hardcaml/examples/n2t/xor/test.ml?raw";
+
+import n2tMuxCircuit from "@hardcaml/examples/n2t/mux/Mux.ml?raw";
+import n2tMuxInterface from "@hardcaml/examples/n2t/mux/Mux.mli?raw";
+import n2tMuxTest from "@hardcaml/examples/n2t/mux/test.ml?raw";
+
+import n2tDmuxCircuit from "@hardcaml/examples/n2t/dmux/Dmux.ml?raw";
+import n2tDmuxInterface from "@hardcaml/examples/n2t/dmux/Dmux.mli?raw";
+import n2tDmuxTest from "@hardcaml/examples/n2t/dmux/test.ml?raw";
+
 // Types
 
-export type ExampleCategory = "hardcaml" | "advent";
+export type ExampleCategory = "hardcaml" | "advent" | "n2t";
 
 export const categoryLabels: Record<ExampleCategory, string> = {
   hardcaml: "Hardcaml Examples",
   advent: "Advent of FPGA",
+  n2t: "Nand2Tetris",
 };
 
 export interface HardcamlExample {
@@ -43,17 +69,31 @@ export interface HardcamlExample {
   difficulty?: "beginner" | "intermediate" | "advanced";
   /** Category for grouping in the dropdown */
   category: ExampleCategory;
-  /** Main circuit implementation (circuit.ml) - loaded into Circuit tab */
+  /** Main circuit implementation - loaded into Circuit tab */
   circuit: string;
-  /** Module interface (circuit.mli) - loaded into Interface tab */
+  /** Filename for circuit (defaults to "circuit.ml") */
+  circuitFilename?: string;
+  /** Module interface - loaded into Interface tab */
   interface: string;
+  /** Filename for interface (defaults to "circuit.mli") */
+  interfaceFilename?: string;
   /** Test harness (test.ml) - loaded into Test tab */
   test: string;
   /** Optional input data - loaded into Input tab, replaces INPUT_DATA in test.ml */
   input?: string;
 }
 
-export type ExampleKey = "counter" | "fibonacci" | "day1_part1" | "day1_part2";
+export type ExampleKey =
+  | "counter"
+  | "fibonacci"
+  | "day1_part1"
+  | "day1_part2"
+  | "n2t_not"
+  | "n2t_and"
+  | "n2t_or"
+  | "n2t_xor"
+  | "n2t_mux"
+  | "n2t_dmux";
 
 // Example definitions
 
@@ -103,6 +143,80 @@ const day1Part2Example: HardcamlExample = {
   input: day1Part2Input,
 };
 
+// N2T Project 1 Examples
+
+const n2tNotExample: HardcamlExample = {
+  name: "Not Gate",
+  description: "Build a NOT gate using only NAND gates",
+  difficulty: "beginner",
+  category: "n2t",
+  circuit: n2tNotCircuit,
+  circuitFilename: "Not.ml",
+  interface: n2tNotInterface,
+  interfaceFilename: "Not.mli",
+  test: n2tNotTest,
+};
+
+const n2tAndExample: HardcamlExample = {
+  name: "And Gate",
+  description: "Build an AND gate using only NAND gates",
+  difficulty: "beginner",
+  category: "n2t",
+  circuit: n2tAndCircuit,
+  circuitFilename: "And.ml",
+  interface: n2tAndInterface,
+  interfaceFilename: "And.mli",
+  test: n2tAndTest,
+};
+
+const n2tOrExample: HardcamlExample = {
+  name: "Or Gate",
+  description: "Build an OR gate using only NAND gates (hint: De Morgan's law)",
+  difficulty: "beginner",
+  category: "n2t",
+  circuit: n2tOrCircuit,
+  circuitFilename: "Or.ml",
+  interface: n2tOrInterface,
+  interfaceFilename: "Or.mli",
+  test: n2tOrTest,
+};
+
+const n2tXorExample: HardcamlExample = {
+  name: "Xor Gate",
+  description: "Build an XOR gate using only NAND gates",
+  difficulty: "intermediate",
+  category: "n2t",
+  circuit: n2tXorCircuit,
+  circuitFilename: "Xor.ml",
+  interface: n2tXorInterface,
+  interfaceFilename: "Xor.mli",
+  test: n2tXorTest,
+};
+
+const n2tMuxExample: HardcamlExample = {
+  name: "Multiplexor",
+  description: "Build a 2-to-1 multiplexor using only NAND gates",
+  difficulty: "intermediate",
+  category: "n2t",
+  circuit: n2tMuxCircuit,
+  circuitFilename: "Mux.ml",
+  interface: n2tMuxInterface,
+  interfaceFilename: "Mux.mli",
+  test: n2tMuxTest,
+};
+
+const n2tDmuxExample: HardcamlExample = {
+  name: "Demultiplexor",
+  description: "Build a 1-to-2 demultiplexor using only NAND gates",
+  difficulty: "intermediate",
+  category: "n2t",
+  circuit: n2tDmuxCircuit,
+  circuitFilename: "Dmux.ml",
+  interface: n2tDmuxInterface,
+  interfaceFilename: "Dmux.mli",
+  test: n2tDmuxTest,
+};
+
 // Registry and helpers
 
 export const examples: Record<ExampleKey, HardcamlExample> = {
@@ -110,6 +224,12 @@ export const examples: Record<ExampleKey, HardcamlExample> = {
   fibonacci: fibonacciExample,
   day1_part1: day1Part1Example,
   day1_part2: day1Part2Example,
+  n2t_not: n2tNotExample,
+  n2t_and: n2tAndExample,
+  n2t_or: n2tOrExample,
+  n2t_xor: n2tXorExample,
+  n2t_mux: n2tMuxExample,
+  n2t_dmux: n2tDmuxExample,
 };
 
 export const getExampleKeys = (): ExampleKey[] => {
@@ -130,6 +250,7 @@ export const getExamplesByCategory = (): Record<
   > = {
     hardcaml: [],
     advent: [],
+    n2t: [],
   };
 
   for (const key of getExampleKeys()) {
