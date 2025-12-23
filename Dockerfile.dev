@@ -12,12 +12,13 @@ RUN cd /opt/build-cache && dune build @runtest --force 2>/dev/null || true
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 ENV PATH="/root/.local/bin:$PATH"
 
-# Install Python dependencies
+# Install Python dependencies to /opt/venv (outside /app so volume mount doesn't shadow it)
 COPY api/pyproject.toml api/uv.lock /app/
-RUN cd /app && uv sync --frozen --no-dev
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv
+RUN cd /app && uv sync --frozen
 
 WORKDIR /app
 
 EXPOSE 8000
 
-CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
