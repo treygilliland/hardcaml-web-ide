@@ -5,6 +5,9 @@ open! Hardcaml_test_harness
 module Circuit = User_circuit.Circuit
 module Harness = Cyclesim_harness.Make (Circuit.I) (Circuit.O)
 
+let passed = ref 0
+let failed = ref 0
+
 (* Parse a single command like "L68" or "R30" *)
 let parse_command (s : string) : bool * int =
   let s = String.strip s in
@@ -38,10 +41,10 @@ let run_testbench (sim : Harness.Sim.t) =
   let cycle ?n () = Cyclesim.cycle ?n sim in
   
   let commands = parse_input input_data in
-  print_s [%message "Processing commands" (List.length commands : int)];
+  printf "Processing %d commands\n" (List.length commands);
   
   let send_command (direction, value) =
-    inputs.direction := if direction then Bits.vdd else Bits.gnd;
+    inputs.Circuit.I.direction := if direction then Bits.vdd else Bits.gnd;
     inputs.value <--. value;
     inputs.command_valid := Bits.vdd;
     cycle ();
@@ -62,11 +65,18 @@ let run_testbench (sim : Harness.Sim.t) =
   (* Process all commands *)
   List.iter commands ~f:send_command;
   
-  (* Report results *)
-  let zero_crossings = Bits.to_unsigned_int !(outputs.zero_crossings) in
+  (* Check result *)
+  let zero_crossings = Bits.to_unsigned_int !(outputs.Circuit.O.zero_crossings) in
   let final_position = Bits.to_unsigned_int !(outputs.position) in
-  print_s [%message "Result" (zero_crossings : int) (final_position : int)];
   
+  if zero_crossings >= 0 then begin
+    incr passed;
+    printf "PASS: zero_crossings = %d (position = %d)\n" zero_crossings final_position
+  end else begin
+    incr failed;
+    printf "FAIL: zero_crossings = %d, expected >= 0\n" zero_crossings
+  end;
+
   cycle ~n:2 ()
 ;;
 
@@ -74,10 +84,14 @@ let print_waves_and_save_vcd waves =
   print_endline "===WAVEFORM_START===";
   Waveform.print ~display_width:100 ~wave_width:2 waves;
   print_endline "===WAVEFORM_END===";
+  printf "===TEST_SUMMARY===\n";
+  printf "TESTS: %d passed, %d failed\n" !passed !failed;
   Waveform.Serialize.marshall_vcd waves "/tmp/waveform.vcd"
 ;;
 
 let%expect_test "Day 1 Part 2" =
+  passed := 0;
+  failed := 0;
   Harness.run_advanced
     ~waves_config:Waves_config.no_waves
     ~create:Circuit.hierarchical
@@ -86,4 +100,3 @@ let%expect_test "Day 1 Part 2" =
     run_testbench;
   [%expect {| |}]
 ;;
-

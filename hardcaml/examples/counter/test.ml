@@ -5,6 +5,19 @@ open! Hardcaml_test_harness
 module Circuit = User_circuit.Circuit
 module Harness = Cyclesim_harness.Make (Circuit.I) (Circuit.O)
 
+let passed = ref 0
+let failed = ref 0
+
+let test_count outputs expected =
+  let count = Bits.to_unsigned_int !(outputs.Circuit.O.count) in
+  if count = expected then begin
+    incr passed;
+    printf "PASS: count = %d\n" count
+  end else begin
+    incr failed;
+    printf "FAIL: count = %d, expected %d\n" count expected
+  end
+
 let run_testbench (sim : Harness.Sim.t) =
   let inputs = Cyclesim.inputs sim in
   let outputs = Cyclesim.outputs sim in
@@ -14,26 +27,29 @@ let run_testbench (sim : Harness.Sim.t) =
   inputs.clear := Bits.vdd;
   cycle ();
   inputs.clear := Bits.gnd;
-  
-  (* Count 10 times *)
+  test_count outputs 0;
+
+  (* Count 5 times with enable *)
   inputs.enable := Bits.vdd;
-  for _ = 1 to 10 do
-    cycle ()
+  for i = 1 to 5 do
+    cycle ();
+    test_count outputs i
   done;
-  
-  (* Pause counting *)
+
+  (* Pause counting - value should stay at 5 *)
   inputs.enable := Bits.gnd;
   cycle ();
+  test_count outputs 5;
   cycle ();
-  
+  test_count outputs 5;
+
   (* Resume counting *)
   inputs.enable := Bits.vdd;
-  for _ = 1 to 5 do
-    cycle ()
+  for i = 6 to 10 do
+    cycle ();
+    test_count outputs i
   done;
   
-  let final_count = Bits.to_unsigned_int !(outputs.count) in
-  print_s [%message "Result" (final_count : int)];
   cycle ()
 ;;
 
@@ -41,10 +57,14 @@ let print_waves_and_save_vcd waves =
   print_endline "===WAVEFORM_START===";
   Waveform.print ~display_width:100 ~wave_width:2 waves;
   print_endline "===WAVEFORM_END===";
+  printf "===TEST_SUMMARY===\n";
+  printf "TESTS: %d passed, %d failed\n" !passed !failed;
   Waveform.Serialize.marshall_vcd waves "/tmp/waveform.vcd"
 ;;
 
 let%expect_test "Counter test" =
+  passed := 0;
+  failed := 0;
   Harness.run_advanced 
     ~waves_config:Waves_config.no_waves
     ~create:Circuit.hierarchical 

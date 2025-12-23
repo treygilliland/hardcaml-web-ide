@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { OcamlEditor } from "./components/OcamlEditor";
+import { ExampleSelector } from "./components/ExampleSelector";
 import {
   examples,
   getExample,
   getExamplesByCategory,
-  categoryLabels,
-  type ExampleCategory,
   type ExampleKey,
 } from "./examples/hardcaml-examples";
 import { useEditorState } from "./hooks/useEditorState";
@@ -15,7 +14,17 @@ import "./App.css";
 
 const DEFAULT_EXAMPLE: ExampleKey = "counter";
 
+function getExampleFromHash(): ExampleKey {
+  const hash = window.location.hash.slice(1);
+  if (hash && examples[hash as ExampleKey]) {
+    return hash as ExampleKey;
+  }
+  return DEFAULT_EXAMPLE;
+}
+
 function App() {
+  const initialExample = getExampleFromHash();
+
   const {
     activeTab,
     setActiveTab,
@@ -25,19 +34,44 @@ function App() {
     updateCurrentFile,
     loadExample,
     hasInput,
-  } = useEditorState(examples[DEFAULT_EXAMPLE]);
+  } = useEditorState(examples[initialExample]);
 
   const examplesByCategory = getExamplesByCategory();
 
   const [currentExampleKey, setCurrentExampleKey] =
-    useState<ExampleKey>(DEFAULT_EXAMPLE);
+    useState<ExampleKey>(initialExample);
   const [result, setResult] = useState<CompileResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [copiedOutput, setCopiedOutput] = useState(false);
+  const [copiedWaveform, setCopiedWaveform] = useState(false);
 
-  const handleLoadExample = (key: string) => {
+  // Sync URL hash with current example
+  useEffect(() => {
+    window.location.hash = currentExampleKey;
+  }, [currentExampleKey]);
+
+  // Handle browser back/forward
+  useEffect(() => {
+    const handleHashChange = () => {
+      const key = getExampleFromHash();
+      if (key !== currentExampleKey) {
+        const example = getExample(key);
+        if (example) {
+          setCurrentExampleKey(key);
+          loadExample(example);
+          setResult(null);
+        }
+      }
+    };
+
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, [currentExampleKey, loadExample]);
+
+  const handleLoadExample = (key: ExampleKey) => {
     const example = getExample(key);
     if (example) {
-      setCurrentExampleKey(key as ExampleKey);
+      setCurrentExampleKey(key);
       loadExample(example);
       setResult(null);
     }
@@ -78,7 +112,6 @@ function App() {
   const getStatusBadge = () => {
     if (!result) return null;
 
-    // Check for test results
     if (
       result.tests_passed !== undefined ||
       result.tests_failed !== undefined
@@ -102,7 +135,6 @@ function App() {
       }
     }
 
-    // Fallback to simple success/error
     if (result.success) {
       return <span className="status-badge success">✓ Success</span>;
     } else if (result.stage === "compile") {
@@ -125,29 +157,41 @@ function App() {
     URL.revokeObjectURL(url);
   };
 
+  const copyToClipboard = useCallback(
+    async (text: string, type: "output" | "waveform") => {
+      try {
+        await navigator.clipboard.writeText(text);
+        if (type === "output") {
+          setCopiedOutput(true);
+          setTimeout(() => setCopiedOutput(false), 2000);
+        } else {
+          setCopiedWaveform(true);
+          setTimeout(() => setCopiedWaveform(false), 2000);
+        }
+      } catch (err) {
+        console.error("Failed to copy:", err);
+      }
+    },
+    []
+  );
+
+  const getOutputText = () => {
+    if (result?.output) return result.output;
+    if (result?.error_message) return result.error_message;
+    return "";
+  };
+
   return (
     <div className="app">
       {/* Header */}
       <header className="header">
         <h1>🔧 Hardcaml Web IDE</h1>
         <div className="header-actions">
-          <select
-            className="example-selector"
-            onChange={(e) => handleLoadExample(e.target.value)}
+          <ExampleSelector
             value={currentExampleKey}
-          >
-            {(Object.keys(categoryLabels) as ExampleCategory[]).map(
-              (category) => (
-                <optgroup key={category} label={categoryLabels[category]}>
-                  {examplesByCategory[category].map(({ key, example }) => (
-                    <option key={key} value={key}>
-                      {example.name}
-                    </option>
-                  ))}
-                </optgroup>
-              )
-            )}
-          </select>
+            examplesByCategory={examplesByCategory}
+            onChange={handleLoadExample}
+          />
         </div>
       </header>
 
@@ -199,15 +243,27 @@ function App() {
           <div className="output-section waveform-section">
             <div className="section-header">
               <span className="section-title">📊 Waveform</span>
-              {result?.waveform_vcd && (
-                <button
-                  className="btn btn-download"
-                  onClick={handleDownloadVcd}
-                  title="Download VCD file for use in GTKWave or other waveform viewers"
-                >
-                  ⬇ Download VCD
-                </button>
-              )}
+              <div className="section-actions">
+                {result?.waveform && (
+                  <button
+                    className="btn btn-icon"
+                    onClick={() =>
+                      copyToClipboard(result.waveform!, "waveform")
+                    }
+                    data-tooltip={copiedWaveform ? "Copied!" : "Copy"}
+                  >
+                    {copiedWaveform ? "✓" : "⧉"}
+                  </button>
+                )}
+                {result?.waveform_vcd && (
+                  <button
+                    className="btn btn-download"
+                    onClick={handleDownloadVcd}
+                  >
+                    ⬇ Download VCD
+                  </button>
+                )}
+              </div>
             </div>
             <div className="waveform-content">
               {result?.waveform || (
@@ -223,6 +279,15 @@ function App() {
             <div className="section-header">
               <span className="section-title">📝 Output</span>
               <div className="section-status">
+                {getOutputText() && (
+                  <button
+                    className="btn btn-icon"
+                    onClick={() => copyToClipboard(getOutputText(), "output")}
+                    data-tooltip={copiedOutput ? "Copied!" : "Copy"}
+                  >
+                    {copiedOutput ? "✓" : "⧉"}
+                  </button>
+                )}
                 {getStatusBadge()}
                 {formatTiming() && (
                   <span className="timing-badge">{formatTiming()}</span>
@@ -230,11 +295,9 @@ function App() {
               </div>
             </div>
             <div className="output-content">
-              {/* Show test output when available */}
               {result?.output && (
                 <div className="result-output">{result.output}</div>
               )}
-              {/* Show error message for compile errors or other failures */}
               {result &&
                 !result.success &&
                 result.error_message &&
