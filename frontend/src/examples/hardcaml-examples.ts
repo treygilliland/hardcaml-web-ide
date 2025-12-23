@@ -1,5 +1,5 @@
 /**
- * Example circuits loaded from hardcaml/examples/ at build time via Vite's ?raw imports.
+ * Example circuits loaded from hardcaml/ at build time via Vite's ?raw imports.
  * Each example needs: circuit.ml, circuit.mli, test.ml, and optionally input.txt.
  */
 
@@ -25,39 +25,45 @@ import day1Part2Interface from "@hardcaml/examples/day1_part2/circuit.mli?raw";
 import day1Part2Test from "@hardcaml/examples/day1_part2/test.ml?raw";
 import day1Part2Input from "@hardcaml/examples/day1_part2/input.txt?raw";
 
-// N2T Project 1: Boolean Logic
-import n2tNotCircuit from "@hardcaml/examples/n2t/not/Not.ml?raw";
-import n2tNotInterface from "@hardcaml/examples/n2t/not/Not.mli?raw";
-import n2tNotTest from "@hardcaml/examples/n2t/not/test.ml?raw";
+// N2T Stubs (exercises) from examples/n2t/
+import n2tNotStub from "@hardcaml/examples/n2t/not.ml?raw";
+import n2tAndStub from "@hardcaml/examples/n2t/and.ml?raw";
+import n2tOrStub from "@hardcaml/examples/n2t/or.ml?raw";
+import n2tXorStub from "@hardcaml/examples/n2t/xor.ml?raw";
+import n2tMuxStub from "@hardcaml/examples/n2t/mux.ml?raw";
+import n2tDmuxStub from "@hardcaml/examples/n2t/dmux.ml?raw";
 
-import n2tAndCircuit from "@hardcaml/examples/n2t/and/And.ml?raw";
-import n2tAndInterface from "@hardcaml/examples/n2t/and/And.mli?raw";
-import n2tAndTest from "@hardcaml/examples/n2t/and/test.ml?raw";
+// N2T Reference implementations (user-runnable solutions)
+import n2tNotImpl from "@hardcaml/examples/n2t_solutions/not.ml?raw";
+import n2tAndImpl from "@hardcaml/examples/n2t_solutions/and.ml?raw";
+import n2tOrImpl from "@hardcaml/examples/n2t_solutions/or.ml?raw";
+import n2tXorImpl from "@hardcaml/examples/n2t_solutions/xor.ml?raw";
+import n2tMuxImpl from "@hardcaml/examples/n2t_solutions/mux.ml?raw";
+import n2tDmuxImpl from "@hardcaml/examples/n2t_solutions/dmux.ml?raw";
 
-import n2tOrCircuit from "@hardcaml/examples/n2t/or/Or.ml?raw";
-import n2tOrInterface from "@hardcaml/examples/n2t/or/Or.mli?raw";
-import n2tOrTest from "@hardcaml/examples/n2t/or/test.ml?raw";
-
-import n2tXorCircuit from "@hardcaml/examples/n2t/xor/Xor.ml?raw";
-import n2tXorInterface from "@hardcaml/examples/n2t/xor/Xor.mli?raw";
-import n2tXorTest from "@hardcaml/examples/n2t/xor/test.ml?raw";
-
-import n2tMuxCircuit from "@hardcaml/examples/n2t/mux/Mux.ml?raw";
-import n2tMuxInterface from "@hardcaml/examples/n2t/mux/Mux.mli?raw";
-import n2tMuxTest from "@hardcaml/examples/n2t/mux/test.ml?raw";
-
-import n2tDmuxCircuit from "@hardcaml/examples/n2t/dmux/Dmux.ml?raw";
-import n2tDmuxInterface from "@hardcaml/examples/n2t/dmux/Dmux.mli?raw";
-import n2tDmuxTest from "@hardcaml/examples/n2t/dmux/test.ml?raw";
+// N2T interfaces and tests from lib/n2t_chips/
+import n2tNotInterface from "@hardcaml/build-cache/lib/n2t_chips/not.mli?raw";
+import n2tNotTest from "@hardcaml/build-cache/lib/n2t_chips/not_test.ml?raw";
+import n2tAndInterface from "@hardcaml/build-cache/lib/n2t_chips/and.mli?raw";
+import n2tAndTest from "@hardcaml/build-cache/lib/n2t_chips/and_test.ml?raw";
+import n2tOrInterface from "@hardcaml/build-cache/lib/n2t_chips/or.mli?raw";
+import n2tOrTest from "@hardcaml/build-cache/lib/n2t_chips/or_test.ml?raw";
+import n2tXorInterface from "@hardcaml/build-cache/lib/n2t_chips/xor.mli?raw";
+import n2tXorTest from "@hardcaml/build-cache/lib/n2t_chips/xor_test.ml?raw";
+import n2tMuxInterface from "@hardcaml/build-cache/lib/n2t_chips/mux.mli?raw";
+import n2tMuxTest from "@hardcaml/build-cache/lib/n2t_chips/mux_test.ml?raw";
+import n2tDmuxInterface from "@hardcaml/build-cache/lib/n2t_chips/dmux.mli?raw";
+import n2tDmuxTest from "@hardcaml/build-cache/lib/n2t_chips/dmux_test.ml?raw";
 
 // Types
 
-export type ExampleCategory = "hardcaml" | "advent" | "n2t";
+export type ExampleCategory = "hardcaml" | "advent" | "n2t" | "n2t_solutions";
 
 export const categoryLabels: Record<ExampleCategory, string> = {
   hardcaml: "Hardcaml Examples",
   advent: "Advent of FPGA",
   n2t: "Nand2Tetris",
+  n2t_solutions: "Nand2Tetris Solutions",
 };
 
 export interface HardcamlExample {
@@ -93,7 +99,13 @@ export type ExampleKey =
   | "n2t_or"
   | "n2t_xor"
   | "n2t_mux"
-  | "n2t_dmux";
+  | "n2t_dmux"
+  | "n2t_not_solution"
+  | "n2t_and_solution"
+  | "n2t_or_solution"
+  | "n2t_xor_solution"
+  | "n2t_mux_solution"
+  | "n2t_dmux_solution";
 
 // Example definitions
 
@@ -143,14 +155,14 @@ const day1Part2Example: HardcamlExample = {
   input: day1Part2Input,
 };
 
-// N2T Project 1 Examples
+// N2T Exercises (stubs)
 
 const n2tNotExample: HardcamlExample = {
   name: "Not Gate",
   description: "Build a NOT gate using only NAND gates",
   difficulty: "beginner",
   category: "n2t",
-  circuit: n2tNotCircuit,
+  circuit: n2tNotStub,
   circuitFilename: "Not.ml",
   interface: n2tNotInterface,
   interfaceFilename: "Not.mli",
@@ -162,7 +174,7 @@ const n2tAndExample: HardcamlExample = {
   description: "Build an AND gate using only NAND gates",
   difficulty: "beginner",
   category: "n2t",
-  circuit: n2tAndCircuit,
+  circuit: n2tAndStub,
   circuitFilename: "And.ml",
   interface: n2tAndInterface,
   interfaceFilename: "And.mli",
@@ -174,7 +186,7 @@ const n2tOrExample: HardcamlExample = {
   description: "Build an OR gate using only NAND gates (hint: De Morgan's law)",
   difficulty: "beginner",
   category: "n2t",
-  circuit: n2tOrCircuit,
+  circuit: n2tOrStub,
   circuitFilename: "Or.ml",
   interface: n2tOrInterface,
   interfaceFilename: "Or.mli",
@@ -186,7 +198,7 @@ const n2tXorExample: HardcamlExample = {
   description: "Build an XOR gate using only NAND gates",
   difficulty: "intermediate",
   category: "n2t",
-  circuit: n2tXorCircuit,
+  circuit: n2tXorStub,
   circuitFilename: "Xor.ml",
   interface: n2tXorInterface,
   interfaceFilename: "Xor.mli",
@@ -198,7 +210,7 @@ const n2tMuxExample: HardcamlExample = {
   description: "Build a 2-to-1 multiplexor using only NAND gates",
   difficulty: "intermediate",
   category: "n2t",
-  circuit: n2tMuxCircuit,
+  circuit: n2tMuxStub,
   circuitFilename: "Mux.ml",
   interface: n2tMuxInterface,
   interfaceFilename: "Mux.mli",
@@ -210,7 +222,81 @@ const n2tDmuxExample: HardcamlExample = {
   description: "Build a 1-to-2 demultiplexor using only NAND gates",
   difficulty: "intermediate",
   category: "n2t",
-  circuit: n2tDmuxCircuit,
+  circuit: n2tDmuxStub,
+  circuitFilename: "Dmux.ml",
+  interface: n2tDmuxInterface,
+  interfaceFilename: "Dmux.mli",
+  test: n2tDmuxTest,
+};
+
+// N2T Solutions (reference implementations)
+
+const n2tNotSolutionExample: HardcamlExample = {
+  name: "Not Gate",
+  description: "Reference implementation of NOT gate",
+  difficulty: "beginner",
+  category: "n2t_solutions",
+  circuit: n2tNotImpl,
+  circuitFilename: "Not.ml",
+  interface: n2tNotInterface,
+  interfaceFilename: "Not.mli",
+  test: n2tNotTest,
+};
+
+const n2tAndSolutionExample: HardcamlExample = {
+  name: "And Gate",
+  description: "Reference implementation of AND gate",
+  difficulty: "beginner",
+  category: "n2t_solutions",
+  circuit: n2tAndImpl,
+  circuitFilename: "And.ml",
+  interface: n2tAndInterface,
+  interfaceFilename: "And.mli",
+  test: n2tAndTest,
+};
+
+const n2tOrSolutionExample: HardcamlExample = {
+  name: "Or Gate",
+  description: "Reference implementation of OR gate",
+  difficulty: "beginner",
+  category: "n2t_solutions",
+  circuit: n2tOrImpl,
+  circuitFilename: "Or.ml",
+  interface: n2tOrInterface,
+  interfaceFilename: "Or.mli",
+  test: n2tOrTest,
+};
+
+const n2tXorSolutionExample: HardcamlExample = {
+  name: "Xor Gate",
+  description: "Reference implementation of XOR gate",
+  difficulty: "intermediate",
+  category: "n2t_solutions",
+  circuit: n2tXorImpl,
+  circuitFilename: "Xor.ml",
+  interface: n2tXorInterface,
+  interfaceFilename: "Xor.mli",
+  test: n2tXorTest,
+};
+
+const n2tMuxSolutionExample: HardcamlExample = {
+  name: "Multiplexor",
+  description: "Reference implementation of 2-to-1 multiplexor",
+  difficulty: "intermediate",
+  category: "n2t_solutions",
+  circuit: n2tMuxImpl,
+  circuitFilename: "Mux.ml",
+  interface: n2tMuxInterface,
+  interfaceFilename: "Mux.mli",
+  test: n2tMuxTest,
+};
+
+const n2tDmuxSolutionExample: HardcamlExample = {
+  name: "Demultiplexor",
+  description: "Reference implementation of 1-to-2 demultiplexor",
+  difficulty: "intermediate",
+  category: "n2t_solutions",
+  circuit: n2tDmuxImpl,
   circuitFilename: "Dmux.ml",
   interface: n2tDmuxInterface,
   interfaceFilename: "Dmux.mli",
@@ -230,6 +316,12 @@ export const examples: Record<ExampleKey, HardcamlExample> = {
   n2t_xor: n2tXorExample,
   n2t_mux: n2tMuxExample,
   n2t_dmux: n2tDmuxExample,
+  n2t_not_solution: n2tNotSolutionExample,
+  n2t_and_solution: n2tAndSolutionExample,
+  n2t_or_solution: n2tOrSolutionExample,
+  n2t_xor_solution: n2tXorSolutionExample,
+  n2t_mux_solution: n2tMuxSolutionExample,
+  n2t_dmux_solution: n2tDmuxSolutionExample,
 };
 
 export const getExampleKeys = (): ExampleKey[] => {
@@ -251,6 +343,7 @@ export const getExamplesByCategory = (): Record<
     hardcaml: [],
     advent: [],
     n2t: [],
+    n2t_solutions: [],
   };
 
   for (const key of getExampleKeys()) {

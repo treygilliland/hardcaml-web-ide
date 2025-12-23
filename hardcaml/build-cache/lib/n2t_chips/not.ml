@@ -1,7 +1,4 @@
-(* Not gate: if (in) out = 0, else out = 1
-   
-   Implement using only Nand gates from the N2t library.
-   Hint: What happens when you NAND a signal with itself? *)
+(* Not gate: if (in) out = 0, else out = 1 *)
 
 open! Core
 open! Hardcaml
@@ -16,12 +13,9 @@ module O = struct
 end
 
 let create _scope (i : _ I.t) : _ O.t =
-  let open N2t in
-  { out = nand_ i.a i.a }
-;;
+  { out = ~:(i.a) }
 
 let hierarchical scope =
   let module Scoped = Hierarchy.In_scope (I) (O) in
   Scoped.hierarchical ~scope ~name:"not" create
-;;
 

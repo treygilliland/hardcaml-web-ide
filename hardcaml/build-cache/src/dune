@@ -1,5 +1,5 @@
 (library
  (name user_circuit)
- (libraries core hardcaml n2t)
+ (libraries core hardcaml n2t_chips)
  (preprocess
   (pps ppx_hardcaml ppx_jane)))

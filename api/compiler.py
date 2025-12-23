@@ -315,6 +315,31 @@ def compile_and_run(files: dict[str, str], timeout_seconds: int = 30) -> Compile
                 tests_failed=parsed.tests_failed,
             )
 
+        # Check for runtime exceptions (failwith, etc.) - returncode != 0 but no test counts
+        if returncode != 0 and parsed.tests_passed is None:
+            # Extract exception message from output
+            exception_msg = None
+            for line in combined_output.split("\n"):
+                if "Failure" in line or "failwith" in line.lower():
+                    exception_msg = line.strip()
+                    break
+                if "Exception:" in line:
+                    exception_msg = line.strip()
+                    break
+            
+            return CompileResult(
+                success=False,
+                output=parsed.test_output if parsed.test_output else combined_output,
+                waveform=parsed.waveform,
+                waveform_vcd=vcd,
+                error_type="runtime_error",
+                error_message=exception_msg or "Test crashed with an exception",
+                stage="test",
+                compile_time_ms=dune_time,
+                tests_passed=0,
+                tests_failed=1,
+            )
+
         return CompileResult(
             success=True,
             output=parsed.test_output,

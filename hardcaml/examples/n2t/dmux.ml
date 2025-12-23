@@ -2,7 +2,7 @@
    [a, b] = [in, 0] if sel = 0
             [0, in] if sel = 1
    
-   Implement using only Nand gates from the N2t library.
+   Implement using only N2t_chips.Nand.nand
    Hint: a = in AND NOT(sel), b = in AND sel *)
 
 open! Core
@@ -25,18 +25,11 @@ module O = struct
   [@@deriving hardcaml]
 end
 
-let create _scope (i : _ I.t) : _ O.t =
-  let open N2t in
-  let not_sel = nand_ i.sel i.sel in
-  let a_nand = nand_ i.inp not_sel in
-  let b_nand = nand_ i.inp i.sel in
-  { a = nand_ a_nand a_nand
-  ; b = nand_ b_nand b_nand
-  }
-;;
+let create _scope (_i : _ I.t) : _ O.t =
+  (* TODO: implement using N2t_chips.Nand.nand *)
+  { a = gnd; b = gnd }
 
 let hierarchical scope =
   let module Scoped = Hierarchy.In_scope (I) (O) in
   Scoped.hierarchical ~scope ~name:"dmux" create
-;;
 

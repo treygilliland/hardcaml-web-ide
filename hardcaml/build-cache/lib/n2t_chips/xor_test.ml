@@ -1,16 +1,15 @@
 open! Core
 open! Hardcaml
 open! Hardcaml_waveterm
-module Circuit = User_circuit.Dmux
+module Circuit = User_circuit.Xor
 
 let print_waves_and_save_vcd waves =
   print_endline "===WAVEFORM_START===";
   Waveform.print ~display_width:80 ~wave_width:2 waves;
   print_endline "===WAVEFORM_END===";
   Waveform.Serialize.marshall_vcd waves "/tmp/waveform.vcd"
-;;
 
-let%expect_test "DMux gate" =
+let%expect_test "Xor gate" =
   let module Sim = Cyclesim.With_interface (Circuit.I) (Circuit.O) in
   let scope = Scope.create ~flatten_design:true () in
   let sim = Sim.create ~config:Cyclesim.Config.trace_all (Circuit.create scope) in
@@ -21,28 +20,26 @@ let%expect_test "DMux gate" =
   let passed = ref 0 in
   let failed = ref 0 in
 
-  let test inp sel expected_a expected_b =
-    inputs.inp := Bits.of_int_trunc ~width:1 inp;
-    inputs.sel := Bits.of_int_trunc ~width:1 sel;
+  let test a b expected =
+    inputs.a := Bits.of_int_trunc ~width:1 a;
+    inputs.b := Bits.of_int_trunc ~width:1 b;
     Cyclesim.cycle sim;
-    let a = Bits.to_int_trunc !(outputs.a) in
-    let b = Bits.to_int_trunc !(outputs.b) in
-    if a = expected_a && b = expected_b then begin
+    let out = Bits.to_int_trunc !(outputs.out) in
+    if out = expected then begin
       incr passed;
-      printf "PASS: DMux(inp=%d, sel=%d) = (a=%d, b=%d)\n" inp sel a b
+      printf "PASS: Xor(%d, %d) = %d\n" a b out
     end else begin
       incr failed;
-      printf "FAIL: DMux(inp=%d, sel=%d) = (a=%d, b=%d), expected (%d, %d)\n" 
-        inp sel a b expected_a expected_b
+      printf "FAIL: Xor(%d, %d) = %d, expected %d\n" a b out expected
     end
   in
 
-  test 0 0 0 0;
-  test 0 1 0 0;
-  test 1 0 1 0;
-  test 1 1 0 1;
+  test 0 0 0;
+  test 0 1 1;
+  test 1 0 1;
+  test 1 1 0;
   print_waves_and_save_vcd waves;
   printf "===TEST_SUMMARY===\n";
   printf "TESTS: %d passed, %d failed\n" !passed !failed;
-  if !failed > 0 then failwith "Some tests failed"
-;;
+  [%expect {| |}]
+

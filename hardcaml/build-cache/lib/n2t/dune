@@ -1,6 +1,0 @@
-(library
- (name n2t)
- (libraries core hardcaml)
- (preprocess
-  (pps ppx_hardcaml ppx_jane)))
-
