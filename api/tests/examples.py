@@ -131,4 +131,3 @@ def get_example_by_id(example_id: str) -> Example:
         return load_n2t_solution(chip_name)
     else:
         raise ValueError(f"Unknown example: {example_id}")
-

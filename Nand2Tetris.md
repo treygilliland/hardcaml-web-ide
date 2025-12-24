@@ -100,6 +100,11 @@ All helpers take a `scope` parameter to preserve hierarchy in waveforms. Availab
 | `ram512_`    | `scope -> clock -> clear -> inp -> load -> address -> out`            |
 | `ram4k_`     | `scope -> clock -> clear -> inp -> load -> address -> out`            |
 | `ram16k_`    | `scope -> clock -> clear -> inp -> load -> address -> out`            |
+| `screen_`    | `scope -> clock -> clear -> inp -> load -> address -> out`            |
+| `keyboard_`  | `scope -> clock -> clear -> key -> out`                               |
+| `aregister_` | `scope -> clock -> clear -> inp -> load -> out`                       |
+| `dregister_` | `scope -> clock -> clear -> inp -> load -> out`                       |
+| `rom32k_`    | `scope -> clock -> address -> out`                                    |
 
 ## Mux Convention
 

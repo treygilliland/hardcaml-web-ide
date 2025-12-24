@@ -35,6 +35,11 @@ module Ram64 = Ram64
 module Ram512 = Ram512
 module Ram4k = Ram4k
 module Ram16k = Ram16k
+module Screen = Screen
+module Keyboard = Keyboard
+module Aregister = Aregister
+module Dregister = Dregister
+module Rom32k = Rom32k
 
 (** {1 Helper Functions}
     
@@ -74,3 +79,8 @@ val ram64_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
 val ram512_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
 val ram4k_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
 val ram16k_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
+val screen_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
+val keyboard_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
+val aregister_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
+val dregister_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
+val rom32k_ : Scope.t -> Signal.t -> Signal.t -> Signal.t

@@ -32,6 +32,11 @@ module Ram64 = Ram64
 module Ram512 = Ram512
 module Ram4k = Ram4k
 module Ram16k = Ram16k
+module Screen = Screen
+module Keyboard = Keyboard
+module Aregister = Aregister
+module Dregister = Dregister
+module Rom32k = Rom32k
 
 (* Convenience functions for concise chip instantiation.
    Usage: let open N2t_chips in not_ scope sel *)
@@ -91,3 +96,13 @@ let ram4k_ scope clock clear inp load address =
   (Ram4k.create scope { Ram4k.I.clock; clear; inp; load; address }).out
 let ram16k_ scope clock clear inp load address = 
   (Ram16k.create scope { Ram16k.I.clock; clear; inp; load; address }).out
+let screen_ scope clock clear inp load address = 
+  (Screen.create scope { Screen.I.clock; clear; inp; load; address }).out
+let keyboard_ scope clock clear key = 
+  (Keyboard.create scope { Keyboard.I.clock; clear; key }).out
+let aregister_ scope clock clear inp load = 
+  (Aregister.create scope { Aregister.I.clock; clear; inp; load }).out
+let dregister_ scope clock clear inp load = 
+  (Dregister.create scope { Dregister.I.clock; clear; inp; load }).out
+let rom32k_ scope clock address = 
+  (Rom32k.create scope { Rom32k.I.clock; address }).out
