@@ -46,6 +46,15 @@ import n2tFulladderStub from "@hardcaml/examples/n2t/fulladder.ml?raw";
 import n2tAdd16Stub from "@hardcaml/examples/n2t/add16.ml?raw";
 import n2tInc16Stub from "@hardcaml/examples/n2t/inc16.ml?raw";
 import n2tAluStub from "@hardcaml/examples/n2t/alu.ml?raw";
+import n2tDffStub from "@hardcaml/examples/n2t/dff.ml?raw";
+import n2tBitStub from "@hardcaml/examples/n2t/bit.ml?raw";
+import n2tRegisterStub from "@hardcaml/examples/n2t/register.ml?raw";
+import n2tRam8Stub from "@hardcaml/examples/n2t/ram8.ml?raw";
+import n2tPcStub from "@hardcaml/examples/n2t/pc.ml?raw";
+import n2tRam64Stub from "@hardcaml/examples/n2t/ram64.ml?raw";
+import n2tRam512Stub from "@hardcaml/examples/n2t/ram512.ml?raw";
+import n2tRam4kStub from "@hardcaml/examples/n2t/ram4k.ml?raw";
+import n2tRam16kStub from "@hardcaml/examples/n2t/ram16k.ml?raw";
 
 // N2T Reference implementations (user-runnable solutions)
 import n2tNotImpl from "@hardcaml/examples/n2t_solutions/not.ml?raw";
@@ -68,6 +77,15 @@ import n2tFulladderImpl from "@hardcaml/examples/n2t_solutions/fulladder.ml?raw"
 import n2tAdd16Impl from "@hardcaml/examples/n2t_solutions/add16.ml?raw";
 import n2tInc16Impl from "@hardcaml/examples/n2t_solutions/inc16.ml?raw";
 import n2tAluImpl from "@hardcaml/examples/n2t_solutions/alu.ml?raw";
+import n2tDffImpl from "@hardcaml/examples/n2t_solutions/dff.ml?raw";
+import n2tBitImpl from "@hardcaml/examples/n2t_solutions/bit.ml?raw";
+import n2tRegisterImpl from "@hardcaml/examples/n2t_solutions/register.ml?raw";
+import n2tRam8Impl from "@hardcaml/examples/n2t_solutions/ram8.ml?raw";
+import n2tPcImpl from "@hardcaml/examples/n2t_solutions/pc.ml?raw";
+import n2tRam64Impl from "@hardcaml/examples/n2t_solutions/ram64.ml?raw";
+import n2tRam512Impl from "@hardcaml/examples/n2t_solutions/ram512.ml?raw";
+import n2tRam4kImpl from "@hardcaml/examples/n2t_solutions/ram4k.ml?raw";
+import n2tRam16kImpl from "@hardcaml/examples/n2t_solutions/ram16k.ml?raw";
 
 // N2T interfaces and tests from lib/n2t_chips/
 import n2tNotInterface from "@hardcaml/build-cache/lib/n2t_chips/not.mli?raw";
@@ -110,6 +128,24 @@ import n2tInc16Interface from "@hardcaml/build-cache/lib/n2t_chips/inc16.mli?raw
 import n2tInc16Test from "@hardcaml/build-cache/lib/n2t_chips/inc16_test.ml?raw";
 import n2tAluInterface from "@hardcaml/build-cache/lib/n2t_chips/alu.mli?raw";
 import n2tAluTest from "@hardcaml/build-cache/lib/n2t_chips/alu_test.ml?raw";
+import n2tDffInterface from "@hardcaml/build-cache/lib/n2t_chips/dff.mli?raw";
+import n2tDffTest from "@hardcaml/build-cache/lib/n2t_chips/dff_test.ml?raw";
+import n2tBitInterface from "@hardcaml/build-cache/lib/n2t_chips/bit.mli?raw";
+import n2tBitTest from "@hardcaml/build-cache/lib/n2t_chips/bit_test.ml?raw";
+import n2tRegisterInterface from "@hardcaml/build-cache/lib/n2t_chips/register.mli?raw";
+import n2tRegisterTest from "@hardcaml/build-cache/lib/n2t_chips/register_test.ml?raw";
+import n2tRam8Interface from "@hardcaml/build-cache/lib/n2t_chips/ram8.mli?raw";
+import n2tRam8Test from "@hardcaml/build-cache/lib/n2t_chips/ram8_test.ml?raw";
+import n2tPcInterface from "@hardcaml/build-cache/lib/n2t_chips/pc.mli?raw";
+import n2tPcTest from "@hardcaml/build-cache/lib/n2t_chips/pc_test.ml?raw";
+import n2tRam64Interface from "@hardcaml/build-cache/lib/n2t_chips/ram64.mli?raw";
+import n2tRam64Test from "@hardcaml/build-cache/lib/n2t_chips/ram64_test.ml?raw";
+import n2tRam512Interface from "@hardcaml/build-cache/lib/n2t_chips/ram512.mli?raw";
+import n2tRam512Test from "@hardcaml/build-cache/lib/n2t_chips/ram512_test.ml?raw";
+import n2tRam4kInterface from "@hardcaml/build-cache/lib/n2t_chips/ram4k.mli?raw";
+import n2tRam4kTest from "@hardcaml/build-cache/lib/n2t_chips/ram4k_test.ml?raw";
+import n2tRam16kInterface from "@hardcaml/build-cache/lib/n2t_chips/ram16k.mli?raw";
+import n2tRam16kTest from "@hardcaml/build-cache/lib/n2t_chips/ram16k_test.ml?raw";
 
 // Types
 
@@ -170,6 +206,15 @@ export type ExampleKey =
   | "n2t_add16"
   | "n2t_inc16"
   | "n2t_alu"
+  | "n2t_dff"
+  | "n2t_bit"
+  | "n2t_register"
+  | "n2t_ram8"
+  | "n2t_pc"
+  | "n2t_ram64"
+  | "n2t_ram512"
+  | "n2t_ram4k"
+  | "n2t_ram16k"
   | "n2t_not_solution"
   | "n2t_and_solution"
   | "n2t_or_solution"
@@ -189,7 +234,16 @@ export type ExampleKey =
   | "n2t_fulladder_solution"
   | "n2t_add16_solution"
   | "n2t_inc16_solution"
-  | "n2t_alu_solution";
+  | "n2t_alu_solution"
+  | "n2t_dff_solution"
+  | "n2t_bit_solution"
+  | "n2t_register_solution"
+  | "n2t_ram8_solution"
+  | "n2t_pc_solution"
+  | "n2t_ram64_solution"
+  | "n2t_ram512_solution"
+  | "n2t_ram4k_solution"
+  | "n2t_ram16k_solution";
 
 // Example definitions
 
@@ -481,6 +535,114 @@ const n2tAluExample: HardcamlExample = {
   test: n2tAluTest,
 };
 
+const n2tDffExample: HardcamlExample = {
+  name: "DFF",
+  description: "D Flip-Flop - stores a single bit (out = previous in)",
+  difficulty: "beginner",
+  category: "n2t",
+  circuit: n2tDffStub,
+  circuitFilename: "dff.ml",
+  interface: n2tDffInterface,
+  interfaceFilename: "dff.mli",
+  test: n2tDffTest,
+};
+
+const n2tBitExample: HardcamlExample = {
+  name: "Bit",
+  description: "1-bit register with load enable",
+  difficulty: "beginner",
+  category: "n2t",
+  circuit: n2tBitStub,
+  circuitFilename: "bit.ml",
+  interface: n2tBitInterface,
+  interfaceFilename: "bit.mli",
+  test: n2tBitTest,
+};
+
+const n2tRegisterExample: HardcamlExample = {
+  name: "Register",
+  description: "16-bit register with load enable",
+  difficulty: "beginner",
+  category: "n2t",
+  circuit: n2tRegisterStub,
+  circuitFilename: "register.ml",
+  interface: n2tRegisterInterface,
+  interfaceFilename: "register.mli",
+  test: n2tRegisterTest,
+};
+
+const n2tRam8Example: HardcamlExample = {
+  name: "RAM8",
+  description: "Memory of 8 16-bit registers",
+  difficulty: "intermediate",
+  category: "n2t",
+  circuit: n2tRam8Stub,
+  circuitFilename: "ram8.ml",
+  interface: n2tRam8Interface,
+  interfaceFilename: "ram8.mli",
+  test: n2tRam8Test,
+};
+
+const n2tPcExample: HardcamlExample = {
+  name: "PC",
+  description: "16-bit Program Counter with reset/load/inc",
+  difficulty: "intermediate",
+  category: "n2t",
+  circuit: n2tPcStub,
+  circuitFilename: "pc.ml",
+  interface: n2tPcInterface,
+  interfaceFilename: "pc.mli",
+  test: n2tPcTest,
+};
+
+const n2tRam64Example: HardcamlExample = {
+  name: "RAM64",
+  description: "Memory of 64 16-bit registers",
+  difficulty: "intermediate",
+  category: "n2t",
+  circuit: n2tRam64Stub,
+  circuitFilename: "ram64.ml",
+  interface: n2tRam64Interface,
+  interfaceFilename: "ram64.mli",
+  test: n2tRam64Test,
+};
+
+const n2tRam512Example: HardcamlExample = {
+  name: "RAM512",
+  description: "Memory of 512 16-bit registers",
+  difficulty: "intermediate",
+  category: "n2t",
+  circuit: n2tRam512Stub,
+  circuitFilename: "ram512.ml",
+  interface: n2tRam512Interface,
+  interfaceFilename: "ram512.mli",
+  test: n2tRam512Test,
+};
+
+const n2tRam4kExample: HardcamlExample = {
+  name: "RAM4K",
+  description: "Memory of 4096 16-bit registers",
+  difficulty: "advanced",
+  category: "n2t",
+  circuit: n2tRam4kStub,
+  circuitFilename: "ram4k.ml",
+  interface: n2tRam4kInterface,
+  interfaceFilename: "ram4k.mli",
+  test: n2tRam4kTest,
+};
+
+const n2tRam16kExample: HardcamlExample = {
+  name: "RAM16K",
+  description: "Memory of 16384 16-bit registers",
+  difficulty: "advanced",
+  category: "n2t",
+  circuit: n2tRam16kStub,
+  circuitFilename: "ram16k.ml",
+  interface: n2tRam16kInterface,
+  interfaceFilename: "ram16k.mli",
+  test: n2tRam16kTest,
+};
+
 // N2T Solutions (reference implementations)
 
 const n2tNotSolutionExample: HardcamlExample = {
@@ -723,6 +885,114 @@ const n2tAluSolutionExample: HardcamlExample = {
   test: n2tAluTest,
 };
 
+const n2tDffSolutionExample: HardcamlExample = {
+  name: "DFF",
+  description: "Reference implementation of D Flip-Flop",
+  difficulty: "beginner",
+  category: "n2t_solutions",
+  circuit: n2tDffImpl,
+  circuitFilename: "dff.ml",
+  interface: n2tDffInterface,
+  interfaceFilename: "dff.mli",
+  test: n2tDffTest,
+};
+
+const n2tBitSolutionExample: HardcamlExample = {
+  name: "Bit",
+  description: "Reference implementation of 1-bit register",
+  difficulty: "beginner",
+  category: "n2t_solutions",
+  circuit: n2tBitImpl,
+  circuitFilename: "bit.ml",
+  interface: n2tBitInterface,
+  interfaceFilename: "bit.mli",
+  test: n2tBitTest,
+};
+
+const n2tRegisterSolutionExample: HardcamlExample = {
+  name: "Register",
+  description: "Reference implementation of 16-bit register",
+  difficulty: "beginner",
+  category: "n2t_solutions",
+  circuit: n2tRegisterImpl,
+  circuitFilename: "register.ml",
+  interface: n2tRegisterInterface,
+  interfaceFilename: "register.mli",
+  test: n2tRegisterTest,
+};
+
+const n2tRam8SolutionExample: HardcamlExample = {
+  name: "RAM8",
+  description: "Reference implementation of RAM8",
+  difficulty: "intermediate",
+  category: "n2t_solutions",
+  circuit: n2tRam8Impl,
+  circuitFilename: "ram8.ml",
+  interface: n2tRam8Interface,
+  interfaceFilename: "ram8.mli",
+  test: n2tRam8Test,
+};
+
+const n2tPcSolutionExample: HardcamlExample = {
+  name: "PC",
+  description: "Reference implementation of Program Counter",
+  difficulty: "intermediate",
+  category: "n2t_solutions",
+  circuit: n2tPcImpl,
+  circuitFilename: "pc.ml",
+  interface: n2tPcInterface,
+  interfaceFilename: "pc.mli",
+  test: n2tPcTest,
+};
+
+const n2tRam64SolutionExample: HardcamlExample = {
+  name: "RAM64",
+  description: "Reference implementation of RAM64",
+  difficulty: "intermediate",
+  category: "n2t_solutions",
+  circuit: n2tRam64Impl,
+  circuitFilename: "ram64.ml",
+  interface: n2tRam64Interface,
+  interfaceFilename: "ram64.mli",
+  test: n2tRam64Test,
+};
+
+const n2tRam512SolutionExample: HardcamlExample = {
+  name: "RAM512",
+  description: "Reference implementation of RAM512",
+  difficulty: "intermediate",
+  category: "n2t_solutions",
+  circuit: n2tRam512Impl,
+  circuitFilename: "ram512.ml",
+  interface: n2tRam512Interface,
+  interfaceFilename: "ram512.mli",
+  test: n2tRam512Test,
+};
+
+const n2tRam4kSolutionExample: HardcamlExample = {
+  name: "RAM4K",
+  description: "Reference implementation of RAM4K",
+  difficulty: "advanced",
+  category: "n2t_solutions",
+  circuit: n2tRam4kImpl,
+  circuitFilename: "ram4k.ml",
+  interface: n2tRam4kInterface,
+  interfaceFilename: "ram4k.mli",
+  test: n2tRam4kTest,
+};
+
+const n2tRam16kSolutionExample: HardcamlExample = {
+  name: "RAM16K",
+  description: "Reference implementation of RAM16K",
+  difficulty: "advanced",
+  category: "n2t_solutions",
+  circuit: n2tRam16kImpl,
+  circuitFilename: "ram16k.ml",
+  interface: n2tRam16kInterface,
+  interfaceFilename: "ram16k.mli",
+  test: n2tRam16kTest,
+};
+
 // Registry and helpers
 
 export const examples: Record<ExampleKey, HardcamlExample> = {
@@ -750,6 +1020,15 @@ export const examples: Record<ExampleKey, HardcamlExample> = {
   n2t_add16: n2tAdd16Example,
   n2t_inc16: n2tInc16Example,
   n2t_alu: n2tAluExample,
+  n2t_dff: n2tDffExample,
+  n2t_bit: n2tBitExample,
+  n2t_register: n2tRegisterExample,
+  n2t_ram8: n2tRam8Example,
+  n2t_pc: n2tPcExample,
+  n2t_ram64: n2tRam64Example,
+  n2t_ram512: n2tRam512Example,
+  n2t_ram4k: n2tRam4kExample,
+  n2t_ram16k: n2tRam16kExample,
   n2t_not_solution: n2tNotSolutionExample,
   n2t_and_solution: n2tAndSolutionExample,
   n2t_or_solution: n2tOrSolutionExample,
@@ -770,6 +1049,15 @@ export const examples: Record<ExampleKey, HardcamlExample> = {
   n2t_add16_solution: n2tAdd16SolutionExample,
   n2t_inc16_solution: n2tInc16SolutionExample,
   n2t_alu_solution: n2tAluSolutionExample,
+  n2t_dff_solution: n2tDffSolutionExample,
+  n2t_bit_solution: n2tBitSolutionExample,
+  n2t_register_solution: n2tRegisterSolutionExample,
+  n2t_ram8_solution: n2tRam8SolutionExample,
+  n2t_pc_solution: n2tPcSolutionExample,
+  n2t_ram64_solution: n2tRam64SolutionExample,
+  n2t_ram512_solution: n2tRam512SolutionExample,
+  n2t_ram4k_solution: n2tRam4kSolutionExample,
+  n2t_ram16k_solution: n2tRam16kSolutionExample,
 };
 
 export const getExampleKeys = (): ExampleKey[] => {

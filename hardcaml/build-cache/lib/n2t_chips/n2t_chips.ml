@@ -23,6 +23,15 @@ module Fulladder = Fulladder
 module Add16 = Add16
 module Inc16 = Inc16
 module Alu = Alu
+module Dff = Dff
+module Bit = Bit
+module Register = Register
+module Ram8 = Ram8
+module Pc = Pc
+module Ram64 = Ram64
+module Ram512 = Ram512
+module Ram4k = Ram4k
+module Ram16k = Ram16k
 
 (* Convenience functions for concise chip instantiation.
    Usage: let open N2t_chips in not_ scope sel *)
@@ -63,3 +72,22 @@ let inc16_ scope inp = (Inc16.create scope { Inc16.I.inp }).out
 let alu_ scope x y zx nx zy ny f no =
   let o = Alu.create scope { Alu.I.x; y; zx; nx; zy; ny; f; no } in
   o.out, o.zr, o.ng
+
+let dff_ scope clock clear inp = 
+  (Dff.create scope { Dff.I.clock; clear; inp }).out
+let bit_ scope clock clear inp load = 
+  (Bit.create scope { Bit.I.clock; clear; inp; load }).out
+let register_ scope clock clear inp load = 
+  (Register.create scope { Register.I.clock; clear; inp; load }).out
+let ram8_ scope clock clear inp load address = 
+  (Ram8.create scope { Ram8.I.clock; clear; inp; load; address }).out
+let pc_ scope clock clear inp load inc reset = 
+  (Pc.create scope { Pc.I.clock; clear; inp; load; inc; reset }).out
+let ram64_ scope clock clear inp load address = 
+  (Ram64.create scope { Ram64.I.clock; clear; inp; load; address }).out
+let ram512_ scope clock clear inp load address = 
+  (Ram512.create scope { Ram512.I.clock; clear; inp; load; address }).out
+let ram4k_ scope clock clear inp load address = 
+  (Ram4k.create scope { Ram4k.I.clock; clear; inp; load; address }).out
+let ram16k_ scope clock clear inp load address = 
+  (Ram16k.create scope { Ram16k.I.clock; clear; inp; load; address }).out

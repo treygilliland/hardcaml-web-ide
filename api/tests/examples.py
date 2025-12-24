@@ -89,6 +89,16 @@ N2T_CHIPS = [
     "add16",
     "inc16",
     "alu",
+    # Project 3: Sequential Logic
+    "dff",
+    "bit",
+    "register",
+    "ram8",
+    "pc",
+    "ram64",
+    "ram512",
+    "ram4k",
+    "ram16k",
 ]
 
 STANDARD_EXAMPLES = ["counter", "fibonacci", "day1_part1", "day1_part2"]

@@ -26,6 +26,15 @@ module Fulladder = Fulladder
 module Add16 = Add16
 module Inc16 = Inc16
 module Alu = Alu
+module Dff = Dff
+module Bit = Bit
+module Register = Register
+module Ram8 = Ram8
+module Pc = Pc
+module Ram64 = Ram64
+module Ram512 = Ram512
+module Ram4k = Ram4k
+module Ram16k = Ram16k
 
 (** {1 Helper Functions}
     
@@ -55,3 +64,13 @@ val fulladder_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t * Signa
 val add16_ : Scope.t -> Signal.t -> Signal.t -> Signal.t
 val inc16_ : Scope.t -> Signal.t -> Signal.t
 val alu_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t * Signal.t * Signal.t
+
+val dff_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
+val bit_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
+val register_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
+val ram8_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
+val pc_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
+val ram64_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
+val ram512_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
+val ram4k_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
+val ram16k_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
