@@ -40,6 +40,9 @@ module Keyboard = Keyboard
 module Aregister = Aregister
 module Dregister = Dregister
 module Rom32k = Rom32k
+module Memory = Memory
+module Cpu = Cpu
+module Computer = Computer
 
 (** {1 Helper Functions}
     
@@ -84,3 +87,6 @@ val keyboard_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
 val aregister_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
 val dregister_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
 val rom32k_ : Scope.t -> Signal.t -> Signal.t -> Signal.t
+val memory_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t
+val cpu_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t * Signal.t * Signal.t * Signal.t
+val computer_ : Scope.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t -> Signal.t * Signal.t * Signal.t * Signal.t

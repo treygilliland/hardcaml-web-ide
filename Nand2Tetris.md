@@ -68,43 +68,46 @@ let not_a = N2t_chips.not_ scope i.a
 
 All helpers take a `scope` parameter to preserve hierarchy in waveforms. Available helpers:
 
-| Function     | Signature                                                             |
-| ------------ | --------------------------------------------------------------------- |
-| `nand_`      | `scope -> a -> b -> out`                                              |
-| `not_`       | `scope -> a -> out`                                                   |
-| `and_`       | `scope -> a -> b -> out`                                              |
-| `or_`        | `scope -> a -> b -> out`                                              |
-| `xor_`       | `scope -> a -> b -> out`                                              |
-| `mux_`       | `scope -> a -> b -> sel -> out`                                       |
-| `dmux_`      | `scope -> inp -> sel -> (a, b)`                                       |
-| `not16_`     | `scope -> a -> out`                                                   |
-| `and16_`     | `scope -> a -> b -> out`                                              |
-| `or16_`      | `scope -> a -> b -> out`                                              |
-| `mux16_`     | `scope -> a -> b -> sel -> out`                                       |
-| `or8way_`    | `scope -> a -> out`                                                   |
-| `mux4way16_` | `scope -> a -> b -> c -> d -> sel -> out`                             |
-| `mux8way16_` | `scope -> a -> b -> c -> d -> e -> f -> g -> h -> sel -> out`         |
-| `dmux4way_`  | `scope -> inp -> sel -> (a, b, c, d)`                                 |
-| `dmux8way_`  | `scope -> inp -> sel -> (a, b, c, d, e, f, g, h)`                     |
-| `halfadder_` | `scope -> a -> b -> (sum, carry)`                                     |
-| `fulladder_` | `scope -> a -> b -> c -> (sum, carry)`                                |
-| `add16_`     | `scope -> a -> b -> out`                                              |
-| `inc16_`     | `scope -> inp -> out`                                                 |
-| `alu_`       | `scope -> x -> y -> zx -> nx -> zy -> ny -> f -> no -> (out, zr, ng)` |
-| `dff_`       | `scope -> clock -> clear -> inp -> out`                               |
-| `bit_`       | `scope -> clock -> clear -> inp -> load -> out`                       |
-| `register_`  | `scope -> clock -> clear -> inp -> load -> out`                       |
-| `ram8_`      | `scope -> clock -> clear -> inp -> load -> address -> out`            |
-| `pc_`        | `scope -> clock -> clear -> inp -> load -> inc -> reset -> out`       |
-| `ram64_`     | `scope -> clock -> clear -> inp -> load -> address -> out`            |
-| `ram512_`    | `scope -> clock -> clear -> inp -> load -> address -> out`            |
-| `ram4k_`     | `scope -> clock -> clear -> inp -> load -> address -> out`            |
-| `ram16k_`    | `scope -> clock -> clear -> inp -> load -> address -> out`            |
-| `screen_`    | `scope -> clock -> clear -> inp -> load -> address -> out`            |
-| `keyboard_`  | `scope -> clock -> clear -> key -> out`                               |
-| `aregister_` | `scope -> clock -> clear -> inp -> load -> out`                       |
-| `dregister_` | `scope -> clock -> clear -> inp -> load -> out`                       |
-| `rom32k_`    | `scope -> clock -> address -> out`                                    |
+| Function     | Signature                                                                                |
+| ------------ | ---------------------------------------------------------------------------------------- |
+| `nand_`      | `scope -> a -> b -> out`                                                                 |
+| `not_`       | `scope -> a -> out`                                                                      |
+| `and_`       | `scope -> a -> b -> out`                                                                 |
+| `or_`        | `scope -> a -> b -> out`                                                                 |
+| `xor_`       | `scope -> a -> b -> out`                                                                 |
+| `mux_`       | `scope -> a -> b -> sel -> out`                                                          |
+| `dmux_`      | `scope -> inp -> sel -> (a, b)`                                                          |
+| `not16_`     | `scope -> a -> out`                                                                      |
+| `and16_`     | `scope -> a -> b -> out`                                                                 |
+| `or16_`      | `scope -> a -> b -> out`                                                                 |
+| `mux16_`     | `scope -> a -> b -> sel -> out`                                                          |
+| `or8way_`    | `scope -> a -> out`                                                                      |
+| `mux4way16_` | `scope -> a -> b -> c -> d -> sel -> out`                                                |
+| `mux8way16_` | `scope -> a -> b -> c -> d -> e -> f -> g -> h -> sel -> out`                            |
+| `dmux4way_`  | `scope -> inp -> sel -> (a, b, c, d)`                                                    |
+| `dmux8way_`  | `scope -> inp -> sel -> (a, b, c, d, e, f, g, h)`                                        |
+| `halfadder_` | `scope -> a -> b -> (sum, carry)`                                                        |
+| `fulladder_` | `scope -> a -> b -> c -> (sum, carry)`                                                   |
+| `add16_`     | `scope -> a -> b -> out`                                                                 |
+| `inc16_`     | `scope -> inp -> out`                                                                    |
+| `alu_`       | `scope -> x -> y -> zx -> nx -> zy -> ny -> f -> no -> (out, zr, ng)`                    |
+| `dff_`       | `scope -> clock -> clear -> inp -> out`                                                  |
+| `bit_`       | `scope -> clock -> clear -> inp -> load -> out`                                          |
+| `register_`  | `scope -> clock -> clear -> inp -> load -> out`                                          |
+| `ram8_`      | `scope -> clock -> clear -> inp -> load -> address -> out`                               |
+| `pc_`        | `scope -> clock -> clear -> inp -> load -> inc -> reset -> out`                          |
+| `ram64_`     | `scope -> clock -> clear -> inp -> load -> address -> out`                               |
+| `ram512_`    | `scope -> clock -> clear -> inp -> load -> address -> out`                               |
+| `ram4k_`     | `scope -> clock -> clear -> inp -> load -> address -> out`                               |
+| `ram16k_`    | `scope -> clock -> clear -> inp -> load -> address -> out`                               |
+| `screen_`    | `scope -> clock -> clear -> inp -> load -> address -> out`                               |
+| `keyboard_`  | `scope -> clock -> clear -> key -> out`                                                  |
+| `aregister_` | `scope -> clock -> clear -> inp -> load -> out`                                          |
+| `dregister_` | `scope -> clock -> clear -> inp -> load -> out`                                          |
+| `rom32k_`    | `scope -> clock -> address -> out`                                                       |
+| `memory_`    | `scope -> clock -> clear -> inp -> load -> address -> key -> out`                        |
+| `cpu_`       | `scope -> clock -> clear -> inM -> instruction -> reset -> (outM, writeM, addressM, pc)` |
+| `computer_`  | `scope -> clock -> clear -> reset -> key -> (pc, addressM, outM, writeM)`                |
 
 ## Mux Convention
 
@@ -359,6 +362,53 @@ assert (output = 1);  (* Value maintained when load=0 *)
 ```
 
 This is the same underlying behavior - the register captures on the clock edge and the simulation shows post-edge state.
+
+#### Combinational Outputs After Register Updates
+
+**Critical subtlety:** Combinational outputs are recomputed using the NEW register values after `cycle`, not the values that were used during the clock edge computation.
+
+Example with CPU's `outM`:
+
+```ocaml
+(* Scenario: A=21, D=0, then execute D=D+A (ALU computes D+A) *)
+(* During clock edge: ALU sees D=0, A=21, computes 0+21=21, stores 21 in D *)
+(* After cycle: outM (combinational) recomputes with NEW D=21, A=21: 21+21=42 *)
+
+(* Test sees outM=42, NOT outM=21! *)
+```
+
+For tests where you need to verify ALU output, use instructions where the expected value doesn't depend on register feedback:
+
+```ocaml
+(* FRAGILE - outM depends on previous D value *)
+test_c_instruction ~instruction:D=D+A ~expected_outM:121 (* Will fail! *)
+
+(* ROBUST - outM=A is stable regardless of D *)
+test_c_instruction ~instruction:D=A ~expected_outM:100 (* Works *)
+```
+
+For A-instructions, `outM` is garbage (ALU control bits are random instruction bits), so tests should not check `outM` for A-instructions.
+
+#### RAM Collision Modes
+
+When using `Ram.create`, the `collision_mode` parameter determines what happens when reading and writing the same address in the same cycle:
+
+| Mode                | Same-cycle read returns   |
+| ------------------- | ------------------------- |
+| `Read_before_write` | OLD value (before write)  |
+| `Write_before_read` | NEW value (being written) |
+
+N2T expects written values to be immediately visible, so use `Write_before_read`:
+
+```ocaml
+(* WRONG - returns old value on same-cycle read *)
+Ram.create ~collision_mode:Read_before_write ...
+
+(* CORRECT - returns new value, matches N2T behavior *)
+Ram.create ~collision_mode:Write_before_read ...
+```
+
+This affects Screen memory and any RAM created with `Ram.create` directly.
 
 ## Hardcaml Gotchas
 

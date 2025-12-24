@@ -94,11 +94,15 @@ N2T_CHIPS = [
     "bit",
     "register",
     "ram8",
-    "pc",
     "ram64",
     "ram512",
     "ram4k",
     "ram16k",
+    "pc",
+    # Project 5: Computer Architecture
+    "memory",
+    "cpu",
+    "computer",
 ]
 
 STANDARD_EXAMPLES = ["counter", "fibonacci", "day1_part1", "day1_part2"]

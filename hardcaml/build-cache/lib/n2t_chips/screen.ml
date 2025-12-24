@@ -22,7 +22,7 @@ end
 
 let create scope (i : _ I.t) : _ O.t =
   let spec = Reg_spec.create ~clock:i.clock ~clear:i.clear () in
-  let mem = Ram.create ~name:"screen_mem" ~collision_mode:Read_before_write ~size:8192 ~write_ports:[|
+  let mem = Ram.create ~name:"screen_mem" ~collision_mode:Write_before_read ~size:8192 ~write_ports:[|
     { write_clock = i.clock
     ; write_address = i.address
     ; write_enable = i.load

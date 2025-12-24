@@ -37,6 +37,9 @@ module Keyboard = Keyboard
 module Aregister = Aregister
 module Dregister = Dregister
 module Rom32k = Rom32k
+module Memory = Memory
+module Cpu = Cpu
+module Computer = Computer
 
 (* Convenience functions for concise chip instantiation.
    Usage: let open N2t_chips in not_ scope sel *)
@@ -106,3 +109,11 @@ let dregister_ scope clock clear inp load =
   (Dregister.create scope { Dregister.I.clock; clear; inp; load }).out
 let rom32k_ scope clock address = 
   (Rom32k.create scope { Rom32k.I.clock; address }).out
+let memory_ scope clock clear inp load address key = 
+  (Memory.create scope { Memory.I.clock; clear; inp; load; address; key }).out
+let cpu_ scope clock clear inM instruction reset =
+  let o = Cpu.create scope { Cpu.I.clock; clear; inM; instruction; reset } in
+  o.outM, o.writeM, o.addressM, o.pc
+let computer_ scope clock clear reset key =
+  let o = Computer.create scope { Computer.I.clock; clear; reset; key } in
+  o.pc, o.addressM, o.outM, o.writeM

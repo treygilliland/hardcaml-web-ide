@@ -1,5 +1,6 @@
 (* ROM32K: 32K read-only memory for instruction storage
-   In simulation, this is implemented as a RAM that can be pre-loaded with program data *)
+   In simulation, this is implemented as a RAM with a disabled write port.
+   The ROM can be pre-loaded with program data externally. *)
 
 open! Core
 open! Hardcaml
@@ -18,7 +19,13 @@ module O = struct
 end
 
 let create _scope (i : _ I.t) : _ O.t =
-  let mem = Ram.create ~name:"rom32k_mem" ~collision_mode:Read_before_write ~size:32768 ~write_ports:[||] ~read_ports:[|
+  let mem = Ram.create ~name:"rom32k_mem" ~collision_mode:Write_before_read ~size:32768 ~write_ports:[|
+    { write_clock = i.clock
+    ; write_address = i.address
+    ; write_enable = gnd
+    ; write_data = zero 16
+    }
+  |] ~read_ports:[|
     { read_clock = i.clock
     ; read_address = i.address
     ; read_enable = vdd
@@ -30,4 +37,3 @@ let create _scope (i : _ I.t) : _ O.t =
 let hierarchical scope =
   let module Scoped = Hierarchy.In_scope (I) (O) in
   Scoped.hierarchical ~scope ~name:"rom32k" create
-

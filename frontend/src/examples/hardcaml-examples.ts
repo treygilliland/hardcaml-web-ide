@@ -55,6 +55,9 @@ import n2tRam64Stub from "@hardcaml/examples/n2t/ram64.ml?raw";
 import n2tRam512Stub from "@hardcaml/examples/n2t/ram512.ml?raw";
 import n2tRam4kStub from "@hardcaml/examples/n2t/ram4k.ml?raw";
 import n2tRam16kStub from "@hardcaml/examples/n2t/ram16k.ml?raw";
+import n2tMemoryStub from "@hardcaml/examples/n2t/memory.ml?raw";
+import n2tCpuStub from "@hardcaml/examples/n2t/cpu.ml?raw";
+import n2tComputerStub from "@hardcaml/examples/n2t/computer.ml?raw";
 
 // N2T Reference implementations (user-runnable solutions)
 import n2tNotImpl from "@hardcaml/examples/n2t_solutions/not.ml?raw";
@@ -86,6 +89,9 @@ import n2tRam64Impl from "@hardcaml/examples/n2t_solutions/ram64.ml?raw";
 import n2tRam512Impl from "@hardcaml/examples/n2t_solutions/ram512.ml?raw";
 import n2tRam4kImpl from "@hardcaml/examples/n2t_solutions/ram4k.ml?raw";
 import n2tRam16kImpl from "@hardcaml/examples/n2t_solutions/ram16k.ml?raw";
+import n2tMemoryImpl from "@hardcaml/examples/n2t_solutions/memory.ml?raw";
+import n2tCpuImpl from "@hardcaml/examples/n2t_solutions/cpu.ml?raw";
+import n2tComputerImpl from "@hardcaml/examples/n2t_solutions/computer.ml?raw";
 
 // N2T interfaces and tests from lib/n2t_chips/
 import n2tNotInterface from "@hardcaml/build-cache/lib/n2t_chips/not.mli?raw";
@@ -146,6 +152,12 @@ import n2tRam4kInterface from "@hardcaml/build-cache/lib/n2t_chips/ram4k.mli?raw
 import n2tRam4kTest from "@hardcaml/build-cache/lib/n2t_chips/ram4k_test.ml?raw";
 import n2tRam16kInterface from "@hardcaml/build-cache/lib/n2t_chips/ram16k.mli?raw";
 import n2tRam16kTest from "@hardcaml/build-cache/lib/n2t_chips/ram16k_test.ml?raw";
+import n2tMemoryInterface from "@hardcaml/build-cache/lib/n2t_chips/memory.mli?raw";
+import n2tMemoryTest from "@hardcaml/build-cache/lib/n2t_chips/memory_test.ml?raw";
+import n2tCpuInterface from "@hardcaml/build-cache/lib/n2t_chips/cpu.mli?raw";
+import n2tCpuTest from "@hardcaml/build-cache/lib/n2t_chips/cpu_test.ml?raw";
+import n2tComputerInterface from "@hardcaml/build-cache/lib/n2t_chips/computer.mli?raw";
+import n2tComputerTest from "@hardcaml/build-cache/lib/n2t_chips/computer_test.ml?raw";
 
 // Types
 
@@ -215,6 +227,9 @@ export type ExampleKey =
   | "n2t_ram512"
   | "n2t_ram4k"
   | "n2t_ram16k"
+  | "n2t_memory"
+  | "n2t_cpu"
+  | "n2t_computer"
   | "n2t_not_solution"
   | "n2t_and_solution"
   | "n2t_or_solution"
@@ -243,7 +258,10 @@ export type ExampleKey =
   | "n2t_ram64_solution"
   | "n2t_ram512_solution"
   | "n2t_ram4k_solution"
-  | "n2t_ram16k_solution";
+  | "n2t_ram16k_solution"
+  | "n2t_memory_solution"
+  | "n2t_cpu_solution"
+  | "n2t_computer_solution";
 
 // Example definitions
 
@@ -643,6 +661,42 @@ const n2tRam16kExample: HardcamlExample = {
   test: n2tRam16kTest,
 };
 
+const n2tMemoryExample: HardcamlExample = {
+  name: "Memory",
+  description: "Complete Hack memory: RAM16K + Screen + Keyboard",
+  difficulty: "advanced",
+  category: "n2t",
+  circuit: n2tMemoryStub,
+  circuitFilename: "memory.ml",
+  interface: n2tMemoryInterface,
+  interfaceFilename: "memory.mli",
+  test: n2tMemoryTest,
+};
+
+const n2tCpuExample: HardcamlExample = {
+  name: "CPU",
+  description: "The Hack Central Processing Unit",
+  difficulty: "advanced",
+  category: "n2t",
+  circuit: n2tCpuStub,
+  circuitFilename: "cpu.ml",
+  interface: n2tCpuInterface,
+  interfaceFilename: "cpu.mli",
+  test: n2tCpuTest,
+};
+
+const n2tComputerExample: HardcamlExample = {
+  name: "Computer",
+  description: "The complete Hack computer: CPU + ROM + Memory",
+  difficulty: "advanced",
+  category: "n2t",
+  circuit: n2tComputerStub,
+  circuitFilename: "computer.ml",
+  interface: n2tComputerInterface,
+  interfaceFilename: "computer.mli",
+  test: n2tComputerTest,
+};
+
 // N2T Solutions (reference implementations)
 
 const n2tNotSolutionExample: HardcamlExample = {
@@ -993,6 +1047,42 @@ const n2tRam16kSolutionExample: HardcamlExample = {
   test: n2tRam16kTest,
 };
 
+const n2tMemorySolutionExample: HardcamlExample = {
+  name: "Memory",
+  description: "Reference implementation of Hack Memory",
+  difficulty: "advanced",
+  category: "n2t_solutions",
+  circuit: n2tMemoryImpl,
+  circuitFilename: "memory.ml",
+  interface: n2tMemoryInterface,
+  interfaceFilename: "memory.mli",
+  test: n2tMemoryTest,
+};
+
+const n2tCpuSolutionExample: HardcamlExample = {
+  name: "CPU",
+  description: "Reference implementation of Hack CPU",
+  difficulty: "advanced",
+  category: "n2t_solutions",
+  circuit: n2tCpuImpl,
+  circuitFilename: "cpu.ml",
+  interface: n2tCpuInterface,
+  interfaceFilename: "cpu.mli",
+  test: n2tCpuTest,
+};
+
+const n2tComputerSolutionExample: HardcamlExample = {
+  name: "Computer",
+  description: "Reference implementation of Hack Computer",
+  difficulty: "advanced",
+  category: "n2t_solutions",
+  circuit: n2tComputerImpl,
+  circuitFilename: "computer.ml",
+  interface: n2tComputerInterface,
+  interfaceFilename: "computer.mli",
+  test: n2tComputerTest,
+};
+
 // Registry and helpers
 
 export const examples: Record<ExampleKey, HardcamlExample> = {
@@ -1029,6 +1119,9 @@ export const examples: Record<ExampleKey, HardcamlExample> = {
   n2t_ram512: n2tRam512Example,
   n2t_ram4k: n2tRam4kExample,
   n2t_ram16k: n2tRam16kExample,
+  n2t_memory: n2tMemoryExample,
+  n2t_cpu: n2tCpuExample,
+  n2t_computer: n2tComputerExample,
   n2t_not_solution: n2tNotSolutionExample,
   n2t_and_solution: n2tAndSolutionExample,
   n2t_or_solution: n2tOrSolutionExample,
@@ -1058,6 +1151,9 @@ export const examples: Record<ExampleKey, HardcamlExample> = {
   n2t_ram512_solution: n2tRam512SolutionExample,
   n2t_ram4k_solution: n2tRam4kSolutionExample,
   n2t_ram16k_solution: n2tRam16kSolutionExample,
+  n2t_memory_solution: n2tMemorySolutionExample,
+  n2t_cpu_solution: n2tCpuSolutionExample,
+  n2t_computer_solution: n2tComputerSolutionExample,
 };
 
 export const getExampleKeys = (): ExampleKey[] => {
