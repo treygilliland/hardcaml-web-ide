@@ -81,4 +81,3 @@ let%expect_test "RAM8" =
   printf "===TEST_SUMMARY===\n";
   printf "TESTS: %d passed, %d failed\n" !passed !failed;
   [%expect {| |}]
-

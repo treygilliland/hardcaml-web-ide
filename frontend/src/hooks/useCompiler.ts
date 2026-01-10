@@ -27,4 +27,3 @@ export function useCompiler(): UseCompilerReturn {
 
   return { result, loading, compile, clearResult };
 }
-

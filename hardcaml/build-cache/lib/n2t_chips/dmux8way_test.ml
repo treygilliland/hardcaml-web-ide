@@ -56,4 +56,3 @@ let%expect_test "DMux8Way gate" =
   printf "===TEST_SUMMARY===\n";
   printf "TESTS: %d passed, %d failed\n" !passed !failed;
   [%expect {| |}]
-

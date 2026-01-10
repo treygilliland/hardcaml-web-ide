@@ -40,4 +40,3 @@ export function Header({ exampleKey, onExampleChange, onResetAll }: HeaderProps)
     </header>
   );
 }
-

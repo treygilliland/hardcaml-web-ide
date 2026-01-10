@@ -44,4 +44,3 @@ let%expect_test "Or8Way gate" =
   printf "===TEST_SUMMARY===\n";
   printf "TESTS: %d passed, %d failed\n" !passed !failed;
   [%expect {| |}]
-

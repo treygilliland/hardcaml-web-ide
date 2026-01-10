@@ -45,4 +45,3 @@ let%expect_test "And16 gate" =
   printf "===TEST_SUMMARY===\n";
   printf "TESTS: %d passed, %d failed\n" !passed !failed;
   [%expect {| |}]
-

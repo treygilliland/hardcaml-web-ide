@@ -29,4 +29,3 @@ module States : sig
 end
 
 val hierarchical : Scope.t -> Signal.t I.t -> Signal.t O.t
-

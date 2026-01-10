@@ -20,4 +20,3 @@ let create _scope (i : _ I.t) : _ O.t =
 let hierarchical scope =
   let module Scoped = Hierarchy.In_scope (I) (O) in
   Scoped.hierarchical ~scope ~name:"not" create
-

@@ -23,4 +23,3 @@ let create _scope (i : _ I.t) : _ O.t = { out = nand i.a i.b }
 let hierarchical scope =
   let module Scoped = Hierarchy.In_scope (I) (O) in
   Scoped.hierarchical ~scope ~name:"nand" create
-
