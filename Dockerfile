@@ -1,8 +1,12 @@
-# Hardcaml Web IDE - Production image
-# Requires: docker build -f Dockerfile.base -t hardcaml-base .
+# Hardcaml Web IDE - Production Dockerfile
+# Uses pre-built base image from ghcr.io (default: ghcr.io/treygilliland/hardcaml-base:latest)
+#
+# Usage:
+#   docker build -t hardcaml-web-ide .
+#   docker build --build-arg BASE_IMAGE=other/image:tag -t hardcaml-web-ide .
 
-# Global ARG for base image (must be before FROM to use in FROM)
-ARG BASE_IMAGE=hardcaml-base
+ARG BASE_IMAGE=ghcr.io/treygilliland/hardcaml-base:latest
+FROM ${BASE_IMAGE} AS base
 
 # --- Frontend build stage ---
 FROM node:24-alpine AS frontend-builder
@@ -14,20 +18,19 @@ COPY frontend/ ./
 COPY hardcaml/ ./hardcaml/
 RUN npm run build
 
-# --- Runtime stage ---
-FROM ${BASE_IMAGE}
+# --- Development stage ---
+FROM base AS dev
 
-# Install uv
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.local/bin:$PATH"
+# Copy API code (will be overridden by volume mount in dev)
+COPY api/ /app/
 
-# Install Python dependencies (before hardcaml for better caching)
-COPY api/pyproject.toml api/uv.lock /app/
-RUN cd /app && uv sync --frozen --no-dev
+WORKDIR /app
+EXPOSE 8000
 
-# Copy and pre-build dune project to warm cache
-COPY hardcaml/build-cache/ /opt/build-cache/
-RUN cd /opt/build-cache && dune build @runtest --force 2>/dev/null || true
+CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+# --- Production stage ---
+FROM base AS prod
 
 # Copy API code
 COPY api/ /app/
@@ -36,7 +39,6 @@ COPY api/ /app/
 COPY --from=frontend-builder /frontend/dist /app/static
 
 WORKDIR /app
-
 EXPOSE 8000
 
 CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

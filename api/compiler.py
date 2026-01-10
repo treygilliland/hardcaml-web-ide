@@ -259,9 +259,11 @@ def compile_and_run(files: dict[str, str], timeout_seconds: int = 30) -> Compile
         log.info(f"[timing] setup_project: {int((time.time() - t0) * 1000)}ms")
 
         # Build and run tests
+        # Note: No --force flag to allow dune's incremental build cache
+        # Each request uses a fresh temp dir, but this helps if container stays warm
         t0 = time.time()
         returncode, stdout, stderr = run_command(
-            ["dune", "build", "@runtest", "--force", "--auto-promote"],
+            ["dune", "build", "@runtest", "--auto-promote"],
             cwd=build_dir,
             timeout=timeout_seconds,
         )
@@ -326,7 +328,7 @@ def compile_and_run(files: dict[str, str], timeout_seconds: int = 30) -> Compile
                 if "Exception:" in line:
                     exception_msg = line.strip()
                     break
-            
+
             return CompileResult(
                 success=False,
                 output=parsed.test_output if parsed.test_output else combined_output,

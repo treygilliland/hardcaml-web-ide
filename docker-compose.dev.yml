@@ -2,7 +2,10 @@ services:
   backend:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
+      target: dev
+      args:
+        BASE_IMAGE: ${BASE_IMAGE:-ghcr.io/treygilliland/hardcaml-base:latest}
     ports:
       - "8000:8000"
     volumes:
@@ -11,7 +14,18 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - UV_PROJECT_ENVIRONMENT=/opt/venv
-    command: ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    command:
+      [
+        "uv",
+        "run",
+        "uvicorn",
+        "main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--reload",
+      ]
     deploy:
       resources:
         limits:

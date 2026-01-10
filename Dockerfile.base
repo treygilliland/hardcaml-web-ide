@@ -1,10 +1,12 @@
 # Hardcaml base image with OxCaml 5.2 + Hardcaml toolchain
-# Build once: docker build -f Dockerfile.base -t hardcaml-base .
+# Built automatically by GitHub Actions on push to main
+# Manual: Go to GitHub → Actions → "Build Base Image" → Run workflow
 
 FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# System packages
 RUN apt-get update && apt-get install -y \
     opam \
     build-essential \
@@ -25,12 +27,15 @@ RUN apt-get update && apt-get install -y \
     python3-venv \
     && rm -rf /var/lib/apt/lists/*
 
+# Initialize opam
 RUN opam init --disable-sandboxing --bare -y
 
+# Create OCaml switch with OxCaml repo
 RUN opam update --all && \
     opam switch create 5.2.0+ox \
       --repos ox=git+https://github.com/oxcaml/opam-repository.git,default
 
+# Install Hardcaml and dependencies
 RUN eval $(opam env --switch 5.2.0+ox) && \
     opam install -y \
       hardcaml \
@@ -44,8 +49,23 @@ RUN eval $(opam env --switch 5.2.0+ox) && \
       re \
       rope
 
+# OCaml environment variables
 ENV OPAM_SWITCH_PREFIX=/root/.opam/5.2.0+ox
 ENV CAML_LD_LIBRARY_PATH=/root/.opam/5.2.0+ox/lib/stublibs:/root/.opam/5.2.0+ox/lib/ocaml/stublibs:/root/.opam/5.2.0+ox/lib/ocaml
 ENV OCAML_TOPLEVEL_PATH=/root/.opam/5.2.0+ox/lib/toplevel
 ENV PATH=/root/.opam/5.2.0+ox/bin:$PATH
 
+# Install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin:$PATH"
+
+# Install Python dependencies
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv
+COPY api/pyproject.toml api/uv.lock /app/
+RUN cd /app && uv sync --frozen
+
+# Copy and pre-build dune project to warm compilation cache
+COPY hardcaml/build-cache/ /opt/build-cache/
+RUN cd /opt/build-cache && dune build @runtest --force 2>/dev/null || true
+
+WORKDIR /app
