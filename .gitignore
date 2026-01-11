@@ -27,6 +27,7 @@ _build/
 *.swo
 *~
 .DS_Store
+SCRATCH.md
 
 # Docker
 *.log
