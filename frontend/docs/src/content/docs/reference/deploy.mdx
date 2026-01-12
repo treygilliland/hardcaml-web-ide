@@ -1,0 +1,122 @@
+---
+title: Deployment
+description: Deploy your own instance of Hardcaml Web IDE
+---
+
+# Deployment Guide
+
+Deploy your own instance of Hardcaml Web IDE.
+
+## Prerequisites
+
+- Docker with buildx
+- GitHub account (for container registry)
+- Railway account (or similar hosting)
+
+## Architecture
+
+```
+┌─────────────────────────────────────┐
+│         Railway / Cloud Host        │
+│  ┌─────────────────────────────┐    │
+│  │    Docker Container         │    │
+│  │  ┌───────────────────────┐  │    │
+│  │  │   FastAPI Backend     │  │    │
+│  │  │   - /compile endpoint │  │    │
+│  │  │   - Static React SPA  │  │    │
+│  │  └───────────────────────┘  │    │
+│  │  ┌───────────────────────┐  │    │
+│  │  │   OCaml Toolchain     │  │    │
+│  │  │   - OxCaml 5.2        │  │    │
+│  │  │   - Hardcaml libs     │  │    │
+│  │  └───────────────────────┘  │    │
+│  └─────────────────────────────┘    │
+└─────────────────────────────────────┘
+```
+
+## Quick Start
+
+The easiest way is to use the pre-built public images:
+
+```bash
+docker pull ghcr.io/treygilliland/hardcaml-web-ide:latest
+docker run -p 8000:8000 ghcr.io/treygilliland/hardcaml-web-ide:latest
+```
+
+## Building Your Own Images
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/treygilliland/hardcaml-web-ide
+cd hardcaml-web-ide
+```
+
+### 2. Build Images
+
+```bash
+# Build base image (OCaml toolchain)
+make build-base
+
+# Build production image
+make build-prod
+```
+
+### 3. Push to Registry
+
+```bash
+# Login to GHCR
+echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
+
+# Push images
+make push-all
+```
+
+## Railway Deployment
+
+1. **Create `railway.json`:**
+```json
+{
+  "deploy": {
+    "image": "ghcr.io/YOUR-USERNAME/hardcaml-web-ide:latest"
+  }
+}
+```
+
+2. **Deploy:**
+```bash
+railway up
+```
+
+## Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `RATE_LIMIT_PER_MINUTE` | API rate limit per IP | 10 |
+| `VITE_PUBLIC_POSTHOG_KEY` | PostHog analytics key | - |
+| `VITE_PUBLIC_POSTHOG_HOST` | PostHog host | us.i.posthog.com |
+
+## Rate Limiting
+
+The API includes built-in rate limiting. For production, also configure Cloudflare:
+
+| Rule | Path | Rate | Action |
+|------|------|------|--------|
+| Compile | `/compile` | 60/min | Block |
+| Global | `/*` | 300/min | Challenge |
+
+## Custom Domain
+
+1. Add domain in Railway dashboard
+2. Configure DNS (CNAME to Railway)
+3. Enable SSL (automatic with Cloudflare proxy)
+
+## GitHub Actions
+
+Automated builds via `.github/workflows/build-base-image.yml`:
+
+1. Triggered manually or on release
+2. Builds both base and production images
+3. Pushes to GHCR
+
+**Note:** Requires 8GB+ RAM for image builds.

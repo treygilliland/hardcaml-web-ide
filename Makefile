@@ -1,4 +1,4 @@
-.PHONY: dev up down logs clean test test-dune test-api build-base build-prod push-base push-prod push-all
+.PHONY: dev up down logs clean test test-dune test-api build-base build-prod push-base push-prod push-all docs docs-dev
 
 dev:
 	docker compose -f docker-compose.dev.yml up --build
@@ -55,3 +55,10 @@ push-prod: build-prod
 
 # Build and push both images
 push-all: push-base push-prod
+
+# Docs commands
+docs:
+	cd frontend && npx pnpm --filter @hardcaml/docs build
+
+docs-dev:
+	cd frontend && npx pnpm --filter @hardcaml/docs dev

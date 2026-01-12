@@ -1,0 +1,130 @@
+:root,
+:root[data-theme='light'],
+:root[data-theme='dark'] {
+  --sl-color-accent-low: #1a2f4a;
+  --sl-color-accent: #0066cc;
+  --sl-color-accent-high: #4da3ff;
+  --sl-color-white: #eceef2;
+  --sl-color-gray-1: #eceef2;
+  --sl-color-gray-2: #c0c2c7;
+  --sl-color-gray-3: #888b96;
+  --sl-color-gray-4: #545861;
+  --sl-color-gray-5: #353841;
+  --sl-color-gray-6: #24272f;
+  --sl-color-black: #17181c;
+  --sl-color-bg: #17181c;
+  --sl-color-bg-nav: #1a1b1f;
+  --sl-color-bg-sidebar: #17181c;
+  --sl-color-bg-inline-code: #24272f;
+  --sl-color-hairline-light: #353841;
+  --sl-color-hairline: #353841;
+  --sl-color-hairline-shade: #24272f;
+  --sl-color-text: #eceef2;
+  --sl-color-text-accent: #4da3ff;
+
+  /* Hardcaml UI theming */
+  --hardcaml-border: var(--sl-color-gray-5);
+  --hardcaml-bg-secondary: var(--sl-color-gray-6);
+  --hardcaml-bg-tertiary: var(--sl-color-black);
+  --hardcaml-bg-elevated: var(--sl-color-gray-5);
+  --hardcaml-text: var(--sl-color-gray-1);
+  --hardcaml-text-secondary: var(--sl-color-gray-3);
+  --hardcaml-text-muted: var(--sl-color-gray-4);
+  --hardcaml-accent: var(--sl-color-accent);
+  --hardcaml-accent-hover: var(--sl-color-accent-high);
+}
+
+/* Force dark background everywhere */
+html, body {
+  background-color: #17181c !important;
+}
+
+/* Header styling */
+header.header {
+  background-color: #1a1b1f !important;
+  border-bottom-color: #353841 !important;
+}
+
+/* Ensure hero title is visible */
+.hero h1 {
+  color: #eceef2 !important;
+}
+
+/* Card titles */
+.card h2, .sl-card h2 {
+  color: #eceef2 !important;
+}
+
+.playground-container {
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+}
+
+.playground-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--sl-color-gray-6);
+  border-bottom: 1px solid var(--sl-color-gray-5);
+}
+
+.playground-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--sl-color-gray-1);
+}
+
+.playground-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.playground-btn {
+  background: var(--sl-color-accent);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.playground-btn:hover {
+  background: var(--sl-color-accent-high);
+}
+
+.playground-btn-secondary {
+  background: var(--sl-color-gray-5);
+}
+
+.playground-btn-secondary:hover {
+  background: var(--sl-color-gray-4);
+}
+
+.playground-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 400px;
+}
+
+@media (max-width: 768px) {
+  .playground-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.playground-editor {
+  border-right: 1px solid var(--sl-color-gray-5);
+}
+
+@media (max-width: 768px) {
+  .playground-editor {
+    border-right: none;
+    border-bottom: 1px solid var(--sl-color-gray-5);
+  }
+}

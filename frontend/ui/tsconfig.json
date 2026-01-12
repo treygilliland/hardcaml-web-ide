@@ -1,0 +1,29 @@
+{
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"types": [
+			"vite/client"
+		],
+		"baseUrl": ".",
+		"paths": {
+			"@ui/api/*": [
+				"src/api/*"
+			],
+			"@ui/components/*": [
+				"src/components/*"
+			],
+			"@ui/hooks/*": [
+				"src/hooks/*"
+			],
+			"@ui/languages/*": [
+				"src/languages/*"
+			],
+			"@ui/shared-types/*": [
+				"src/types/*"
+			]
+		}
+	},
+	"include": [
+		"src"
+	]
+}

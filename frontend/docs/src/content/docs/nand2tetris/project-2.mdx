@@ -1,0 +1,134 @@
+---
+title: "Project 2: ALU"
+description: Build arithmetic circuits including the ALU
+---
+
+# Project 2: Boolean Arithmetic
+
+Build arithmetic circuits using the gates from Project 1.
+
+## HalfAdder
+
+Adds two bits, outputs sum and carry.
+
+| a | b | sum | carry |
+|---|---|-----|-------|
+| 0 | 0 | 0 | 0 |
+| 0 | 1 | 1 | 0 |
+| 1 | 0 | 1 | 0 |
+| 1 | 1 | 0 | 1 |
+
+```ocaml
+let create scope (i : _ I.t) : _ O.t =
+  { sum = N2t_chips.xor_ scope i.a i.b
+  ; carry = N2t_chips.and_ scope i.a i.b
+  }
+```
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_halfadder)
+
+## FullAdder
+
+Adds three bits (two inputs + carry-in).
+
+**Hint:** Chain two HalfAdders, OR the carries.
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_fulladder)
+
+## Add16
+
+16-bit adder. Use HalfAdder for bit 0, FullAdders for bits 1-15.
+
+```ocaml
+(* Ripple-carry adder *)
+let sum0, carry0 = N2t_chips.halfadder_ scope a0 b0 in
+let sum1, carry1 = N2t_chips.fulladder_ scope a1 b1 carry0 in
+(* ... continue for all bits ... *)
+```
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_add16)
+
+## Inc16
+
+Increment a 16-bit value by 1.
+
+**Hint:** `Inc16(in) = Add16(in, 1)`
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_inc16)
+
+## ALU
+
+The Arithmetic Logic Unit - the heart of the CPU.
+
+### Control Bits
+
+| Bit | Function |
+|-----|----------|
+| zx | if 1, set x = 0 |
+| nx | if 1, set x = NOT(x) |
+| zy | if 1, set y = 0 |
+| ny | if 1, set y = NOT(y) |
+| f | if 0, out = x AND y; if 1, out = x + y |
+| no | if 1, out = NOT(out) |
+
+### Output Flags
+
+- **zr** = 1 if out == 0
+- **ng** = 1 if out < 0 (MSB is 1)
+
+### Implementation Steps
+
+```ocaml
+(* 1. Zero x if zx *)
+let x1 = N2t_chips.mux16_ scope i.x (zero 16) i.zx in
+
+(* 2. Negate x if nx *)
+let x2 = N2t_chips.mux16_ scope x1 (N2t_chips.not16_ scope x1) i.nx in
+
+(* 3. Similarly for y... *)
+
+(* 4. Compute both functions *)
+let f_and = N2t_chips.and16_ scope x2 y2 in
+let f_add = N2t_chips.add16_ scope x2 y2 in
+
+(* 5. Select based on f *)
+let out1 = N2t_chips.mux16_ scope f_and f_add i.f in
+
+(* 6. Negate if no *)
+let out2 = N2t_chips.mux16_ scope out1 (N2t_chips.not16_ scope out1) i.no in
+
+(* 7. Compute flags *)
+let ng = msb out2 in
+let zr = (* out == 0 *) in
+```
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_alu)
+
+## Computing zr (zero flag)
+
+Check if all 16 bits are 0:
+
+```ocaml
+(* OR all bits together, then NOT *)
+let or_lo = N2t_chips.or8way_ scope (select out ~high:7 ~low:0) in
+let or_hi = N2t_chips.or8way_ scope (select out ~high:15 ~low:8) in
+let any_set = N2t_chips.or_ scope or_lo or_hi in
+let zr = N2t_chips.not_ scope any_set
+```
+
+## ALU Operations
+
+With the right control bits, the ALU computes:
+
+| zx | nx | zy | ny | f | no | out |
+|----|----|----|----|---|----|-----|
+| 1 | 0 | 1 | 0 | 1 | 0 | 0 |
+| 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| 1 | 1 | 1 | 0 | 1 | 0 | -1 |
+| 0 | 0 | 1 | 1 | 0 | 0 | x |
+| 0 | 0 | 1 | 1 | 1 | 1 | x+1 |
+| 0 | 0 | 0 | 0 | 1 | 0 | x+y |
+
+## Next Steps
+
+- [Project 3: Memory](/nand2tetris/project-3) - Build sequential circuits

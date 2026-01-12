@@ -1,0 +1,129 @@
+---
+title: "Project 3: Memory"
+description: Build sequential circuits including registers and RAM
+---
+
+# Project 3: Sequential Logic
+
+Build circuits that remember state across clock cycles.
+
+## Key Concept: Registers
+
+Unlike combinational circuits, sequential circuits have memory. In Hardcaml:
+
+```ocaml
+let spec = Reg_spec.create ~clock:i.clock ~clear:i.clear () in
+let stored = reg spec input_signal
+```
+
+## DFF (D Flip-Flop)
+
+The basic memory element. Output = previous input.
+
+```ocaml
+let create _scope (i : _ I.t) : _ O.t =
+  let spec = Reg_spec.create ~clock:i.clock ~clear:i.clear () in
+  { out = reg spec i.inp }
+```
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_dff)
+
+## Bit
+
+1-bit register with load enable. Only updates when load=1.
+
+```ocaml
+let create _scope (i : _ I.t) : _ O.t =
+  let spec = Reg_spec.create ~clock:i.clock ~clear:i.clear () in
+  { out = reg spec ~enable:i.load i.inp }
+```
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_bit)
+
+## Register
+
+16-bit register. Use 16 Bit chips or a single 16-bit reg:
+
+```ocaml
+{ out = reg spec ~enable:i.load i.inp }  (* inp is 16 bits *)
+```
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_register)
+
+## RAM8
+
+8 registers, addressed by 3 bits.
+
+**Structure:**
+1. DMux8Way the load signal to 8 registers
+2. 8 Registers all get the same input
+3. Mux8Way16 selects which register's output
+
+```ocaml
+let loads = N2t_chips.dmux8way_ scope i.load i.address in
+let r0 = N2t_chips.register_ scope i.clock i.clear i.inp loads.a in
+(* ... 7 more registers ... *)
+{ out = N2t_chips.mux8way16_ scope r0 r1 r2 r3 r4 r5 r6 r7 i.address }
+```
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_ram8)
+
+## Larger RAMs
+
+Build hierarchically:
+- **RAM64** = 8 × RAM8 (split 6-bit address: [0..2] + [3..5])
+- **RAM512** = 8 × RAM64
+- **RAM4K** = 8 × RAM512
+- **RAM16K** = 4 × RAM4K
+
+```ocaml
+(* RAM64: use bottom 3 bits for RAM8, top 3 for selection *)
+let addr_low = select i.address ~high:2 ~low:0 in
+let addr_high = select i.address ~high:5 ~low:3 in
+```
+
+## PC (Program Counter)
+
+16-bit counter with priority: reset > load > inc > hold
+
+```ocaml
+let create scope (i : _ I.t) : _ O.t =
+  let spec = Reg_spec.create ~clock:i.clock ~clear:i.clear () in
+  let out = reg_fb spec ~width:16 ~f:(fun feedback ->
+    let open N2t_chips in
+    (* inc: out = feedback + 1 *)
+    let incval = inc16_ scope feedback in
+    let o1 = mux16_ scope feedback incval i.inc in
+    (* load: out = input *)
+    let o2 = mux16_ scope o1 i.inp i.load in
+    (* reset: out = 0 *)
+    mux16_ scope o2 (zero 16) i.reset
+  ) in
+  { out }
+```
+
+**Note:** Use `reg_fb` for feedback loops.
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_pc)
+
+## Timing in Hardcaml
+
+**Important:** In Hardcaml simulation, values update after `Cyclesim.cycle`:
+
+```ocaml
+inputs.inp := Bits.of_int ~width:16 42;
+inputs.load := Bits.vdd;
+Cyclesim.cycle sim;
+(* Now out = 42, not the old value *)
+```
+
+This is the "post-clock-edge" view of the circuit.
+
+## Next Steps
+
+After Project 3, you have all the building blocks for a CPU:
+- Logic gates (Project 1)
+- ALU (Project 2)
+- Registers and RAM (Project 3)
+
+The CPU (Project 5) combines these to execute Hack machine code!

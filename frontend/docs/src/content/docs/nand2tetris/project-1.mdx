@@ -1,0 +1,117 @@
+---
+title: "Project 1: Logic Gates"
+description: Build basic logic gates from NAND
+---
+
+# Project 1: Boolean Logic
+
+In this project, you'll build all basic logic gates using only NAND gates.
+
+## The NAND Gate
+
+NAND is the universal gate - you can build any other gate from it:
+
+| a | b | NAND(a,b) |
+|---|---|-----------|
+| 0 | 0 | 1 |
+| 0 | 1 | 1 |
+| 1 | 0 | 1 |
+| 1 | 1 | 0 |
+
+In Hardcaml, use `N2t_chips.Nand.nand`:
+
+```ocaml
+let result = N2t_chips.Nand.nand i.a i.b
+```
+
+## Chips to Build
+
+### NOT Gate
+
+Output the inverse of input.
+
+**Hint:** `NOT(a) = NAND(a, a)`
+
+```ocaml
+let create _scope (i : _ I.t) : _ O.t =
+  { out = N2t_chips.Nand.nand i.a i.a }
+```
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_not)
+
+### AND Gate
+
+Output 1 only when both inputs are 1.
+
+**Hint:** `AND(a,b) = NOT(NAND(a,b))`
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_and)
+
+### OR Gate
+
+Output 1 when at least one input is 1.
+
+**Hint:** Use De Morgan's law: `OR(a,b) = NAND(NOT(a), NOT(b))`
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_or)
+
+### XOR Gate
+
+Output 1 when inputs differ.
+
+**Hint:** `XOR(a,b) = OR(AND(a,NOT(b)), AND(NOT(a),b))`
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_xor)
+
+### MUX (Multiplexor)
+
+Select between two inputs based on sel.
+
+```
+if sel=0 then out=a else out=b
+```
+
+**Hint:** `MUX(a,b,sel) = OR(AND(a,NOT(sel)), AND(b,sel))`
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_mux)
+
+### DMUX (Demultiplexor)
+
+Route input to one of two outputs based on sel.
+
+```
+if sel=0 then {a=in, b=0} else {a=0, b=in}
+```
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_dmux)
+
+## 16-bit Variants
+
+After building 1-bit gates, extend them to 16 bits:
+
+- **Not16** - Bitwise NOT on 16-bit input
+- **And16** - Bitwise AND of two 16-bit inputs
+- **Or16** - Bitwise OR of two 16-bit inputs
+- **Mux16** - Select between two 16-bit inputs
+
+Use `concat_msb` to combine bits:
+
+```ocaml
+let bits = List.init 16 ~f:(fun i ->
+  N2t_chips.not_ scope (bit i.a ~pos:i))
+in
+concat_msb (List.rev bits)
+```
+
+## Multi-way Chips
+
+- **Or8Way** - OR of 8 1-bit inputs
+- **Mux4Way16** - Select from 4 16-bit inputs (2-bit sel)
+- **Mux8Way16** - Select from 8 16-bit inputs (3-bit sel)
+- **DMux4Way** - Route to 1 of 4 outputs (2-bit sel)
+- **DMux8Way** - Route to 1 of 8 outputs (3-bit sel)
+
+## Next Steps
+
+Once you've completed Project 1:
+- [Project 2: ALU](/nand2tetris/project-2) - Build arithmetic circuits

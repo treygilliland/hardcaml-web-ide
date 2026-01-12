@@ -33,20 +33,19 @@ services:
           memory: 2G
 
   frontend:
-    image: node:24-alpine
-    working_dir: /app
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.dev
     ports:
       - "5173:5173"
     volumes:
+      # Mount code for live editing
+      # node_modules will be created in this mount on first pnpm install
       - ./frontend:/app
-      - ./hardcaml:/app/hardcaml
-      - frontend_node_modules:/app/node_modules
+      - ./hardcaml:/hardcaml
     environment:
       - CHOKIDAR_USEPOLLING=true
       - DOCKER_ENV=true
-    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+      - CI=true
     depends_on:
       - backend
-
-volumes:
-  frontend_node_modules:

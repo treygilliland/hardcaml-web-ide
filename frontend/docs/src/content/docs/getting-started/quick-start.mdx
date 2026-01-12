@@ -1,0 +1,89 @@
+---
+title: Quick Start
+description: Get started with Hardcaml Web IDE in minutes
+---
+
+# Quick Start
+
+The Hardcaml Web IDE runs entirely in your browser - no installation required!
+
+## Using the IDE
+
+1. **Go to** [hardcaml.tg3.dev](https://hardcaml.tg3.dev)
+2. **Select an example** from the dropdown in the top-right
+3. **Edit the code** in the editor tabs (circuit.ml, circuit.mli, test.ml)
+4. **Click Run** to compile and simulate
+
+## Understanding the Interface
+
+### Editor Tabs
+
+- **circuit.ml** - Your circuit implementation
+- **circuit.mli** - Module interface (defines I/O signals)
+- **test.ml** - Test harness with expect tests
+- **input.txt** - Optional input data for some examples
+
+### Output Panel
+
+- **Waveform** - ASCII visualization of signal values over time
+- **Output** - Test results, showing passed/failed tests and compile errors
+
+## Circuit Structure
+
+Every Hardcaml circuit follows this pattern:
+
+```ocaml
+(* Define input signals *)
+module I = struct
+  type 'a t = { clock : 'a; clear : 'a; my_input : 'a [@bits 8] }
+  [@@deriving hardcaml]
+end
+
+(* Define output signals *)
+module O = struct
+  type 'a t = { my_output : 'a [@bits 8] }
+  [@@deriving hardcaml]
+end
+
+(* Create the circuit logic *)
+let create scope (i : _ I.t) : _ O.t =
+  { my_output = (* ... your logic here ... *) }
+
+(* Wrap for hierarchy *)
+let hierarchical scope =
+  let module Scoped = Hierarchy.In_scope (I) (O) in
+  Scoped.hierarchical ~scope ~name:"my_circuit" create
+```
+
+## Writing Tests
+
+Tests use Jane Street's expect test framework:
+
+```ocaml
+let%expect_test "my_test" =
+  (* Create simulator *)
+  let module Sim = Cyclesim.With_interface (Circuit.I) (Circuit.O) in
+  let sim = Sim.create (Circuit.hierarchical (Scope.create ())) in
+  let waves, sim = Waveform.create sim in
+  let inputs = Cyclesim.inputs sim in
+  
+  (* Set inputs and run cycles *)
+  inputs.my_input := Bits.of_int ~width:8 42;
+  Cyclesim.cycle sim;
+  
+  (* Display waveform *)
+  Waveform.expect waves;
+  [%expect {| |}]  (* Fill in after first run *)
+```
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+Enter` | Run code |
+| `Ctrl+S` | Save (auto-saved to browser) |
+
+## Next Steps
+
+- [Your First Circuit](/tutorials/first-circuit) - Build a circuit step by step
+- [Nand2Tetris](/nand2tetris/overview) - Learn by building a computer

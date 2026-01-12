@@ -11,8 +11,10 @@ venv/
 
 # Node.js
 node_modules/
+.pnpm-store/
 *.log
 .npm
+.astro
 
 # OCaml/Dune
 _build/

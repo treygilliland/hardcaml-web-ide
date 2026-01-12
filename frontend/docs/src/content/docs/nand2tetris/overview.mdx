@@ -1,0 +1,85 @@
+---
+title: Nand2Tetris Overview
+description: Build a computer from NAND gates using Hardcaml
+---
+
+# Nand2Tetris in Hardcaml
+
+This section guides you through implementing the [Nand2Tetris](https://www.nand2tetris.org/) course using Hardcaml. You'll build a complete computer starting from a single NAND gate.
+
+## What is Nand2Tetris?
+
+Nand2Tetris (also known as "The Elements of Computing Systems") teaches you how computers work by having you build one from scratch:
+
+1. **Project 1** - Boolean Logic (NOT, AND, OR, XOR, MUX, DMUX)
+2. **Project 2** - Arithmetic (HalfAdder, FullAdder, ALU)
+3. **Project 3** - Memory (DFF, Register, RAM)
+4. **Project 5** - CPU and Computer
+
+## Why Hardcaml?
+
+The original N2T course uses HDL (Hardware Description Language). Hardcaml provides:
+
+- **Type safety** - Catch wiring errors at compile time
+- **Better tooling** - Real IDE with syntax highlighting
+- **Powerful testing** - Waveform visualization built-in
+- **Real HDL output** - Generate Verilog for synthesis
+
+## How It Works
+
+### The `N2t_chips` Library
+
+All chips are available through the `N2t_chips` module:
+
+```ocaml
+(* Use helper functions for concise syntax *)
+let not_a = N2t_chips.not_ scope i.a
+let and_ab = N2t_chips.and_ scope i.a i.b
+
+(* Or use modules directly *)
+let o = N2t_chips.Not.create scope { N2t_chips.Not.I.a = i.a }
+```
+
+### Exercise Structure
+
+Each chip has:
+- **Stub** - Template code you complete (Nand2Tetris exercises)
+- **Solution** - Reference implementation (Nand2Tetris Solutions)
+- **Test** - Pre-written tests to verify your implementation
+
+### Key Convention
+
+N2T and Hardcaml have different MUX conventions:
+
+| Convention | sel=0 | sel=1 |
+|------------|-------|-------|
+| N2T | out = a | out = b |
+| Hardcaml `mux2` | out = low | out = high |
+
+The `mux16_` helper follows N2T convention, so use it for clarity.
+
+## Getting Started
+
+1. Open the [IDE](https://hardcaml.tg3.dev)
+2. Select a chip from "Nand2Tetris" dropdown
+3. Implement the `create` function using `N2t_chips.Nand.nand`
+4. Click Run to test
+5. Check "Nand2Tetris Solutions" to compare
+
+## Project Overview
+
+### [Project 1: Logic Gates](/nand2tetris/project-1)
+Build all basic gates from NAND: NOT, AND, OR, XOR, MUX, DMUX, plus 16-bit variants.
+
+### [Project 2: ALU](/nand2tetris/project-2)
+Build arithmetic circuits: HalfAdder, FullAdder, Add16, Inc16, and the ALU.
+
+### [Project 3: Memory](/nand2tetris/project-3)
+Build sequential circuits: DFF, Bit, Register, RAM8 through RAM16K, and PC.
+
+## Tips for Success
+
+1. **Start simple** - NOT is just `NAND(a, a)`
+2. **Build hierarchically** - Use previous chips to build new ones
+3. **Check waveforms** - Visual debugging is your friend
+4. **Compare solutions** - Learn from the reference implementations

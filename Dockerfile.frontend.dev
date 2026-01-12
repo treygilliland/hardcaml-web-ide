@@ -1,0 +1,31 @@
+FROM node:24-alpine
+
+# Layer 1: Install pnpm (cached unless base image changes)
+RUN npm install -g pnpm
+
+WORKDIR /app
+
+# Layer 2: Copy package files only (cached unless dependencies change)
+# This layer separates dependency changes from code changes
+COPY frontend/package.json frontend/pnpm-workspace.yaml frontend/pnpm-lock.yaml ./
+COPY frontend/ui/package.json ./ui/
+COPY frontend/ide/package.json ./ide/
+COPY frontend/docs/package.json ./docs/
+
+# Layer 3: Install dependencies (cached unless package.json or lockfile changes)
+# This provides a warm cache for faster installs when volumes are mounted
+RUN pnpm install --frozen-lockfile
+
+# Layer 4: Copy workspace code (cached unless code changes)
+# Dependencies layer stays cached when only code changes
+COPY frontend/ui/ ./ui/
+COPY frontend/ide/ ./ide/
+COPY frontend/docs/ ./docs/
+COPY frontend/tsconfig.base.json ./
+
+EXPOSE 5173
+
+# On container start, volumes will mount over /app
+# pnpm install will sync dependencies to match the mounted lockfile
+# This ensures dependencies are always in sync with the workspace
+CMD ["sh", "-c", "pnpm install --frozen-lockfile && pnpm --filter @hardcaml/ide dev"]

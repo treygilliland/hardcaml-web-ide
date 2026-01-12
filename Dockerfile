@@ -18,12 +18,21 @@ RUN cd /app && uv sync --frozen
 # --- Frontend build stage ---
 FROM node:24-alpine AS frontend-builder
 
-WORKDIR /frontend
-COPY frontend/package*.json ./
-RUN npm ci
-COPY frontend/ ./
-COPY hardcaml/ ./hardcaml/
-RUN npm run build
+RUN npm install -g pnpm
+
+WORKDIR /app
+COPY frontend/package.json frontend/pnpm-workspace.yaml frontend/pnpm-lock.yaml ./
+COPY frontend/ui/package.json ./ui/
+COPY frontend/ide/package.json ./ide/
+RUN pnpm install --frozen-lockfile
+
+COPY frontend/tsconfig.base.json ./
+COPY frontend/ui/ ./ui/
+COPY frontend/ide/ ./ide/
+COPY hardcaml/ /hardcaml/
+
+WORKDIR /app/ide
+RUN pnpm build
 
 # --- Development stage ---
 FROM base AS dev
@@ -43,7 +52,7 @@ FROM base AS prod
 COPY api/ /app/
 
 # Copy built frontend
-COPY --from=frontend-builder /frontend/dist /app/static
+COPY --from=frontend-builder /app/ide/dist /app/static
 
 WORKDIR /app
 EXPOSE 8000

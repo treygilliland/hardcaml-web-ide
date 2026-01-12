@@ -1,0 +1,46 @@
+{
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+		"types": [
+			"vite/client"
+		],
+		"baseUrl": ".",
+		"paths": {
+			"@ide/*": [
+				"src/*"
+			],
+			"@ide/components/*": [
+				"src/components/*"
+			],
+			"@ide/hooks/*": [
+				"src/hooks/*"
+			],
+			"@ide/providers/*": [
+				"src/providers/*"
+			],
+			"@ide/examples/*": [
+				"src/examples/*"
+			],
+			"@ui/api/*": [
+				"../ui/src/api/*"
+			],
+			"@ui/components/*": [
+				"../ui/src/components/*"
+			],
+			"@ui/hooks/*": [
+				"../ui/src/hooks/*"
+			],
+			"@ui/languages/*": [
+				"../ui/src/languages/*"
+			],
+			"@ui/shared-types/*": [
+				"../ui/src/types/*"
+			]
+		}
+	},
+	"include": [
+		"src",
+		"../ui/src"
+	]
+}

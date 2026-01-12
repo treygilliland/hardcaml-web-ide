@@ -1,0 +1,148 @@
+---
+title: API Reference
+description: Hardcaml Web IDE API documentation
+---
+
+# API Reference
+
+The Hardcaml Web IDE backend exposes a simple REST API.
+
+## Base URL
+
+- **Production:** `https://hardcaml.tg3.dev`
+- **Development:** `http://localhost:8000`
+
+## Endpoints
+
+### POST /compile
+
+Compile and run Hardcaml code.
+
+#### Request
+
+```json
+{
+  "files": {
+    "circuit.ml": "open! Core\nopen! Hardcaml\n...",
+    "circuit.mli": "open! Hardcaml\n...",
+    "test.ml": "open! Core\n..."
+  },
+  "timeout_seconds": 60
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `files` | object | Yes | Map of filename → content |
+| `timeout_seconds` | number | No | Max execution time (default: 60) |
+
+#### Required Files
+
+- `circuit.ml` or custom name - Implementation
+- `circuit.mli` or custom name - Interface
+- `test.ml` - Test harness
+
+#### Response (Success)
+
+```json
+{
+  "success": true,
+  "output": "Test output...",
+  "waveform": "┌Signals────────┐┌Waves...",
+  "waveform_vcd": "$timescale 1ns $end...",
+  "compile_time_ms": 1234,
+  "run_time_ms": 567,
+  "tests_passed": 3,
+  "tests_failed": 0
+}
+```
+
+#### Response (Compile Error)
+
+```json
+{
+  "success": false,
+  "stage": "compile",
+  "error_type": "compile_error",
+  "error_message": "File \"circuit.ml\", line 10..."
+}
+```
+
+#### Response (Rate Limited)
+
+```json
+{
+  "success": false,
+  "error_type": "rate_limit",
+  "error_message": "Too many builds. Please wait..."
+}
+```
+
+HTTP Status: `429`
+
+### GET /health
+
+Health check endpoint.
+
+#### Response
+
+```json
+{
+  "status": "healthy"
+}
+```
+
+## Rate Limiting
+
+- **Default:** 10 requests/minute per IP
+- **Configurable:** `RATE_LIMIT_PER_MINUTE` env var
+- **Response:** HTTP 429 when exceeded
+
+## CORS
+
+The API allows cross-origin requests from any origin.
+
+## Using from JavaScript
+
+```javascript
+async function compileCode(circuit, interface_, test) {
+  const response = await fetch('https://hardcaml.tg3.dev/compile', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      files: {
+        'circuit.ml': circuit,
+        'circuit.mli': interface_,
+        'test.ml': test
+      }
+    })
+  });
+  
+  if (response.status === 429) {
+    throw new Error('Rate limited');
+  }
+  
+  return response.json();
+}
+```
+
+## Using the Shared UI Components
+
+If you're building a React application, use the `@hardcaml/ui` package:
+
+```tsx
+import { OcamlEditor, OutputPanel, useCompiler } from '@hardcaml/ui';
+
+function MyPlayground() {
+  const [code, setCode] = useState('...');
+  const compiler = useCompiler({ apiBase: 'https://hardcaml.tg3.dev' });
+  
+  return (
+    <>
+      <OcamlEditor value={code} onChange={setCode} />
+      <button onClick={() => compiler.compile({ ... })}>Run</button>
+      <OutputPanel result={compiler.result} />
+    </>
+  );
+}
+```

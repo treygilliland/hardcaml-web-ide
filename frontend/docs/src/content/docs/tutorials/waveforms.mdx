@@ -1,0 +1,80 @@
+---
+title: Understanding Waveforms
+description: Learn to read and interpret Hardcaml waveform output
+---
+
+# Understanding Waveforms
+
+Waveforms are the primary way to debug and verify digital circuits. They show how signal values change over time (clock cycles).
+
+## Reading Waveforms
+
+Hardcaml's waveform output uses ASCII art:
+
+```
+┌Signals────────┐┌Waves──────────────────────────────────────────────┐
+│clock          ││┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──│
+│               ││   └──┘  └──┘  └──┘  └──┘  └──┘  └──┘  └──┘  └──┘  │
+│clear          ││                                                   │
+│               ││────────────────────────────────────────────────── │
+│enable         ││────────────────────────────────────────────────── │
+│               ││                                                   │
+│               ││────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬─│
+│out            ││ 00 │ 01 │ 02 │ 03 │ 04 │ 05 │ 06 │ 07 │ 08 │ 09 │ │
+│               ││────┴────┴────┴────┴────┴────┴────┴────┴────┴────┴─│
+└───────────────┘└───────────────────────────────────────────────────┘
+```
+
+### Signal Types
+
+**1-bit signals** show high/low transitions:
+- `──────` - Signal is high (1)
+- `      ` (blank) - Signal is low (0)
+- `┌──┐  ┌──┐` - Clock toggling
+
+**Multi-bit signals** show hex values:
+- `│ 00 │ 01 │ 02 │` - Values in each cycle
+- `────┴────┴────` - Value changes
+
+## Customizing Display
+
+Control waveform appearance with options:
+
+```ocaml
+Waveform.expect 
+  ~display_height:20       (* More vertical space *)
+  ~display_width:80        (* Wider display *)
+  ~wave_width:2            (* Wider waves per cycle *)
+  waves
+```
+
+## Selecting Signals
+
+By default, all signals are shown. Select specific signals:
+
+```ocaml
+Waveform.expect 
+  ~display_rules:
+    [ Display_rule.port_name_is "out"
+    ; Display_rule.port_name_is "enable"
+    ]
+  waves
+```
+
+## Timing Diagram Tips
+
+1. **Count cycles** - Each vertical bar marks a clock edge
+2. **Watch edges** - Outputs change after the clock edge that triggered them
+3. **Check setup** - Inputs must be stable before the clock edge
+
+## VCD Export
+
+For complex debugging, download VCD files and open in GTKWave:
+
+1. Click **Download VCD** in the IDE
+2. Open in GTKWave or other waveform viewer
+3. Zoom, measure, and analyze signals
+
+## Next Steps
+
+- [Nand2Tetris](/nand2tetris/overview) - Apply these skills building real circuits

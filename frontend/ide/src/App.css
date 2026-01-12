@@ -1,0 +1,17 @@
+/**
+ * App layout styles
+ * Component-specific styles live in colocated .module.scss files
+ */
+
+/* Layout */
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}

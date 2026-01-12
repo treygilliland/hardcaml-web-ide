@@ -1,0 +1,104 @@
+---
+title: Introduction
+description: Learn hardware design with Hardcaml in your browser
+---
+
+import { Playground } from '@components/Playground';
+
+# Welcome to Hardcaml Web IDE
+
+Hardcaml Web IDE is a browser-based environment for learning and experimenting with hardware design using [Hardcaml](https://github.com/janestreet/hardcaml), Jane Street's OCaml library for digital circuit design.
+
+## What is Hardcaml?
+
+Hardcaml is a powerful library for describing, simulating, and generating digital hardware. It provides:
+
+- **Type-safe circuit descriptions** - Catch errors at compile time
+- **Simulation** - Test your circuits without physical hardware
+- **Waveform visualization** - See signal behavior over time
+- **RTL generation** - Export to Verilog for synthesis
+
+## What can you do here?
+
+### Learn Hardcaml
+
+Work through interactive tutorials that teach you hardware design concepts using real, runnable code.
+
+### Complete Nand2Tetris
+
+Implement the entire Nand2Tetris course in Hardcaml - build a computer from NAND gates up to a CPU.
+
+### Experiment
+
+Try out circuit ideas quickly without any local setup. The IDE compiles and simulates your code in the cloud.
+
+## Quick Example
+
+Here's a simple 8-bit counter:
+
+<Playground
+  client:only="react"
+  title="8-bit Counter"
+  initialCode={`open! Core
+open! Hardcaml
+open! Signal
+
+module I = struct
+  type 'a t = { clock : 'a; clear : 'a; enable : 'a }
+  [@@deriving hardcaml]
+end
+
+module O = struct
+  type 'a t = { out : 'a [@bits 8] }
+  [@@deriving hardcaml]
+end
+
+let create scope (i : _ I.t) : _ O.t =
+  let spec = Reg_spec.create ~clock:i.clock ~clear:i.clear () in
+  let counter = reg_fb spec ~width:8 ~f:(fun fb ->
+    mux2 i.enable (fb +:. 1) fb)
+  in
+  { out = counter }
+;;
+
+let hierarchical scope =
+  let module Scoped = Hierarchy.In_scope (I) (O) in
+  Scoped.hierarchical ~scope ~name:"counter" create
+;;`}
+  testCode={`open! Core
+open! Hardcaml
+open Hardcaml_waveterm
+
+let%expect_test "counter" =
+  let module Sim = Cyclesim.With_interface (Circuit.I) (Circuit.O) in
+  let sim = Sim.create (Circuit.hierarchical (Scope.create ())) in
+  let waves, sim = Waveform.create sim in
+  let inputs = Cyclesim.inputs sim in
+  inputs.enable := Bits.vdd;
+  for _ = 0 to 15 do
+    Cyclesim.cycle sim
+  done;
+  Waveform.expect ~display_height:12 waves;
+  [%expect {|
+    ┌Signals────────┐┌Waves──────────────────────────────────────────────┐
+    │clock          ││┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──│
+    │               ││   └──┘  └──┘  └──┘  └──┘  └──┘  └──┘  └──┘  └──┘  │
+    │clear          ││                                                   │
+    │               ││────────────────────────────────────────────────── │
+    │enable         ││────────────────────────────────────────────────── │
+    │               ││                                                   │
+    │               ││────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬─│
+    │out            ││ 00 │ 01 │ 02 │ 03 │ 04 │ 05 │ 06 │ 07 │ 08 │ 09 │ │
+    │               ││────┴────┴────┴────┴────┴────┴────┴────┴────┴────┴─│
+    └───────────────┘└───────────────────────────────────────────────────┘
+  |}]
+;;`}
+/>
+
+Click **Run** to compile and simulate the counter, or **Open in IDE** to experiment in the full editor.
+
+## Next Steps
+
+- [Quick Start](/getting-started/quick-start) - Get up and running
+- [Your First Circuit](/tutorials/first-circuit) - Step-by-step tutorial
+- [Nand2Tetris](/nand2tetris/overview) - Build a computer from scratch

@@ -1,0 +1,184 @@
+.panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-bottom: 1px solid var(--hardcaml-border, #333);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.waveformSection {
+  flex: 2;
+  min-height: 0;
+}
+
+.outputSection {
+  flex: 1;
+  min-height: 120px;
+}
+
+.sectionHeader {
+  background: var(--hardcaml-bg-secondary, #1e1e1e);
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--hardcaml-border, #333);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sectionTitle {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--hardcaml-text, #e0e0e0);
+}
+
+.sectionStatus {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sectionActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusBadge {
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+
+  &.success {
+    background: rgba(76, 175, 80, 0.15);
+    color: #4caf50;
+  }
+
+  &.error {
+    background: rgba(244, 67, 54, 0.15);
+    color: #f44336;
+  }
+}
+
+.timingBadge {
+  font-size: 11px;
+  color: var(--hardcaml-text-secondary, #888);
+  padding: 3px 8px;
+  background: var(--hardcaml-bg-elevated, #2a2a2a);
+  border-radius: 4px;
+}
+
+.outputContent {
+  flex: 1;
+  overflow: auto;
+  padding: 12px 16px;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.waveformContent {
+  flex: 1;
+  overflow: auto;
+  padding: 12px 16px;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 11px;
+  line-height: 1.15;
+  white-space: pre;
+  background: var(--hardcaml-bg-tertiary, #141414);
+}
+
+.placeholder {
+  color: var(--hardcaml-text-muted, #666);
+  font-style: italic;
+}
+
+.errorMessage {
+  color: #f44336;
+  background: rgba(244, 67, 54, 0.1);
+  padding: 12px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 13px;
+}
+
+.resultOutput {
+  color: var(--hardcaml-text, #e0e0e0);
+  background: var(--hardcaml-bg-elevated, #2a2a2a);
+  padding: 12px;
+  border-radius: 4px;
+}
+
+.iconBtn {
+  background: transparent;
+  color: var(--hardcaml-text-secondary, #888);
+  padding: 4px 8px;
+  font-size: 16px;
+  font-weight: 400;
+  border: none;
+  min-width: 28px;
+  position: relative;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: var(--hardcaml-bg-elevated, #2a2a2a);
+    color: #fff;
+  }
+
+  &::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 8px;
+    background: #000;
+    color: #fff;
+    font-size: 11px;
+    white-space: nowrap;
+    border-radius: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.1s;
+    margin-top: 4px;
+    z-index: 100;
+  }
+
+  &:hover::after {
+    opacity: 1;
+  }
+}
+
+.downloadBtn {
+  background: var(--hardcaml-accent, #0066cc);
+  color: #fff;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) {
+    background: var(--hardcaml-accent-hover, #0055aa);
+  }
+}

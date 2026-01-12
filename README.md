@@ -13,20 +13,32 @@ make up       # Production (:8000)
 ## Project Structure
 
 ```
-├── api/                    # FastAPI backend
-│   ├── main.py
-│   ├── compiler.py
-│   ├── test_runner.py
-│   └── tests/
-├── frontend/               # React + Vite
-│   └── src/examples/
-├── hardcaml/
+├── api/                    # FastAPI compilation and server backend
+├── frontend/               # pnpm workspace (see frontend/README.md)
+│   ├── ui/                 # @hardcaml/ui - shared components
+│   ├── ide/                # @hardcaml/ide - main IDE app
+│   └── docs/               # @hardcaml/docs - Astro docs site
+├── hardcaml/               # hardcaml source code
 │   ├── examples/           # Example circuits
 │   └── build-cache/        # Pre-built dune project
 ├── Dockerfile              # App image (uses base)
 ├── Dockerfile.base         # Base image (OCaml toolchain)
 └── .github/workflows/      # GitHub Actions (builds base image)
 ```
+
+## Architecture
+
+The project is split into:
+
+1. **Python FastAPI Backend** (`api/`) - Compiles and runs Hardcaml circuits, serves the IDE app in production
+2. **Frontend Workspace** (`frontend/`) - pnpm monorepo containing:
+   - `@hardcaml/ui` - Shared React components, hooks, and API client
+   - `@hardcaml/ide` - Main IDE application (React + Vite)
+   - `@hardcaml/docs` - Documentation site (Astro Starlight)
+
+The frontend uses a pnpm workspace to share code between the IDE and docs site. The IDE app is bundled with the API in production, while the docs site is deployed separately to GitHub Pages.
+
+See [frontend/README.md](frontend/README.md) for details on the frontend architecture and development workflow.
 
 ## Development
 
@@ -57,11 +69,16 @@ make test-api    # API integration tests (~25s)
 
 ## Frontend
 
-Built with React + TypeScript + Vite. The frontend includes analytics (PostHog) to track usage and improve the experience.
+The frontend is a pnpm workspace containing three packages:
+- **IDE** - React + TypeScript + Vite application
+- **Docs** - Astro Starlight documentation site
+- **UI** - Shared components and utilities
+
+The workspace structure allows code sharing between the IDE and docs while keeping them as separate applications. See [frontend/README.md](frontend/README.md) for architecture details and development instructions.
 
 ### Analytics
 
-Analytics is enabled by default in production but automatically disabled on localhost.
+Analytics (PostHog) is enabled by default in production but automatically disabled on localhost.
 To explicitly disable it, set `VITE_POSTHOG_ENABLED=false` in your environment.
 
 To connect to a PostHog instance, set:
