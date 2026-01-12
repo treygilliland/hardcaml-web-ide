@@ -28,6 +28,7 @@ COPY frontend/docs/package.json ./docs/
 RUN pnpm install --frozen-lockfile
 
 COPY frontend/tsconfig.base.json ./
+COPY frontend/hardcaml-simple-transparent.png ./
 COPY frontend/ui/ ./ui/
 COPY frontend/ide/ ./ide/
 COPY hardcaml/ /hardcaml/
