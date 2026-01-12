@@ -28,7 +28,6 @@ COPY frontend/docs/package.json ./docs/
 RUN pnpm install --frozen-lockfile
 
 COPY frontend/tsconfig.base.json ./
-COPY frontend/hardcaml-simple-transparent.png ./
 COPY frontend/ui/ ./ui/
 COPY frontend/ide/ ./ide/
 COPY hardcaml/ /hardcaml/
@@ -45,7 +44,7 @@ COPY api/ /app/
 WORKDIR /app
 EXPOSE 8000
 
-CMD ["sh", "-c", "uv run uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --reload"]
+CMD ["sh", "-c", "exec uv run uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --reload"]
 
 # --- Production stage ---
 FROM base AS prod
@@ -59,4 +58,4 @@ COPY --from=frontend-builder /app/ide/dist /app/static
 WORKDIR /app
 EXPOSE 8000
 
-CMD ["sh", "-c", "uv run uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "-c", "exec uv run uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]

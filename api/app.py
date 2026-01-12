@@ -44,6 +44,10 @@ def create_app() -> FastAPI:
         async def serve_frontend():
             return FileResponse(STATIC_DIR / "index.html")
 
+        @app.get("/favicon.png")
+        async def serve_favicon():
+            return FileResponse(STATIC_DIR / "favicon.png")
+
     return app
 
 

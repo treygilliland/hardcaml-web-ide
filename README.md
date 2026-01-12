@@ -26,22 +26,22 @@ make clean    # Stop services and remove volumes
 ## Project Structure
 
 ```
-├── api/                    # FastAPI compilation and server backend
-├── frontend/               # pnpm workspace (see frontend/README.md)
-│   ├── ui/                 # @hardcaml/ui - shared components
-│   ├── ide/                # @hardcaml/ide - main IDE app
-│   └── docs/               # @hardcaml/docs - Astro docs site
-├── hardcaml/               # hardcaml source code
-│   ├── examples/           # Example circuits
-│   └── build-cache/        # Pre-built dune project
-├── Dockerfile              # App image (uses base)
-├── Dockerfile.base         # Base image (OCaml toolchain)
-├── docker-compose.yml      # Production services
-├── docker-compose.dev.yml  # Development services
+├── api/                  		# FastAPI compilation and server backend
+├── frontend/             		# pnpm workspace (see frontend/README.md)
+│   ├── ui/               		# @hardcaml/ui    - shared components
+│   ├── ide/              		# @hardcaml/ide   - main IDE app
+│   └── docs/             		# @hardcaml/docs  - Astro docs site
+├── hardcaml/             		# hardcaml source code
+│   ├── examples/         		# Example circuits
+│   └── build-cache/      		# Pre-built dune project
+├── Dockerfile            		# App image (uses base)
+├── Dockerfile.base       		# Base image (OCaml toolchain)
+├── docker-compose.yml    		# Production services
+├── docker-compose.dev.yml    # Development services
 ├── frontend/
 │   ├── Dockerfile.docs         # Docs site image
 │   └── Dockerfile.frontend.dev # Frontend dev image
-└── .github/workflows/      # GitHub Actions (builds base image)
+└── .github/workflows/          # GitHub Actions (builds base image)
 ```
 
 ## Architecture
@@ -57,6 +57,23 @@ The project is split into:
 The frontend uses a pnpm workspace to share code between the IDE and docs site. The IDE app is bundled with the API in production, while the docs site runs as a separate service in both development and production.
 
 See [frontend/README.md](frontend/README.md) for details on the frontend architecture and development workflow.
+
+## Ports
+
+### Development (`make dev`)
+
+| Service  | Port | Description                      |
+| -------- | ---- | -------------------------------- |
+| Backend  | 8000 | FastAPI server (hot reload)      |
+| Frontend | 5173 | Vite dev server (IDE)            |
+| Docs     | 4321 | Astro dev server (documentation) |
+
+### Production (`make up`)
+
+| Service | Port | Description                       |
+| ------- | ---- | --------------------------------- |
+| IDE/API | 8000 | FastAPI serving IDE + compile API |
+| Docs    | 8080 | nginx serving static docs site    |
 
 ## Development
 
