@@ -1,4 +1,21 @@
-# Railway Deployment
+# Deployment
+
+## Rate Limiting
+
+The API includes built-in rate limiting (10 builds/min per IP). Configure via `RATE_LIMIT_PER_MINUTE` env var.
+
+### Cloudflare Rate Limiting (Recommended)
+
+Add these rules in Cloudflare Dashboard (Security > WAF > Rate limiting rules):
+
+| Rule             | Path       | Rate               | Action    |
+| ---------------- | ---------- | ------------------ | --------- |
+| Compile endpoint | `/compile` | 60 req/min per IP  | Block     |
+| Global fallback  | `/*`       | 300 req/min per IP | Challenge |
+
+This provides defense-in-depth - Cloudflare blocks obvious abuse before it hits Railway.
+
+## Railway Deployment
 
 Railway has build timeouts, so we use a pre-built base image on GitHub Container Registry.
 

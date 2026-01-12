@@ -1,7 +1,8 @@
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { Header } from "./components/Header/Header";
 import { EditorPanel } from "./components/EditorPanel/EditorPanel";
 import { OutputPanel } from "./components/OutputPanel/OutputPanel";
+import { Toast } from "./components/Toast/Toast";
 import {
   examples,
   getExample,
@@ -17,6 +18,15 @@ const initialKey = getInitialExampleKey();
 function App() {
   const editor = useEditorState(examples[initialKey], initialKey);
   const compiler = useCompiler();
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (compiler.result?.error_type === "rate_limit") {
+      setToastMessage(
+        compiler.result.error_message || "Rate limit exceeded. Please wait."
+      );
+    }
+  }, [compiler.result]);
 
   const handleExampleChange = useCallback(
     (key: ExampleKey) => {
@@ -75,6 +85,13 @@ function App() {
         />
         <OutputPanel result={compiler.result} />
       </main>
+      {toastMessage && (
+        <Toast
+          message={toastMessage}
+          type="warning"
+          onDismiss={() => setToastMessage(null)}
+        />
+      )}
     </div>
   );
 }

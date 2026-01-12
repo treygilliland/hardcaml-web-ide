@@ -3,9 +3,9 @@ API integration test - validates the compile endpoint works end-to-end.
 """
 
 import pytest
+from app import app
 from fastapi.testclient import TestClient
-
-from main import app
+from rate_limit import limiter
 
 from .examples import get_example_by_id
 
@@ -13,6 +13,7 @@ from .examples import get_example_by_id
 @pytest.fixture(scope="function")
 def client():
     """Create a fresh test client for each test."""
+    limiter.reset()
     with TestClient(app, raise_server_exceptions=False) as client:
         yield client
 

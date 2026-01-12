@@ -66,6 +66,15 @@ export async function compileCode(
       body: JSON.stringify(request),
     });
 
+    if (response.status === 429) {
+      return {
+        success: false,
+        error_type: "rate_limit",
+        error_message:
+          "Too many builds. Please wait a minute before trying again.",
+      };
+    }
+
     if (!response.ok) {
       return {
         success: false,
