@@ -24,6 +24,7 @@ WORKDIR /app
 COPY frontend/package.json frontend/pnpm-workspace.yaml frontend/pnpm-lock.yaml ./
 COPY frontend/ui/package.json ./ui/
 COPY frontend/ide/package.json ./ide/
+COPY frontend/docs/package.json ./docs/
 RUN pnpm install --frozen-lockfile
 
 COPY frontend/tsconfig.base.json ./

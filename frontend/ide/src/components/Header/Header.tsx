@@ -1,5 +1,8 @@
 import { ExampleSelector } from "@ide/components/ExampleSelector";
-import { getExamplesByCategory, type ExampleKey } from "@ide/examples/hardcaml-examples";
+import {
+  getExamplesByCategory,
+  type ExampleKey,
+} from "@ide/examples/hardcaml-examples";
 import styles from "./Header.module.scss";
 
 interface HeaderProps {
@@ -9,18 +12,39 @@ interface HeaderProps {
 }
 
 const examplesByCategory = getExamplesByCategory();
+const DOCS_URL =
+  import.meta.env.VITE_DOCS_URL || "https://docs.hardcaml.tg3.dev";
 
-export function Header({ exampleKey, onExampleChange, onResetAll }: HeaderProps) {
+export function Header({
+  exampleKey,
+  onExampleChange,
+  onResetAll,
+}: HeaderProps) {
   const handleResetAll = () => {
-    if (confirm("Reset all examples to their original state? This cannot be undone.")) {
+    if (
+      confirm(
+        "Reset all examples to their original state? This cannot be undone."
+      )
+    ) {
       onResetAll();
     }
   };
 
   return (
     <header className={styles.header}>
-      <h1>🔧 Hardcaml Web IDE</h1>
+      <a href="/" className={styles.siteTitle}>
+        <img src="/favicon.png" alt="Hardcaml Logo" className={styles.logo} />
+        <span>Hardcaml Web IDE</span>
+      </a>
       <div className={styles.actions}>
+        <a
+          href={DOCS_URL}
+          className={styles.docsLink}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          📚 Docs
+        </a>
         <button
           className={styles.resetAllBtn}
           onClick={handleResetAll}

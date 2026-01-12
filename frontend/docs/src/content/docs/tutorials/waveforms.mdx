@@ -3,8 +3,6 @@ title: Understanding Waveforms
 description: Learn to read and interpret Hardcaml waveform output
 ---
 
-# Understanding Waveforms
-
 Waveforms are the primary way to debug and verify digital circuits. They show how signal values change over time (clock cycles).
 
 ## Reading Waveforms
@@ -28,11 +26,13 @@ Hardcaml's waveform output uses ASCII art:
 ### Signal Types
 
 **1-bit signals** show high/low transitions:
+
 - `──────` - Signal is high (1)
 - `      ` (blank) - Signal is low (0)
 - `┌──┐  ┌──┐` - Clock toggling
 
 **Multi-bit signals** show hex values:
+
 - `│ 00 │ 01 │ 02 │` - Values in each cycle
 - `────┴────┴────` - Value changes
 
@@ -41,7 +41,7 @@ Hardcaml's waveform output uses ASCII art:
 Control waveform appearance with options:
 
 ```ocaml
-Waveform.expect 
+Waveform.expect
   ~display_height:20       (* More vertical space *)
   ~display_width:80        (* Wider display *)
   ~wave_width:2            (* Wider waves per cycle *)
@@ -53,7 +53,7 @@ Waveform.expect
 By default, all signals are shown. Select specific signals:
 
 ```ocaml
-Waveform.expect 
+Waveform.expect
   ~display_rules:
     [ Display_rule.port_name_is "out"
     ; Display_rule.port_name_is "enable"

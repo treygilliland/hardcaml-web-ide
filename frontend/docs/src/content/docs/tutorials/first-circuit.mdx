@@ -3,13 +3,12 @@ title: Your First Circuit
 description: Build your first Hardcaml circuit step by step
 ---
 
-# Your First Circuit
-
 In this tutorial, you'll build a simple combinational circuit that performs basic logic operations.
 
 ## What We'll Build
 
 A circuit that takes two 1-bit inputs `a` and `b` and outputs:
+
 - `and_out` - a AND b
 - `or_out` - a OR b
 - `xor_out` - a XOR b
@@ -45,6 +44,7 @@ let create _scope (i : _ I.t) : _ O.t =
 ```
 
 Hardcaml provides operators for common logic operations:
+
 - `&:` - bitwise AND
 - `|:` - bitwise OR
 - `^:` - bitwise XOR
@@ -60,19 +60,19 @@ let%expect_test "logic_gates" =
   let sim = Sim.create (Circuit.hierarchical (Scope.create ())) in
   let waves, sim = Waveform.create sim in
   let inputs = Cyclesim.inputs sim in
-  
+
   (* Test all combinations *)
   let test a b =
     inputs.a := Bits.of_int ~width:1 a;
     inputs.b := Bits.of_int ~width:1 b;
     Cyclesim.cycle sim
   in
-  
+
   test 0 0;
   test 0 1;
   test 1 0;
   test 1 1;
-  
+
   Waveform.expect waves;
   [%expect {| |}]
 ```
@@ -88,6 +88,7 @@ let%expect_test "logic_gates" =
 ## Try It
 
 Go to the [IDE](https://hardcaml.tg3.dev#counter) and:
+
 1. Replace the counter code with the logic gates implementation
 2. Click Run to see the waveform
 3. Verify AND, OR, XOR work correctly for all inputs

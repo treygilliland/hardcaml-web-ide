@@ -3,10 +3,6 @@ title: Introduction
 description: Learn hardware design with Hardcaml in your browser
 ---
 
-import { Playground } from '@components/Playground';
-
-# Welcome to Hardcaml Web IDE
-
 Hardcaml Web IDE is a browser-based environment for learning and experimenting with hardware design using [Hardcaml](https://github.com/janestreet/hardcaml), Jane Street's OCaml library for digital circuit design.
 
 ## What is Hardcaml?
@@ -36,10 +32,8 @@ Try out circuit ideas quickly without any local setup. The IDE compiles and simu
 
 Here's a simple 8-bit counter:
 
-<Playground
-  client:only="react"
-  title="8-bit Counter"
-  initialCode={`open! Core
+```ocaml
+open! Core
 open! Hardcaml
 open! Signal
 
@@ -64,38 +58,10 @@ let create scope (i : _ I.t) : _ O.t =
 let hierarchical scope =
   let module Scoped = Hierarchy.In_scope (I) (O) in
   Scoped.hierarchical ~scope ~name:"counter" create
-;;`}
-  testCode={`open! Core
-open! Hardcaml
-open Hardcaml_waveterm
+;;
+```
 
-let%expect_test "counter" =
-  let module Sim = Cyclesim.With_interface (Circuit.I) (Circuit.O) in
-  let sim = Sim.create (Circuit.hierarchical (Scope.create ())) in
-  let waves, sim = Waveform.create sim in
-  let inputs = Cyclesim.inputs sim in
-  inputs.enable := Bits.vdd;
-  for _ = 0 to 15 do
-    Cyclesim.cycle sim
-  done;
-  Waveform.expect ~display_height:12 waves;
-  [%expect {|
-    ┌Signals────────┐┌Waves──────────────────────────────────────────────┐
-    │clock          ││┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──│
-    │               ││   └──┘  └──┘  └──┘  └──┘  └──┘  └──┘  └──┘  └──┘  │
-    │clear          ││                                                   │
-    │               ││────────────────────────────────────────────────── │
-    │enable         ││────────────────────────────────────────────────── │
-    │               ││                                                   │
-    │               ││────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬─│
-    │out            ││ 00 │ 01 │ 02 │ 03 │ 04 │ 05 │ 06 │ 07 │ 08 │ 09 │ │
-    │               ││────┴────┴────┴────┴────┴────┴────┴────┴────┴────┴─│
-    └───────────────┘└───────────────────────────────────────────────────┘
-  |}]
-;;`}
-/>
-
-Click **Run** to compile and simulate the counter, or **Open in IDE** to experiment in the full editor.
+Try it out in the [IDE](https://hardcaml.tg3.dev)!
 
 ## Next Steps
 

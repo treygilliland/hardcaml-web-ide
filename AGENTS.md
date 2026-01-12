@@ -16,3 +16,6 @@ See [docs/](docs/) for additional documentation:
 - No barrel files (`index.ts` that just re-export) - use descriptive filenames instead
 - `index.ts` should only be used as an actual index when needed (e.g., package entry points)
 - Prefer aptly named files: `useCompiler.ts` over `hooks/index.ts`
+
+### Environment Variables
+- When adding or changing environment variables, update **both** `README.md` and `.env.example`
