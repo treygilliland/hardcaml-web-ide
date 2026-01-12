@@ -8,6 +8,13 @@
 ARG BASE_IMAGE=ghcr.io/treygilliland/hardcaml-base:latest
 FROM ${BASE_IMAGE} AS base
 
+# Install uv and Python deps
+RUN curl -LsSf https://astral.sh/uv/0.9.24/install.sh | sh
+ENV PATH="/root/.local/bin:$PATH"
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv
+COPY api/pyproject.toml api/uv.lock /app/
+RUN cd /app && uv sync --frozen
+
 # --- Frontend build stage ---
 FROM node:24-alpine AS frontend-builder
 
@@ -27,7 +34,7 @@ COPY api/ /app/
 WORKDIR /app
 EXPOSE 8000
 
-CMD uv run uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --reload
+CMD ["sh", "-c", "uv run uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --reload"]
 
 # --- Production stage ---
 FROM base AS prod
@@ -41,4 +48,4 @@ COPY --from=frontend-builder /frontend/dist /app/static
 WORKDIR /app
 EXPOSE 8000
 
-CMD uv run uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
+CMD ["sh", "-c", "uv run uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]

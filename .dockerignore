@@ -2,12 +2,10 @@
 .git
 .gitignore
 
-# Documentation
-README.md
-DEPLOY.md
-Nand2Tetris.md
+# OS
+.DS_Store
 
-# Environment files
+# Environment
 .env
 .env.local
 
@@ -20,12 +18,10 @@ __pycache__
 *.pyc
 .pytest_cache
 .coverage
-api/__pycache__
-api/tests/__pycache__
 
-# OS
-.DS_Store
-
-# Build artifacts (these are rebuilt in containers)
+# Repo-specific
+README.md
+AGENTS.md
+docs/
 hardcaml/build-cache/_build
 frontend/dist

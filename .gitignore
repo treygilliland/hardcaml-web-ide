@@ -11,7 +11,6 @@ venv/
 
 # Node.js
 node_modules/
-frontend/dist/
 *.log
 .npm
 
@@ -26,14 +25,14 @@ _build/
 *.swp
 *.swo
 *~
-.DS_Store
-SCRATCH.md
 
-# Docker
-*.log
+# OS
+.DS_Store
 
 # Environment
 .env
 .env.local
 
-
+# Repo-specific
+frontend/dist/
+SCRATCH.md
