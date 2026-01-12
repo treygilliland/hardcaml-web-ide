@@ -23,9 +23,9 @@ async def rate_limit_exceeded_handler(request: Request, exc: Exception) -> Respo
     """Custom handler for rate limit exceeded errors."""
     client_id = get_client_id(request)
     logger.warning(f"Rate limit exceeded for client {client_id}")
-    
+
     retry_after = getattr(exc, "retry_after", 60)
-    
+
     return JSONResponse(
         status_code=429,
         headers={"Retry-After": str(retry_after)},

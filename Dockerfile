@@ -1,5 +1,5 @@
 # Hardcaml Web IDE - Production Dockerfile
-# Uses pre-built base image from ghcr.io (default: ghcr.io/treygilliland/hardcaml-base:latest)
+# Uses pre-built base image from ghcr.io/treygilliland (publicly available)
 #
 # Usage:
 #   docker build -t hardcaml-web-ide .
@@ -27,7 +27,7 @@ COPY api/ /app/
 WORKDIR /app
 EXPOSE 8000
 
-CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD uv run uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --reload
 
 # --- Production stage ---
 FROM base AS prod
@@ -41,4 +41,4 @@ COPY --from=frontend-builder /frontend/dist /app/static
 WORKDIR /app
 EXPOSE 8000
 
-CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD uv run uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}

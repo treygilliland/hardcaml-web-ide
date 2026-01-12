@@ -1,19 +1,12 @@
-name: Build Base Image
+name: Build and Push Images
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - "Dockerfile.base"
-      - "api/pyproject.toml"
-      - "api/uv.lock"
-      - "hardcaml/build-cache/**"
-    branches:
-      - main
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/hardcaml-base
+  BASE_IMAGE_NAME: ${{ github.repository_owner }}/hardcaml-base
+  PROD_IMAGE_NAME: ${{ github.repository_owner }}/hardcaml-web-ide
 
 jobs:
   build-and-push:
@@ -36,23 +29,47 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata
-        id: meta
+      - name: Extract base image metadata
+        id: base-meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}
           tags: |
             type=raw,value=latest
             type=sha,prefix=
 
-      - name: Build and push
+      - name: Build and push base image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile.base
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.base-meta.outputs.tags }}
+          labels: ${{ steps.base-meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Extract production image metadata
+        id: prod-meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.PROD_IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=
+
+      - name: Build and push production image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          target: prod
+          build-args: |
+            BASE_IMAGE=${{ env.REGISTRY }}/${{ env.BASE_IMAGE_NAME }}:latest
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.prod-meta.outputs.tags }}
+          labels: ${{ steps.prod-meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

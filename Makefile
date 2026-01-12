@@ -1,4 +1,4 @@
-.PHONY: dev up down logs clean test test-dune test-api build-base-local
+.PHONY: dev up down logs clean test test-dune test-api build-base build-prod push-base push-prod push-all
 
 dev:
 	docker compose -f docker-compose.dev.yml up --build
@@ -25,6 +25,33 @@ test-dune:
 test-api:
 	docker compose -f docker-compose.dev.yml exec -T backend uv run --extra test pytest tests/ -v --tb=short
 
-# Build base image locally (GitHub Actions handles this automatically)
-build-base-local:
-	docker build -f Dockerfile.base -t ghcr.io/treygilliland/hardcaml-base:latest .
+# Load environment variables from .env file if it exists
+ifneq (,$(wildcard .env))
+    include .env
+    export
+endif
+
+# Default values if not set in .env
+# Public images are available at ghcr.io/treygilliland/
+GITHUB_USERNAME ?= treygilliland
+BASE_IMAGE ?= ghcr.io/$(GITHUB_USERNAME)/hardcaml-base:latest
+PROD_IMAGE ?= ghcr.io/$(GITHUB_USERNAME)/hardcaml-web-ide:latest
+
+# Build base image locally (amd64 only, for Railway)
+build-base:
+	docker build -f Dockerfile.base -t $(BASE_IMAGE) --platform linux/amd64 .
+
+# Build production image locally (amd64 only, for Railway)
+build-prod:
+	docker build -f Dockerfile --target prod --build-arg BASE_IMAGE=$(BASE_IMAGE) -t $(PROD_IMAGE) --platform linux/amd64 .
+
+# Push base image to GHCR
+push-base: build-base
+	docker push $(BASE_IMAGE)
+
+# Push production image to GHCR
+push-prod: build-prod
+	docker push $(PROD_IMAGE)
+
+# Build and push both images
+push-all: push-base push-prod

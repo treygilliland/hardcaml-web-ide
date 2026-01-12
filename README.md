@@ -150,3 +150,17 @@ let hierarchical scope =
 ## Deployment
 
 See [DEPLOY.md](DEPLOY.md) for Railway setup.
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and configure:
+
+- `RATE_LIMIT_PER_MINUTE`: API rate limit (default: 10)
+- `VITE_PUBLIC_POSTHOG_KEY`: PostHog API key (optional, for analytics)
+- `VITE_PUBLIC_POSTHOG_HOST`: PostHog host URL (optional)
+- `VITE_POSTHOG_ENABLED`: Enable/disable analytics (optional)
+- `GITHUB_USERNAME`: Only needed if building/pushing your own images (defaults to `treygilliland`)
+
+**Note:** Docker images are publicly available at `ghcr.io/treygilliland/`, so you can use them directly without configuration.
+
+See `.env.example` for all available options.

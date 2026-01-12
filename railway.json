@@ -1,11 +1,6 @@
 {
 	"$schema": "https://railway.app/railway.schema.json",
-	"build": {
-		"builder": "DOCKERFILE",
-		"dockerfilePath": "Dockerfile",
-		"buildTarget": "prod",
-		"buildArgs": {
-			"BASE_IMAGE": "ghcr.io/treygilliland/hardcaml-base:latest"
-		}
+	"deploy": {
+		"image": "ghcr.io/treygilliland/hardcaml-web-ide:latest"
 	}
 }

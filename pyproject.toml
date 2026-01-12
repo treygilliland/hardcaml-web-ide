@@ -1,7 +1,7 @@
 [project]
 name = "hardcaml-web-ide"
 version = "0.1.0"
-description = "Add your description here"
+description = "A web-based IDE for Hardcaml"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = []
