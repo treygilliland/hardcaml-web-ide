@@ -36,6 +36,21 @@ def _hardcaml_root() -> Path:
     return Path(__file__).resolve().parent
 
 
+def _standard_example_roots() -> list[Path]:
+    return [
+        _hardcaml_root() / "examples",
+        _hardcaml_root() / "aoc",
+    ]
+
+
+def _standard_example_dir(example_id: str) -> Path:
+    for root in _standard_example_roots():
+        p = root / example_id
+        if p.exists():
+            return p
+    raise FileNotFoundError(f"Unknown example id: {example_id}")
+
+
 def _default_build_dir() -> Path:
     opt = Path("/opt/build-cache")
     if opt.exists():
@@ -54,18 +69,20 @@ def _n2t_chips_dir() -> Path:
 
 
 def _standard_example_ids() -> list[str]:
-    examples_dir = _hardcaml_root() / "examples"
     ids: list[str] = []
-    for p in sorted(examples_dir.iterdir()):
-        if not p.is_dir():
+    for root in _standard_example_roots():
+        if not root.exists():
             continue
-        if (p / "circuit.ml").exists() and (p / "test.ml").exists():
-            ids.append(p.name)
+        for p in sorted(root.iterdir()):
+            if not p.is_dir():
+                continue
+            if (p / "circuit.ml").exists() and (p / "test.ml").exists():
+                ids.append(p.name)
     return ids
 
 
 def _n2t_chip_names() -> list[str]:
-    chips_dir = _hardcaml_root() / "examples" / "n2t_solutions"
+    chips_dir = _hardcaml_root() / "n2t" / "solutions"
     if not chips_dir.exists():
         return []
     names: list[str] = []
@@ -75,7 +92,7 @@ def _n2t_chip_names() -> list[str]:
 
 
 def load_standard_example(example_id: str) -> Example:
-    ex_dir = _hardcaml_root() / "examples" / example_id
+    ex_dir = _standard_example_dir(example_id)
     files = {
         "circuit.ml": _read_text(ex_dir / "circuit.ml"),
         "circuit.mli": _read_text(ex_dir / "circuit.mli"),
@@ -95,8 +112,8 @@ def load_standard_example(example_id: str) -> Example:
 
 
 def load_n2t_example(chip: str, *, use_stub: bool) -> Example:
-    ex_root = _hardcaml_root() / "examples"
-    impl_dir = ex_root / ("n2t" if use_stub else "n2t_solutions")
+    ex_root = _hardcaml_root() / "n2t"
+    impl_dir = ex_root / ("stubs" if use_stub else "solutions")
     impl_file = impl_dir / f"{chip}.ml"
     if not impl_file.exists():
         raise FileNotFoundError(f"Missing implementation file: {impl_file}")
@@ -177,7 +194,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument(
         "--use-stub",
         action="store_true",
-        help="For N2T chips, stage from examples/n2t (student stubs) instead of examples/n2t_solutions",
+        help="For N2T chips, stage from n2t/stubs (student stubs) instead of n2t/solutions",
     )
     parser.add_argument(
         "example_id",

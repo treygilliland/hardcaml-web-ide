@@ -11,6 +11,8 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 HARDCAML_DIR = PROJECT_ROOT / "hardcaml"
 EXAMPLES_DIR = HARDCAML_DIR / "examples"
+AOC_DIR = HARDCAML_DIR / "aoc"
+N2T_DIR = HARDCAML_DIR / "n2t"
 BUILD_CACHE_DIR = HARDCAML_DIR / "build-cache"
 N2T_CHIPS_DIR = BUILD_CACHE_DIR / "lib" / "n2t_chips"
 
@@ -31,6 +33,8 @@ def load_file(path: Path) -> str:
 def load_standard_example(example_id: str) -> Example:
     """Load a standard example with circuit.ml, circuit.mli, test.ml structure."""
     example_dir = EXAMPLES_DIR / example_id
+    if not example_dir.exists():
+        example_dir = AOC_DIR / example_id
     files = {
         "circuit.ml": load_file(example_dir / "circuit.ml"),
         "circuit.mli": load_file(example_dir / "circuit.mli"),
@@ -47,7 +51,7 @@ def load_standard_example(example_id: str) -> Example:
 
 def load_n2t_solution(chip_name: str) -> Example:
     """Load an N2T solution example with its test from build-cache."""
-    solution_file = EXAMPLES_DIR / "n2t_solutions" / f"{chip_name}.ml"
+    solution_file = N2T_DIR / "solutions" / f"{chip_name}.ml"
     interface_file = N2T_CHIPS_DIR / f"{chip_name}.mli"
     test_file = N2T_CHIPS_DIR / f"{chip_name}_test.ml"
 

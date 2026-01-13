@@ -21,7 +21,7 @@ let create _scope (i : _ I.t) : _ O.t =
   { out = ~:(i.a) }
 ```
 
-### 2. Student Stubs (`hardcaml/examples/n2t/`)
+### 2. Student Stubs (`hardcaml/n2t/stubs/`)
 
 Placeholder files for students to complete. These:
 
@@ -37,7 +37,7 @@ let create _scope (_i : _ I.t) : _ O.t =
   { out = gnd }
 ```
 
-### 3. Reference Solutions (`hardcaml/examples/n2t_solutions/`)
+### 3. Reference Solutions (`hardcaml/n2t/solutions/`)
 
 Canonical hierarchical implementations that demonstrate the N2T approach:
 
@@ -157,10 +157,11 @@ hardcaml/
 │   │   └── not_test.ml, ...      # Test files (loaded by frontend, not compiled)
 │   ├── src/                      # User circuit (replaced per request)
 │   └── test/                     # User tests (replaced per request)
-├── examples/n2t/                 # Student stubs
-│   └── not.ml, and.ml, ...       # Placeholder implementations
-└── examples/n2t_solutions/       # Reference solutions
-    └── not.ml, and.ml, ...       # Hierarchical implementations
+└── n2t/
+    ├── stubs/                    # Student stubs
+    │   └── not.ml, and.ml, ...   # Placeholder implementations
+    └── solutions/                # Reference solutions
+        └── not.ml, and.ml, ...   # Hierarchical implementations
 ```
 
 ## Build Cache Strategy
@@ -516,7 +517,7 @@ let ab, cd = N2t_chips.dmux_ scope i.inp sel1 in
 3. Add test to `lib/n2t_chips/chipname_test.ml`
 4. Update `lib/n2t_chips/dune` modules list (to exclude tests from lib compilation)
 5. Export in `lib/n2t_chips/n2t_chips.ml` and `.mli`
-6. Add stub to `examples/n2t/chipname.ml`
-7. Add solution to `examples/n2t_solutions/chipname.ml`
+6. Add stub to `n2t/stubs/chipname.ml`
+7. Add solution to `n2t/solutions/chipname.ml`
 8. Update `frontend/src/examples/hardcaml-examples.ts` with imports and entries
 9. Add chip name to `api/tests/examples.py` `N2T_CHIPS` list for test coverage

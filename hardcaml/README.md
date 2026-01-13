@@ -2,7 +2,9 @@
 
 This directory contains the OCaml sources used by the Hardcaml Web IDE:
 
-- `examples/`: example circuits and tests (AoC + N2T stubs/solutions)
+- `examples/`: small standalone example circuits and tests (e.g. counter, fibonacci)
+- `aoc/`: Advent of Code circuits and tests
+- `n2t/`: Nand2Tetris student stubs + reference solutions
 - `build-cache/`: a **dune project** used as the compilation baseline inside the Web IDE
 
 ## See also
@@ -77,7 +79,12 @@ uv run python /hardcaml/dev_runner.py n2t_alu
 
 ## Iterate on an existing example
 
-Examples live in `/hardcaml/examples/<example_id>/` inside the container (volume-mounted from `hardcaml-web-ide/hardcaml/examples/`).
+Examples live in:
+
+- `/hardcaml/examples/<example_id>/` (standalone examples like `counter`)
+- `/hardcaml/aoc/<example_id>/` (AoC examples like `day1_part1`)
+
+These are volume-mounted from `hardcaml-web-ide/hardcaml/`.
 
 ### What the dev runner does
 
@@ -91,7 +98,7 @@ Examples live in `/hardcaml/examples/<example_id>/` inside the container (volume
 
 ## N2T stubs vs solutions (dev runner)
 
-By default, `n2t_<chip>` stages from `examples/n2t_solutions/<chip>.ml`.
+By default, `n2t_<chip>` stages from `n2t/solutions/<chip>.ml`.
 
 To stage the **student stub** instead:
 
@@ -117,7 +124,7 @@ See `examples/counter/test.ml` for a minimal pattern using `Hardcaml_test_harnes
 There are three “tiers” of N2T chips:
 
 - `build-cache/lib/n2t_chips/`: efficient library chips + helper functions (compiled into the dune project)
-- `examples/n2t/`: student stubs (loaded by the IDE for exercises)
-- `examples/n2t_solutions/`: reference solutions (hierarchical, readable)
+- `n2t/stubs/`: student stubs (loaded by the IDE for exercises)
+- `n2t/solutions/`: reference solutions (hierarchical, readable)
 
 More details: `../docs/Nand2Tetris.md`.

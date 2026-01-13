@@ -14,210 +14,210 @@ import fibonacciInterface from "@hardcaml-examples/examples/fibonacci/circuit.ml
 import fibonacciTest from "@hardcaml-examples/examples/fibonacci/test.ml?raw";
 
 // Day 1 Part 1
-import day1Part1Circuit from "@hardcaml-examples/examples/day1_part1/circuit.ml?raw";
-import day1Part1Interface from "@hardcaml-examples/examples/day1_part1/circuit.mli?raw";
-import day1Part1Test from "@hardcaml-examples/examples/day1_part1/test.ml?raw";
-import day1Part1Input from "@hardcaml-examples/examples/day1_part1/input.txt?raw";
+import day1Part1Circuit from "@hardcaml-examples/aoc/day1_part1/circuit.ml?raw";
+import day1Part1Interface from "@hardcaml-examples/aoc/day1_part1/circuit.mli?raw";
+import day1Part1Test from "@hardcaml-examples/aoc/day1_part1/test.ml?raw";
+import day1Part1Input from "@hardcaml-examples/aoc/day1_part1/input.txt?raw";
 
 // Day 1 Part 2
-import day1Part2Circuit from "@hardcaml-examples/examples/day1_part2/circuit.ml?raw";
-import day1Part2Interface from "@hardcaml-examples/examples/day1_part2/circuit.mli?raw";
-import day1Part2Test from "@hardcaml-examples/examples/day1_part2/test.ml?raw";
-import day1Part2Input from "@hardcaml-examples/examples/day1_part2/input.txt?raw";
+import day1Part2Circuit from "@hardcaml-examples/aoc/day1_part2/circuit.ml?raw";
+import day1Part2Interface from "@hardcaml-examples/aoc/day1_part2/circuit.mli?raw";
+import day1Part2Test from "@hardcaml-examples/aoc/day1_part2/test.ml?raw";
+import day1Part2Input from "@hardcaml-examples/aoc/day1_part2/input.txt?raw";
 
 // Day 2 Part 1
-import day2Part1Circuit from "@hardcaml-examples/examples/day2_part1/circuit.ml?raw";
-import day2Part1Interface from "@hardcaml-examples/examples/day2_part1/circuit.mli?raw";
-import day2Part1Test from "@hardcaml-examples/examples/day2_part1/test.ml?raw";
-import day2Part1Input from "@hardcaml-examples/examples/day2_part1/input.txt?raw";
+import day2Part1Circuit from "@hardcaml-examples/aoc/day2_part1/circuit.ml?raw";
+import day2Part1Interface from "@hardcaml-examples/aoc/day2_part1/circuit.mli?raw";
+import day2Part1Test from "@hardcaml-examples/aoc/day2_part1/test.ml?raw";
+import day2Part1Input from "@hardcaml-examples/aoc/day2_part1/input.txt?raw";
 
 // Day 2 Part 2
-import day2Part2Circuit from "@hardcaml-examples/examples/day2_part2/circuit.ml?raw";
-import day2Part2Interface from "@hardcaml-examples/examples/day2_part2/circuit.mli?raw";
-import day2Part2Test from "@hardcaml-examples/examples/day2_part2/test.ml?raw";
-import day2Part2Input from "@hardcaml-examples/examples/day2_part2/input.txt?raw";
+import day2Part2Circuit from "@hardcaml-examples/aoc/day2_part2/circuit.ml?raw";
+import day2Part2Interface from "@hardcaml-examples/aoc/day2_part2/circuit.mli?raw";
+import day2Part2Test from "@hardcaml-examples/aoc/day2_part2/test.ml?raw";
+import day2Part2Input from "@hardcaml-examples/aoc/day2_part2/input.txt?raw";
 
 // Day 3 Part 1
-import day3Part1Circuit from "@hardcaml-examples/examples/day3_part1/circuit.ml?raw";
-import day3Part1Interface from "@hardcaml-examples/examples/day3_part1/circuit.mli?raw";
-import day3Part1Test from "@hardcaml-examples/examples/day3_part1/test.ml?raw";
-import day3Part1Input from "@hardcaml-examples/examples/day3_part1/input.txt?raw";
+import day3Part1Circuit from "@hardcaml-examples/aoc/day3_part1/circuit.ml?raw";
+import day3Part1Interface from "@hardcaml-examples/aoc/day3_part1/circuit.mli?raw";
+import day3Part1Test from "@hardcaml-examples/aoc/day3_part1/test.ml?raw";
+import day3Part1Input from "@hardcaml-examples/aoc/day3_part1/input.txt?raw";
 
 // Day 3 Part 2
-import day3Part2Circuit from "@hardcaml-examples/examples/day3_part2/circuit.ml?raw";
-import day3Part2Interface from "@hardcaml-examples/examples/day3_part2/circuit.mli?raw";
-import day3Part2Test from "@hardcaml-examples/examples/day3_part2/test.ml?raw";
-import day3Part2Input from "@hardcaml-examples/examples/day3_part2/input.txt?raw";
+import day3Part2Circuit from "@hardcaml-examples/aoc/day3_part2/circuit.ml?raw";
+import day3Part2Interface from "@hardcaml-examples/aoc/day3_part2/circuit.mli?raw";
+import day3Part2Test from "@hardcaml-examples/aoc/day3_part2/test.ml?raw";
+import day3Part2Input from "@hardcaml-examples/aoc/day3_part2/input.txt?raw";
 
 // Day 4 Part 1
-import day4Part1Circuit from "@hardcaml-examples/examples/day4_part1/circuit.ml?raw";
-import day4Part1Interface from "@hardcaml-examples/examples/day4_part1/circuit.mli?raw";
-import day4Part1Test from "@hardcaml-examples/examples/day4_part1/test.ml?raw";
-import day4Part1Input from "@hardcaml-examples/examples/day4_part1/input.txt?raw";
+import day4Part1Circuit from "@hardcaml-examples/aoc/day4_part1/circuit.ml?raw";
+import day4Part1Interface from "@hardcaml-examples/aoc/day4_part1/circuit.mli?raw";
+import day4Part1Test from "@hardcaml-examples/aoc/day4_part1/test.ml?raw";
+import day4Part1Input from "@hardcaml-examples/aoc/day4_part1/input.txt?raw";
 
 // Day 4 Part 2
-import day4Part2Circuit from "@hardcaml-examples/examples/day4_part2/circuit.ml?raw";
-import day4Part2Interface from "@hardcaml-examples/examples/day4_part2/circuit.mli?raw";
-import day4Part2Test from "@hardcaml-examples/examples/day4_part2/test.ml?raw";
-import day4Part2Input from "@hardcaml-examples/examples/day4_part2/input.txt?raw";
+import day4Part2Circuit from "@hardcaml-examples/aoc/day4_part2/circuit.ml?raw";
+import day4Part2Interface from "@hardcaml-examples/aoc/day4_part2/circuit.mli?raw";
+import day4Part2Test from "@hardcaml-examples/aoc/day4_part2/test.ml?raw";
+import day4Part2Input from "@hardcaml-examples/aoc/day4_part2/input.txt?raw";
 
 // Day 5 Part 1
-import day5Part1Circuit from "@hardcaml-examples/examples/day5_part1/circuit.ml?raw";
-import day5Part1Interface from "@hardcaml-examples/examples/day5_part1/circuit.mli?raw";
-import day5Part1Test from "@hardcaml-examples/examples/day5_part1/test.ml?raw";
-import day5Part1Input from "@hardcaml-examples/examples/day5_part1/input.txt?raw";
+import day5Part1Circuit from "@hardcaml-examples/aoc/day5_part1/circuit.ml?raw";
+import day5Part1Interface from "@hardcaml-examples/aoc/day5_part1/circuit.mli?raw";
+import day5Part1Test from "@hardcaml-examples/aoc/day5_part1/test.ml?raw";
+import day5Part1Input from "@hardcaml-examples/aoc/day5_part1/input.txt?raw";
 
 // Day 5 Part 2
-import day5Part2Circuit from "@hardcaml-examples/examples/day5_part2/circuit.ml?raw";
-import day5Part2Interface from "@hardcaml-examples/examples/day5_part2/circuit.mli?raw";
-import day5Part2Test from "@hardcaml-examples/examples/day5_part2/test.ml?raw";
-import day5Part2Input from "@hardcaml-examples/examples/day5_part2/input.txt?raw";
+import day5Part2Circuit from "@hardcaml-examples/aoc/day5_part2/circuit.ml?raw";
+import day5Part2Interface from "@hardcaml-examples/aoc/day5_part2/circuit.mli?raw";
+import day5Part2Test from "@hardcaml-examples/aoc/day5_part2/test.ml?raw";
+import day5Part2Input from "@hardcaml-examples/aoc/day5_part2/input.txt?raw";
 
 // Day 6 Part 1
-import day6Part1Circuit from "@hardcaml-examples/examples/day6_part1/circuit.ml?raw";
-import day6Part1Interface from "@hardcaml-examples/examples/day6_part1/circuit.mli?raw";
-import day6Part1Test from "@hardcaml-examples/examples/day6_part1/test.ml?raw";
-import day6Part1Input from "@hardcaml-examples/examples/day6_part1/input.txt?raw";
+import day6Part1Circuit from "@hardcaml-examples/aoc/day6_part1/circuit.ml?raw";
+import day6Part1Interface from "@hardcaml-examples/aoc/day6_part1/circuit.mli?raw";
+import day6Part1Test from "@hardcaml-examples/aoc/day6_part1/test.ml?raw";
+import day6Part1Input from "@hardcaml-examples/aoc/day6_part1/input.txt?raw";
 
 // Day 6 Part 2
-import day6Part2Circuit from "@hardcaml-examples/examples/day6_part2/circuit.ml?raw";
-import day6Part2Interface from "@hardcaml-examples/examples/day6_part2/circuit.mli?raw";
-import day6Part2Test from "@hardcaml-examples/examples/day6_part2/test.ml?raw";
-import day6Part2Input from "@hardcaml-examples/examples/day6_part2/input.txt?raw";
+import day6Part2Circuit from "@hardcaml-examples/aoc/day6_part2/circuit.ml?raw";
+import day6Part2Interface from "@hardcaml-examples/aoc/day6_part2/circuit.mli?raw";
+import day6Part2Test from "@hardcaml-examples/aoc/day6_part2/test.ml?raw";
+import day6Part2Input from "@hardcaml-examples/aoc/day6_part2/input.txt?raw";
 
 // Day 7 Part 1
-import day7Part1Circuit from "@hardcaml-examples/examples/day7_part1/circuit.ml?raw";
-import day7Part1Interface from "@hardcaml-examples/examples/day7_part1/circuit.mli?raw";
-import day7Part1Test from "@hardcaml-examples/examples/day7_part1/test.ml?raw";
-import day7Part1Input from "@hardcaml-examples/examples/day7_part1/input.txt?raw";
+import day7Part1Circuit from "@hardcaml-examples/aoc/day7_part1/circuit.ml?raw";
+import day7Part1Interface from "@hardcaml-examples/aoc/day7_part1/circuit.mli?raw";
+import day7Part1Test from "@hardcaml-examples/aoc/day7_part1/test.ml?raw";
+import day7Part1Input from "@hardcaml-examples/aoc/day7_part1/input.txt?raw";
 
 // Day 7 Part 2
-import day7Part2Circuit from "@hardcaml-examples/examples/day7_part2/circuit.ml?raw";
-import day7Part2Interface from "@hardcaml-examples/examples/day7_part2/circuit.mli?raw";
-import day7Part2Test from "@hardcaml-examples/examples/day7_part2/test.ml?raw";
-import day7Part2Input from "@hardcaml-examples/examples/day7_part2/input.txt?raw";
+import day7Part2Circuit from "@hardcaml-examples/aoc/day7_part2/circuit.ml?raw";
+import day7Part2Interface from "@hardcaml-examples/aoc/day7_part2/circuit.mli?raw";
+import day7Part2Test from "@hardcaml-examples/aoc/day7_part2/test.ml?raw";
+import day7Part2Input from "@hardcaml-examples/aoc/day7_part2/input.txt?raw";
 
 // Day 8 Part 1
-import day8Part1Circuit from "@hardcaml-examples/examples/day8_part1/circuit.ml?raw";
-import day8Part1Interface from "@hardcaml-examples/examples/day8_part1/circuit.mli?raw";
-import day8Part1Test from "@hardcaml-examples/examples/day8_part1/test.ml?raw";
-import day8Part1Input from "@hardcaml-examples/examples/day8_part1/input.txt?raw";
+import day8Part1Circuit from "@hardcaml-examples/aoc/day8_part1/circuit.ml?raw";
+import day8Part1Interface from "@hardcaml-examples/aoc/day8_part1/circuit.mli?raw";
+import day8Part1Test from "@hardcaml-examples/aoc/day8_part1/test.ml?raw";
+import day8Part1Input from "@hardcaml-examples/aoc/day8_part1/input.txt?raw";
 
 // Day 8 Part 2
-import day8Part2Circuit from "@hardcaml-examples/examples/day8_part2/circuit.ml?raw";
-import day8Part2Interface from "@hardcaml-examples/examples/day8_part2/circuit.mli?raw";
-import day8Part2Test from "@hardcaml-examples/examples/day8_part2/test.ml?raw";
-import day8Part2Input from "@hardcaml-examples/examples/day8_part2/input.txt?raw";
+import day8Part2Circuit from "@hardcaml-examples/aoc/day8_part2/circuit.ml?raw";
+import day8Part2Interface from "@hardcaml-examples/aoc/day8_part2/circuit.mli?raw";
+import day8Part2Test from "@hardcaml-examples/aoc/day8_part2/test.ml?raw";
+import day8Part2Input from "@hardcaml-examples/aoc/day8_part2/input.txt?raw";
 
 // Day 9 Part 1
-import day9Part1Circuit from "@hardcaml-examples/examples/day9_part1/circuit.ml?raw";
-import day9Part1Interface from "@hardcaml-examples/examples/day9_part1/circuit.mli?raw";
-import day9Part1Test from "@hardcaml-examples/examples/day9_part1/test.ml?raw";
-import day9Part1Input from "@hardcaml-examples/examples/day9_part1/input.txt?raw";
+import day9Part1Circuit from "@hardcaml-examples/aoc/day9_part1/circuit.ml?raw";
+import day9Part1Interface from "@hardcaml-examples/aoc/day9_part1/circuit.mli?raw";
+import day9Part1Test from "@hardcaml-examples/aoc/day9_part1/test.ml?raw";
+import day9Part1Input from "@hardcaml-examples/aoc/day9_part1/input.txt?raw";
 
 // Day 9 Part 2
-import day9Part2Circuit from "@hardcaml-examples/examples/day9_part2/circuit.ml?raw";
-import day9Part2Interface from "@hardcaml-examples/examples/day9_part2/circuit.mli?raw";
-import day9Part2Test from "@hardcaml-examples/examples/day9_part2/test.ml?raw";
-import day9Part2Input from "@hardcaml-examples/examples/day9_part2/input.txt?raw";
+import day9Part2Circuit from "@hardcaml-examples/aoc/day9_part2/circuit.ml?raw";
+import day9Part2Interface from "@hardcaml-examples/aoc/day9_part2/circuit.mli?raw";
+import day9Part2Test from "@hardcaml-examples/aoc/day9_part2/test.ml?raw";
+import day9Part2Input from "@hardcaml-examples/aoc/day9_part2/input.txt?raw";
 
 // Day 10 Part 1
-import day10Part1Circuit from "@hardcaml-examples/examples/day10_part1/circuit.ml?raw";
-import day10Part1Interface from "@hardcaml-examples/examples/day10_part1/circuit.mli?raw";
-import day10Part1Test from "@hardcaml-examples/examples/day10_part1/test.ml?raw";
-import day10Part1Input from "@hardcaml-examples/examples/day10_part1/input.txt?raw";
+import day10Part1Circuit from "@hardcaml-examples/aoc/day10_part1/circuit.ml?raw";
+import day10Part1Interface from "@hardcaml-examples/aoc/day10_part1/circuit.mli?raw";
+import day10Part1Test from "@hardcaml-examples/aoc/day10_part1/test.ml?raw";
+import day10Part1Input from "@hardcaml-examples/aoc/day10_part1/input.txt?raw";
 
 // Day 10 Part 2
-import day10Part2Circuit from "@hardcaml-examples/examples/day10_part2/circuit.ml?raw";
-import day10Part2Interface from "@hardcaml-examples/examples/day10_part2/circuit.mli?raw";
-import day10Part2Test from "@hardcaml-examples/examples/day10_part2/test.ml?raw";
-import day10Part2Input from "@hardcaml-examples/examples/day10_part2/input.txt?raw";
+import day10Part2Circuit from "@hardcaml-examples/aoc/day10_part2/circuit.ml?raw";
+import day10Part2Interface from "@hardcaml-examples/aoc/day10_part2/circuit.mli?raw";
+import day10Part2Test from "@hardcaml-examples/aoc/day10_part2/test.ml?raw";
+import day10Part2Input from "@hardcaml-examples/aoc/day10_part2/input.txt?raw";
 
 // Day 11 Part 1
-import day11Part1Circuit from "@hardcaml-examples/examples/day11_part1/circuit.ml?raw";
-import day11Part1Interface from "@hardcaml-examples/examples/day11_part1/circuit.mli?raw";
-import day11Part1Test from "@hardcaml-examples/examples/day11_part1/test.ml?raw";
-import day11Part1Input from "@hardcaml-examples/examples/day11_part1/input.txt?raw";
+import day11Part1Circuit from "@hardcaml-examples/aoc/day11_part1/circuit.ml?raw";
+import day11Part1Interface from "@hardcaml-examples/aoc/day11_part1/circuit.mli?raw";
+import day11Part1Test from "@hardcaml-examples/aoc/day11_part1/test.ml?raw";
+import day11Part1Input from "@hardcaml-examples/aoc/day11_part1/input.txt?raw";
 
 // Day 11 Part 2
-import day11Part2Circuit from "@hardcaml-examples/examples/day11_part2/circuit.ml?raw";
-import day11Part2Interface from "@hardcaml-examples/examples/day11_part2/circuit.mli?raw";
-import day11Part2Test from "@hardcaml-examples/examples/day11_part2/test.ml?raw";
-import day11Part2Input from "@hardcaml-examples/examples/day11_part2/input.txt?raw";
+import day11Part2Circuit from "@hardcaml-examples/aoc/day11_part2/circuit.ml?raw";
+import day11Part2Interface from "@hardcaml-examples/aoc/day11_part2/circuit.mli?raw";
+import day11Part2Test from "@hardcaml-examples/aoc/day11_part2/test.ml?raw";
+import day11Part2Input from "@hardcaml-examples/aoc/day11_part2/input.txt?raw";
 
 // Day 12 Part 1
-import day12Part1Circuit from "@hardcaml-examples/examples/day12_part1/circuit.ml?raw";
-import day12Part1Interface from "@hardcaml-examples/examples/day12_part1/circuit.mli?raw";
-import day12Part1Test from "@hardcaml-examples/examples/day12_part1/test.ml?raw";
-import day12Part1Input from "@hardcaml-examples/examples/day12_part1/input.txt?raw";
+import day12Part1Circuit from "@hardcaml-examples/aoc/day12_part1/circuit.ml?raw";
+import day12Part1Interface from "@hardcaml-examples/aoc/day12_part1/circuit.mli?raw";
+import day12Part1Test from "@hardcaml-examples/aoc/day12_part1/test.ml?raw";
+import day12Part1Input from "@hardcaml-examples/aoc/day12_part1/input.txt?raw";
 
-// N2T Stubs (exercises) from examples/n2t/
-import n2tNotStub from "@hardcaml-examples/examples/n2t/not.ml?raw";
-import n2tAndStub from "@hardcaml-examples/examples/n2t/and.ml?raw";
-import n2tOrStub from "@hardcaml-examples/examples/n2t/or.ml?raw";
-import n2tXorStub from "@hardcaml-examples/examples/n2t/xor.ml?raw";
-import n2tMuxStub from "@hardcaml-examples/examples/n2t/mux.ml?raw";
-import n2tDmuxStub from "@hardcaml-examples/examples/n2t/dmux.ml?raw";
-import n2tNot16Stub from "@hardcaml-examples/examples/n2t/not16.ml?raw";
-import n2tAnd16Stub from "@hardcaml-examples/examples/n2t/and16.ml?raw";
-import n2tOr16Stub from "@hardcaml-examples/examples/n2t/or16.ml?raw";
-import n2tMux16Stub from "@hardcaml-examples/examples/n2t/mux16.ml?raw";
-import n2tOr8wayStub from "@hardcaml-examples/examples/n2t/or8way.ml?raw";
-import n2tMux4way16Stub from "@hardcaml-examples/examples/n2t/mux4way16.ml?raw";
-import n2tMux8way16Stub from "@hardcaml-examples/examples/n2t/mux8way16.ml?raw";
-import n2tDmux4wayStub from "@hardcaml-examples/examples/n2t/dmux4way.ml?raw";
-import n2tDmux8wayStub from "@hardcaml-examples/examples/n2t/dmux8way.ml?raw";
-import n2tHalfadderStub from "@hardcaml-examples/examples/n2t/halfadder.ml?raw";
-import n2tFulladderStub from "@hardcaml-examples/examples/n2t/fulladder.ml?raw";
-import n2tAdd16Stub from "@hardcaml-examples/examples/n2t/add16.ml?raw";
-import n2tInc16Stub from "@hardcaml-examples/examples/n2t/inc16.ml?raw";
-import n2tAluStub from "@hardcaml-examples/examples/n2t/alu.ml?raw";
-import n2tDffStub from "@hardcaml-examples/examples/n2t/dff.ml?raw";
-import n2tBitStub from "@hardcaml-examples/examples/n2t/bit.ml?raw";
-import n2tRegisterStub from "@hardcaml-examples/examples/n2t/register.ml?raw";
-import n2tRam8Stub from "@hardcaml-examples/examples/n2t/ram8.ml?raw";
-import n2tPcStub from "@hardcaml-examples/examples/n2t/pc.ml?raw";
-import n2tRam64Stub from "@hardcaml-examples/examples/n2t/ram64.ml?raw";
-import n2tRam512Stub from "@hardcaml-examples/examples/n2t/ram512.ml?raw";
-import n2tRam4kStub from "@hardcaml-examples/examples/n2t/ram4k.ml?raw";
-import n2tRam16kStub from "@hardcaml-examples/examples/n2t/ram16k.ml?raw";
-import n2tMemoryStub from "@hardcaml-examples/examples/n2t/memory.ml?raw";
-import n2tCpuStub from "@hardcaml-examples/examples/n2t/cpu.ml?raw";
-import n2tComputerStub from "@hardcaml-examples/examples/n2t/computer.ml?raw";
+// N2T Stubs (exercises) from n2t/stubs/
+import n2tNotStub from "@hardcaml-examples/n2t/stubs/not.ml?raw";
+import n2tAndStub from "@hardcaml-examples/n2t/stubs/and.ml?raw";
+import n2tOrStub from "@hardcaml-examples/n2t/stubs/or.ml?raw";
+import n2tXorStub from "@hardcaml-examples/n2t/stubs/xor.ml?raw";
+import n2tMuxStub from "@hardcaml-examples/n2t/stubs/mux.ml?raw";
+import n2tDmuxStub from "@hardcaml-examples/n2t/stubs/dmux.ml?raw";
+import n2tNot16Stub from "@hardcaml-examples/n2t/stubs/not16.ml?raw";
+import n2tAnd16Stub from "@hardcaml-examples/n2t/stubs/and16.ml?raw";
+import n2tOr16Stub from "@hardcaml-examples/n2t/stubs/or16.ml?raw";
+import n2tMux16Stub from "@hardcaml-examples/n2t/stubs/mux16.ml?raw";
+import n2tOr8wayStub from "@hardcaml-examples/n2t/stubs/or8way.ml?raw";
+import n2tMux4way16Stub from "@hardcaml-examples/n2t/stubs/mux4way16.ml?raw";
+import n2tMux8way16Stub from "@hardcaml-examples/n2t/stubs/mux8way16.ml?raw";
+import n2tDmux4wayStub from "@hardcaml-examples/n2t/stubs/dmux4way.ml?raw";
+import n2tDmux8wayStub from "@hardcaml-examples/n2t/stubs/dmux8way.ml?raw";
+import n2tHalfadderStub from "@hardcaml-examples/n2t/stubs/halfadder.ml?raw";
+import n2tFulladderStub from "@hardcaml-examples/n2t/stubs/fulladder.ml?raw";
+import n2tAdd16Stub from "@hardcaml-examples/n2t/stubs/add16.ml?raw";
+import n2tInc16Stub from "@hardcaml-examples/n2t/stubs/inc16.ml?raw";
+import n2tAluStub from "@hardcaml-examples/n2t/stubs/alu.ml?raw";
+import n2tDffStub from "@hardcaml-examples/n2t/stubs/dff.ml?raw";
+import n2tBitStub from "@hardcaml-examples/n2t/stubs/bit.ml?raw";
+import n2tRegisterStub from "@hardcaml-examples/n2t/stubs/register.ml?raw";
+import n2tRam8Stub from "@hardcaml-examples/n2t/stubs/ram8.ml?raw";
+import n2tPcStub from "@hardcaml-examples/n2t/stubs/pc.ml?raw";
+import n2tRam64Stub from "@hardcaml-examples/n2t/stubs/ram64.ml?raw";
+import n2tRam512Stub from "@hardcaml-examples/n2t/stubs/ram512.ml?raw";
+import n2tRam4kStub from "@hardcaml-examples/n2t/stubs/ram4k.ml?raw";
+import n2tRam16kStub from "@hardcaml-examples/n2t/stubs/ram16k.ml?raw";
+import n2tMemoryStub from "@hardcaml-examples/n2t/stubs/memory.ml?raw";
+import n2tCpuStub from "@hardcaml-examples/n2t/stubs/cpu.ml?raw";
+import n2tComputerStub from "@hardcaml-examples/n2t/stubs/computer.ml?raw";
 
 // N2T Reference implementations (user-runnable solutions)
-import n2tNotImpl from "@hardcaml-examples/examples/n2t_solutions/not.ml?raw";
-import n2tAndImpl from "@hardcaml-examples/examples/n2t_solutions/and.ml?raw";
-import n2tOrImpl from "@hardcaml-examples/examples/n2t_solutions/or.ml?raw";
-import n2tXorImpl from "@hardcaml-examples/examples/n2t_solutions/xor.ml?raw";
-import n2tMuxImpl from "@hardcaml-examples/examples/n2t_solutions/mux.ml?raw";
-import n2tDmuxImpl from "@hardcaml-examples/examples/n2t_solutions/dmux.ml?raw";
-import n2tNot16Impl from "@hardcaml-examples/examples/n2t_solutions/not16.ml?raw";
-import n2tAnd16Impl from "@hardcaml-examples/examples/n2t_solutions/and16.ml?raw";
-import n2tOr16Impl from "@hardcaml-examples/examples/n2t_solutions/or16.ml?raw";
-import n2tMux16Impl from "@hardcaml-examples/examples/n2t_solutions/mux16.ml?raw";
-import n2tOr8wayImpl from "@hardcaml-examples/examples/n2t_solutions/or8way.ml?raw";
-import n2tMux4way16Impl from "@hardcaml-examples/examples/n2t_solutions/mux4way16.ml?raw";
-import n2tMux8way16Impl from "@hardcaml-examples/examples/n2t_solutions/mux8way16.ml?raw";
-import n2tDmux4wayImpl from "@hardcaml-examples/examples/n2t_solutions/dmux4way.ml?raw";
-import n2tDmux8wayImpl from "@hardcaml-examples/examples/n2t_solutions/dmux8way.ml?raw";
-import n2tHalfadderImpl from "@hardcaml-examples/examples/n2t_solutions/halfadder.ml?raw";
-import n2tFulladderImpl from "@hardcaml-examples/examples/n2t_solutions/fulladder.ml?raw";
-import n2tAdd16Impl from "@hardcaml-examples/examples/n2t_solutions/add16.ml?raw";
-import n2tInc16Impl from "@hardcaml-examples/examples/n2t_solutions/inc16.ml?raw";
-import n2tAluImpl from "@hardcaml-examples/examples/n2t_solutions/alu.ml?raw";
-import n2tDffImpl from "@hardcaml-examples/examples/n2t_solutions/dff.ml?raw";
-import n2tBitImpl from "@hardcaml-examples/examples/n2t_solutions/bit.ml?raw";
-import n2tRegisterImpl from "@hardcaml-examples/examples/n2t_solutions/register.ml?raw";
-import n2tRam8Impl from "@hardcaml-examples/examples/n2t_solutions/ram8.ml?raw";
-import n2tPcImpl from "@hardcaml-examples/examples/n2t_solutions/pc.ml?raw";
-import n2tRam64Impl from "@hardcaml-examples/examples/n2t_solutions/ram64.ml?raw";
-import n2tRam512Impl from "@hardcaml-examples/examples/n2t_solutions/ram512.ml?raw";
-import n2tRam4kImpl from "@hardcaml-examples/examples/n2t_solutions/ram4k.ml?raw";
-import n2tRam16kImpl from "@hardcaml-examples/examples/n2t_solutions/ram16k.ml?raw";
-import n2tMemoryImpl from "@hardcaml-examples/examples/n2t_solutions/memory.ml?raw";
-import n2tCpuImpl from "@hardcaml-examples/examples/n2t_solutions/cpu.ml?raw";
-import n2tComputerImpl from "@hardcaml-examples/examples/n2t_solutions/computer.ml?raw";
+import n2tNotImpl from "@hardcaml-examples/n2t/solutions/not.ml?raw";
+import n2tAndImpl from "@hardcaml-examples/n2t/solutions/and.ml?raw";
+import n2tOrImpl from "@hardcaml-examples/n2t/solutions/or.ml?raw";
+import n2tXorImpl from "@hardcaml-examples/n2t/solutions/xor.ml?raw";
+import n2tMuxImpl from "@hardcaml-examples/n2t/solutions/mux.ml?raw";
+import n2tDmuxImpl from "@hardcaml-examples/n2t/solutions/dmux.ml?raw";
+import n2tNot16Impl from "@hardcaml-examples/n2t/solutions/not16.ml?raw";
+import n2tAnd16Impl from "@hardcaml-examples/n2t/solutions/and16.ml?raw";
+import n2tOr16Impl from "@hardcaml-examples/n2t/solutions/or16.ml?raw";
+import n2tMux16Impl from "@hardcaml-examples/n2t/solutions/mux16.ml?raw";
+import n2tOr8wayImpl from "@hardcaml-examples/n2t/solutions/or8way.ml?raw";
+import n2tMux4way16Impl from "@hardcaml-examples/n2t/solutions/mux4way16.ml?raw";
+import n2tMux8way16Impl from "@hardcaml-examples/n2t/solutions/mux8way16.ml?raw";
+import n2tDmux4wayImpl from "@hardcaml-examples/n2t/solutions/dmux4way.ml?raw";
+import n2tDmux8wayImpl from "@hardcaml-examples/n2t/solutions/dmux8way.ml?raw";
+import n2tHalfadderImpl from "@hardcaml-examples/n2t/solutions/halfadder.ml?raw";
+import n2tFulladderImpl from "@hardcaml-examples/n2t/solutions/fulladder.ml?raw";
+import n2tAdd16Impl from "@hardcaml-examples/n2t/solutions/add16.ml?raw";
+import n2tInc16Impl from "@hardcaml-examples/n2t/solutions/inc16.ml?raw";
+import n2tAluImpl from "@hardcaml-examples/n2t/solutions/alu.ml?raw";
+import n2tDffImpl from "@hardcaml-examples/n2t/solutions/dff.ml?raw";
+import n2tBitImpl from "@hardcaml-examples/n2t/solutions/bit.ml?raw";
+import n2tRegisterImpl from "@hardcaml-examples/n2t/solutions/register.ml?raw";
+import n2tRam8Impl from "@hardcaml-examples/n2t/solutions/ram8.ml?raw";
+import n2tPcImpl from "@hardcaml-examples/n2t/solutions/pc.ml?raw";
+import n2tRam64Impl from "@hardcaml-examples/n2t/solutions/ram64.ml?raw";
+import n2tRam512Impl from "@hardcaml-examples/n2t/solutions/ram512.ml?raw";
+import n2tRam4kImpl from "@hardcaml-examples/n2t/solutions/ram4k.ml?raw";
+import n2tRam16kImpl from "@hardcaml-examples/n2t/solutions/ram16k.ml?raw";
+import n2tMemoryImpl from "@hardcaml-examples/n2t/solutions/memory.ml?raw";
+import n2tCpuImpl from "@hardcaml-examples/n2t/solutions/cpu.ml?raw";
+import n2tComputerImpl from "@hardcaml-examples/n2t/solutions/computer.ml?raw";
 
 // N2T interfaces and tests from lib/n2t_chips/
 import n2tNotInterface from "@hardcaml-examples/build-cache/lib/n2t_chips/not.mli?raw";

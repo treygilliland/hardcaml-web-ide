@@ -138,9 +138,9 @@ If you want the fastest “OCaml programmer” iteration loop (stage files into 
 
 The example manifest (`tests/examples.py`) loads two categories:
 
-- `STANDARD_EXAMPLES`: from `hardcaml/examples/<example_id>/{circuit.ml,circuit.mli,test.ml}` (+ optional `input.txt`)
+- `STANDARD_EXAMPLES`: from `hardcaml/examples/<example_id>/...` and `hardcaml/aoc/<example_id>/...` (`{circuit.ml,circuit.mli,test.ml}` + optional `input.txt`)
   - If `input.txt` exists, it replaces `INPUT_DATA` in `test.ml`.
-- `N2T_CHIPS`: from `hardcaml/examples/n2t_solutions/<chip>.ml` plus interface/tests from the prebuilt `hardcaml/build-cache/lib/n2t_chips/`.
+- `N2T_CHIPS`: from `hardcaml/n2t/solutions/<chip>.ml` plus interface/tests from the prebuilt `hardcaml/build-cache/lib/n2t_chips/`.
 
 ## Running (inside docker)
 
