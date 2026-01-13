@@ -105,7 +105,14 @@ N2T_CHIPS = [
     "computer",
 ]
 
-STANDARD_EXAMPLES = ["counter", "fibonacci", "day1_part1", "day1_part2"]
+STANDARD_EXAMPLES = [
+    "counter",
+    "fibonacci",
+    "day1_part1",
+    "day1_part2",
+    "day2_part1",
+    "day2_part2",
+]
 
 
 def get_all_testable_examples() -> list[Example]:

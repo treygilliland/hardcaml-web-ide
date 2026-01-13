@@ -30,7 +30,6 @@ let parse_input input_string =
   |> List.map ~f:parse_command
 ;;
 
-(* The input data is provided via the Input tab *)
 let input_data = {|INPUT_DATA|}
 
 let ( <--. ) = Bits.( <--. )

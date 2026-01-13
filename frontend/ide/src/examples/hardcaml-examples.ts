@@ -25,6 +25,132 @@ import day1Part2Interface from "@hardcaml-examples/examples/day1_part2/circuit.m
 import day1Part2Test from "@hardcaml-examples/examples/day1_part2/test.ml?raw";
 import day1Part2Input from "@hardcaml-examples/examples/day1_part2/input.txt?raw";
 
+// Day 2 Part 1
+import day2Part1Circuit from "@hardcaml-examples/examples/day2_part1/circuit.ml?raw";
+import day2Part1Interface from "@hardcaml-examples/examples/day2_part1/circuit.mli?raw";
+import day2Part1Test from "@hardcaml-examples/examples/day2_part1/test.ml?raw";
+import day2Part1Input from "@hardcaml-examples/examples/day2_part1/input.txt?raw";
+
+// Day 2 Part 2
+import day2Part2Circuit from "@hardcaml-examples/examples/day2_part2/circuit.ml?raw";
+import day2Part2Interface from "@hardcaml-examples/examples/day2_part2/circuit.mli?raw";
+import day2Part2Test from "@hardcaml-examples/examples/day2_part2/test.ml?raw";
+import day2Part2Input from "@hardcaml-examples/examples/day2_part2/input.txt?raw";
+
+// Day 3 Part 1
+import day3Part1Circuit from "@hardcaml-examples/examples/day3_part1/circuit.ml?raw";
+import day3Part1Interface from "@hardcaml-examples/examples/day3_part1/circuit.mli?raw";
+import day3Part1Test from "@hardcaml-examples/examples/day3_part1/test.ml?raw";
+import day3Part1Input from "@hardcaml-examples/examples/day3_part1/input.txt?raw";
+
+// Day 3 Part 2
+import day3Part2Circuit from "@hardcaml-examples/examples/day3_part2/circuit.ml?raw";
+import day3Part2Interface from "@hardcaml-examples/examples/day3_part2/circuit.mli?raw";
+import day3Part2Test from "@hardcaml-examples/examples/day3_part2/test.ml?raw";
+import day3Part2Input from "@hardcaml-examples/examples/day3_part2/input.txt?raw";
+
+// Day 4 Part 1
+import day4Part1Circuit from "@hardcaml-examples/examples/day4_part1/circuit.ml?raw";
+import day4Part1Interface from "@hardcaml-examples/examples/day4_part1/circuit.mli?raw";
+import day4Part1Test from "@hardcaml-examples/examples/day4_part1/test.ml?raw";
+import day4Part1Input from "@hardcaml-examples/examples/day4_part1/input.txt?raw";
+
+// Day 4 Part 2
+import day4Part2Circuit from "@hardcaml-examples/examples/day4_part2/circuit.ml?raw";
+import day4Part2Interface from "@hardcaml-examples/examples/day4_part2/circuit.mli?raw";
+import day4Part2Test from "@hardcaml-examples/examples/day4_part2/test.ml?raw";
+import day4Part2Input from "@hardcaml-examples/examples/day4_part2/input.txt?raw";
+
+// Day 5 Part 1
+import day5Part1Circuit from "@hardcaml-examples/examples/day5_part1/circuit.ml?raw";
+import day5Part1Interface from "@hardcaml-examples/examples/day5_part1/circuit.mli?raw";
+import day5Part1Test from "@hardcaml-examples/examples/day5_part1/test.ml?raw";
+import day5Part1Input from "@hardcaml-examples/examples/day5_part1/input.txt?raw";
+
+// Day 5 Part 2
+import day5Part2Circuit from "@hardcaml-examples/examples/day5_part2/circuit.ml?raw";
+import day5Part2Interface from "@hardcaml-examples/examples/day5_part2/circuit.mli?raw";
+import day5Part2Test from "@hardcaml-examples/examples/day5_part2/test.ml?raw";
+import day5Part2Input from "@hardcaml-examples/examples/day5_part2/input.txt?raw";
+
+// Day 6 Part 1
+import day6Part1Circuit from "@hardcaml-examples/examples/day6_part1/circuit.ml?raw";
+import day6Part1Interface from "@hardcaml-examples/examples/day6_part1/circuit.mli?raw";
+import day6Part1Test from "@hardcaml-examples/examples/day6_part1/test.ml?raw";
+import day6Part1Input from "@hardcaml-examples/examples/day6_part1/input.txt?raw";
+
+// Day 6 Part 2
+import day6Part2Circuit from "@hardcaml-examples/examples/day6_part2/circuit.ml?raw";
+import day6Part2Interface from "@hardcaml-examples/examples/day6_part2/circuit.mli?raw";
+import day6Part2Test from "@hardcaml-examples/examples/day6_part2/test.ml?raw";
+import day6Part2Input from "@hardcaml-examples/examples/day6_part2/input.txt?raw";
+
+// Day 7 Part 1
+import day7Part1Circuit from "@hardcaml-examples/examples/day7_part1/circuit.ml?raw";
+import day7Part1Interface from "@hardcaml-examples/examples/day7_part1/circuit.mli?raw";
+import day7Part1Test from "@hardcaml-examples/examples/day7_part1/test.ml?raw";
+import day7Part1Input from "@hardcaml-examples/examples/day7_part1/input.txt?raw";
+
+// Day 7 Part 2
+import day7Part2Circuit from "@hardcaml-examples/examples/day7_part2/circuit.ml?raw";
+import day7Part2Interface from "@hardcaml-examples/examples/day7_part2/circuit.mli?raw";
+import day7Part2Test from "@hardcaml-examples/examples/day7_part2/test.ml?raw";
+import day7Part2Input from "@hardcaml-examples/examples/day7_part2/input.txt?raw";
+
+// Day 8 Part 1
+import day8Part1Circuit from "@hardcaml-examples/examples/day8_part1/circuit.ml?raw";
+import day8Part1Interface from "@hardcaml-examples/examples/day8_part1/circuit.mli?raw";
+import day8Part1Test from "@hardcaml-examples/examples/day8_part1/test.ml?raw";
+import day8Part1Input from "@hardcaml-examples/examples/day8_part1/input.txt?raw";
+
+// Day 8 Part 2
+import day8Part2Circuit from "@hardcaml-examples/examples/day8_part2/circuit.ml?raw";
+import day8Part2Interface from "@hardcaml-examples/examples/day8_part2/circuit.mli?raw";
+import day8Part2Test from "@hardcaml-examples/examples/day8_part2/test.ml?raw";
+import day8Part2Input from "@hardcaml-examples/examples/day8_part2/input.txt?raw";
+
+// Day 9 Part 1
+import day9Part1Circuit from "@hardcaml-examples/examples/day9_part1/circuit.ml?raw";
+import day9Part1Interface from "@hardcaml-examples/examples/day9_part1/circuit.mli?raw";
+import day9Part1Test from "@hardcaml-examples/examples/day9_part1/test.ml?raw";
+import day9Part1Input from "@hardcaml-examples/examples/day9_part1/input.txt?raw";
+
+// Day 9 Part 2
+import day9Part2Circuit from "@hardcaml-examples/examples/day9_part2/circuit.ml?raw";
+import day9Part2Interface from "@hardcaml-examples/examples/day9_part2/circuit.mli?raw";
+import day9Part2Test from "@hardcaml-examples/examples/day9_part2/test.ml?raw";
+import day9Part2Input from "@hardcaml-examples/examples/day9_part2/input.txt?raw";
+
+// Day 10 Part 1
+import day10Part1Circuit from "@hardcaml-examples/examples/day10_part1/circuit.ml?raw";
+import day10Part1Interface from "@hardcaml-examples/examples/day10_part1/circuit.mli?raw";
+import day10Part1Test from "@hardcaml-examples/examples/day10_part1/test.ml?raw";
+import day10Part1Input from "@hardcaml-examples/examples/day10_part1/input.txt?raw";
+
+// Day 10 Part 2
+import day10Part2Circuit from "@hardcaml-examples/examples/day10_part2/circuit.ml?raw";
+import day10Part2Interface from "@hardcaml-examples/examples/day10_part2/circuit.mli?raw";
+import day10Part2Test from "@hardcaml-examples/examples/day10_part2/test.ml?raw";
+import day10Part2Input from "@hardcaml-examples/examples/day10_part2/input.txt?raw";
+
+// Day 11 Part 1
+import day11Part1Circuit from "@hardcaml-examples/examples/day11_part1/circuit.ml?raw";
+import day11Part1Interface from "@hardcaml-examples/examples/day11_part1/circuit.mli?raw";
+import day11Part1Test from "@hardcaml-examples/examples/day11_part1/test.ml?raw";
+import day11Part1Input from "@hardcaml-examples/examples/day11_part1/input.txt?raw";
+
+// Day 11 Part 2
+import day11Part2Circuit from "@hardcaml-examples/examples/day11_part2/circuit.ml?raw";
+import day11Part2Interface from "@hardcaml-examples/examples/day11_part2/circuit.mli?raw";
+import day11Part2Test from "@hardcaml-examples/examples/day11_part2/test.ml?raw";
+import day11Part2Input from "@hardcaml-examples/examples/day11_part2/input.txt?raw";
+
+// Day 12 Part 1
+import day12Part1Circuit from "@hardcaml-examples/examples/day12_part1/circuit.ml?raw";
+import day12Part1Interface from "@hardcaml-examples/examples/day12_part1/circuit.mli?raw";
+import day12Part1Test from "@hardcaml-examples/examples/day12_part1/test.ml?raw";
+import day12Part1Input from "@hardcaml-examples/examples/day12_part1/input.txt?raw";
+
 // N2T Stubs (exercises) from examples/n2t/
 import n2tNotStub from "@hardcaml-examples/examples/n2t/not.ml?raw";
 import n2tAndStub from "@hardcaml-examples/examples/n2t/and.ml?raw";
@@ -198,6 +324,27 @@ export type ExampleKey =
   | "fibonacci"
   | "day1_part1"
   | "day1_part2"
+  | "day2_part1"
+  | "day2_part2"
+  | "day3_part1"
+  | "day3_part2"
+  | "day4_part1"
+  | "day4_part2"
+  | "day5_part1"
+  | "day5_part2"
+  | "day6_part1"
+  | "day6_part2"
+  | "day7_part1"
+  | "day7_part2"
+  | "day8_part1"
+  | "day8_part2"
+  | "day9_part1"
+  | "day9_part2"
+  | "day10_part1"
+  | "day10_part2"
+  | "day11_part1"
+  | "day11_part2"
+  | "day12_part1"
   | "n2t_not"
   | "n2t_and"
   | "n2t_or"
@@ -309,6 +456,239 @@ const day1Part2Example: HardcamlExample = {
   interface: day1Part2Interface,
   test: day1Part2Test,
   input: day1Part2Input,
+};
+
+const day2Part1Example: HardcamlExample = {
+  name: "AoC Day 2 Part 1",
+  description:
+    "Find numbers in ranges where the digit count is even and the first half equals the second half",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day2Part1Circuit,
+  interface: day2Part1Interface,
+  test: day2Part1Test,
+  input: day2Part1Input,
+};
+
+const day2Part2Example: HardcamlExample = {
+  name: "AoC Day 2 Part 2",
+  description:
+    "Find numbers in ranges where any repeating pattern of digits exists",
+  difficulty: "advanced",
+  category: "advent",
+  circuit: day2Part2Circuit,
+  interface: day2Part2Interface,
+  test: day2Part2Test,
+  input: day2Part2Input,
+};
+
+const day3Part1Example: HardcamlExample = {
+  name: "AoC Day 3 Part 1",
+  description: "TODO: Implement Day 3 Part 1",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day3Part1Circuit,
+  interface: day3Part1Interface,
+  test: day3Part1Test,
+  input: day3Part1Input,
+};
+
+const day3Part2Example: HardcamlExample = {
+  name: "AoC Day 3 Part 2",
+  description: "TODO: Implement Day 3 Part 2",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day3Part2Circuit,
+  interface: day3Part2Interface,
+  test: day3Part2Test,
+  input: day3Part2Input,
+};
+
+const day4Part1Example: HardcamlExample = {
+  name: "AoC Day 4 Part 1",
+  description: "TODO: Implement Day 4 Part 1",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day4Part1Circuit,
+  interface: day4Part1Interface,
+  test: day4Part1Test,
+  input: day4Part1Input,
+};
+
+const day4Part2Example: HardcamlExample = {
+  name: "AoC Day 4 Part 2",
+  description: "TODO: Implement Day 4 Part 2",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day4Part2Circuit,
+  interface: day4Part2Interface,
+  test: day4Part2Test,
+  input: day4Part2Input,
+};
+
+const day5Part1Example: HardcamlExample = {
+  name: "AoC Day 5 Part 1",
+  description: "TODO: Implement Day 5 Part 1",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day5Part1Circuit,
+  interface: day5Part1Interface,
+  test: day5Part1Test,
+  input: day5Part1Input,
+};
+
+const day5Part2Example: HardcamlExample = {
+  name: "AoC Day 5 Part 2",
+  description: "TODO: Implement Day 5 Part 2",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day5Part2Circuit,
+  interface: day5Part2Interface,
+  test: day5Part2Test,
+  input: day5Part2Input,
+};
+
+const day6Part1Example: HardcamlExample = {
+  name: "AoC Day 6 Part 1",
+  description: "TODO: Implement Day 6 Part 1",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day6Part1Circuit,
+  interface: day6Part1Interface,
+  test: day6Part1Test,
+  input: day6Part1Input,
+};
+
+const day6Part2Example: HardcamlExample = {
+  name: "AoC Day 6 Part 2",
+  description: "TODO: Implement Day 6 Part 2",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day6Part2Circuit,
+  interface: day6Part2Interface,
+  test: day6Part2Test,
+  input: day6Part2Input,
+};
+
+const day7Part1Example: HardcamlExample = {
+  name: "AoC Day 7 Part 1",
+  description: "TODO: Implement Day 7 Part 1",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day7Part1Circuit,
+  interface: day7Part1Interface,
+  test: day7Part1Test,
+  input: day7Part1Input,
+};
+
+const day7Part2Example: HardcamlExample = {
+  name: "AoC Day 7 Part 2",
+  description: "TODO: Implement Day 7 Part 2",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day7Part2Circuit,
+  interface: day7Part2Interface,
+  test: day7Part2Test,
+  input: day7Part2Input,
+};
+
+const day8Part1Example: HardcamlExample = {
+  name: "AoC Day 8 Part 1",
+  description: "TODO: Implement Day 8 Part 1",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day8Part1Circuit,
+  interface: day8Part1Interface,
+  test: day8Part1Test,
+  input: day8Part1Input,
+};
+
+const day8Part2Example: HardcamlExample = {
+  name: "AoC Day 8 Part 2",
+  description: "TODO: Implement Day 8 Part 2",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day8Part2Circuit,
+  interface: day8Part2Interface,
+  test: day8Part2Test,
+  input: day8Part2Input,
+};
+
+const day9Part1Example: HardcamlExample = {
+  name: "AoC Day 9 Part 1",
+  description: "TODO: Implement Day 9 Part 1",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day9Part1Circuit,
+  interface: day9Part1Interface,
+  test: day9Part1Test,
+  input: day9Part1Input,
+};
+
+const day9Part2Example: HardcamlExample = {
+  name: "AoC Day 9 Part 2",
+  description: "TODO: Implement Day 9 Part 2",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day9Part2Circuit,
+  interface: day9Part2Interface,
+  test: day9Part2Test,
+  input: day9Part2Input,
+};
+
+const day10Part1Example: HardcamlExample = {
+  name: "AoC Day 10 Part 1",
+  description: "TODO: Implement Day 10 Part 1",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day10Part1Circuit,
+  interface: day10Part1Interface,
+  test: day10Part1Test,
+  input: day10Part1Input,
+};
+
+const day10Part2Example: HardcamlExample = {
+  name: "AoC Day 10 Part 2",
+  description: "TODO: Implement Day 10 Part 2",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day10Part2Circuit,
+  interface: day10Part2Interface,
+  test: day10Part2Test,
+  input: day10Part2Input,
+};
+
+const day11Part1Example: HardcamlExample = {
+  name: "AoC Day 11 Part 1",
+  description: "TODO: Implement Day 11 Part 1",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day11Part1Circuit,
+  interface: day11Part1Interface,
+  test: day11Part1Test,
+  input: day11Part1Input,
+};
+
+const day11Part2Example: HardcamlExample = {
+  name: "AoC Day 11 Part 2",
+  description: "TODO: Implement Day 11 Part 2",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day11Part2Circuit,
+  interface: day11Part2Interface,
+  test: day11Part2Test,
+  input: day11Part2Input,
+};
+
+const day12Part1Example: HardcamlExample = {
+  name: "AoC Day 12 Part 1",
+  description: "TODO: Implement Day 12 Part 1",
+  difficulty: "intermediate",
+  category: "advent",
+  circuit: day12Part1Circuit,
+  interface: day12Part1Interface,
+  test: day12Part1Test,
+  input: day12Part1Input,
 };
 
 // N2T Exercises (stubs)
@@ -1090,6 +1470,27 @@ export const examples: Record<ExampleKey, HardcamlExample> = {
   fibonacci: fibonacciExample,
   day1_part1: day1Part1Example,
   day1_part2: day1Part2Example,
+  day2_part1: day2Part1Example,
+  day2_part2: day2Part2Example,
+  day3_part1: day3Part1Example,
+  day3_part2: day3Part2Example,
+  day4_part1: day4Part1Example,
+  day4_part2: day4Part2Example,
+  day5_part1: day5Part1Example,
+  day5_part2: day5Part2Example,
+  day6_part1: day6Part1Example,
+  day6_part2: day6Part2Example,
+  day7_part1: day7Part1Example,
+  day7_part2: day7Part2Example,
+  day8_part1: day8Part1Example,
+  day8_part2: day8Part2Example,
+  day9_part1: day9Part1Example,
+  day9_part2: day9Part2Example,
+  day10_part1: day10Part1Example,
+  day10_part2: day10Part2Example,
+  day11_part1: day11Part1Example,
+  day11_part2: day11Part2Example,
+  day12_part1: day12Part1Example,
   n2t_not: n2tNotExample,
   n2t_and: n2tAndExample,
   n2t_or: n2tOrExample,

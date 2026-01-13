@@ -23,6 +23,15 @@ make logs     # View logs from all services
 make clean    # Stop services and remove volumes
 ```
 
+## What do you want to do?
+
+- **Use the Web IDE locally**: run `make dev`, then open the IDE on `localhost:5173`.
+- **Work on the backend compile API / test runner**: see [`api/README.md`](api/README.md).
+- **Write OCaml/Hardcaml circuits and run dune tests directly**: see [`hardcaml/README.md`](hardcaml/README.md).
+- **Work on the frontend**: see [`frontend/README.md`](frontend/README.md).
+- **Read Nand2Tetris implementation notes**: see [`docs/Nand2Tetris.md`](docs/Nand2Tetris.md).
+- **Deploy**: see [`docs/DEPLOY.md`](docs/DEPLOY.md).
+
 ## Project Structure
 
 ```
@@ -155,111 +164,7 @@ Uses [uv](https://docs.astral.sh/uv/) for dependency management.
 Dependencies are automatically installed when you start the development services with `make dev`.
 The backend service installs dependencies in the container's virtual environment at `/opt/venv` on startup.
 
-## Adding Examples
+## Configuration
 
-1. Create `hardcaml/examples/<name>/` with:
-
-   - `circuit.ml` - Implementation with `I`, `O` modules and `hierarchical` function
-   - `circuit.mli` - Interface file
-   - `test.ml` - Test with `[%expect {| |}]` and `===WAVEFORM_START/END===` markers
-   - `input.txt` (optional) - Input data
-
-2. Register in `frontend/src/examples/hardcaml-examples.ts`
-
-3. Add to `api/tests/examples.py` for test coverage
-
-## API Reference
-
-### `POST /compile`
-
-```json
-{
-  "files": {
-    "circuit.ml": "...",
-    "circuit.mli": "...",
-    "test.ml": "..."
-  },
-  "timeout_seconds": 30
-}
-```
-
-### `GET /health`
-
-Returns `{"status": "healthy"}`.
-
-## Circuit Template
-
-```ocaml
-open! Core
-open! Hardcaml
-open! Signal
-
-module I = struct
-  type 'a t = { clock : 'a; clear : 'a }
-  [@@deriving hardcaml]
-end
-
-module O = struct
-  type 'a t = { out : 'a [@bits 8] }
-  [@@deriving hardcaml]
-end
-
-let create scope (i : _ I.t) : _ O.t =
-  let spec = Reg_spec.create ~clock:i.clock ~clear:i.clear () in
-  { out = reg spec ~enable:vdd (i.clear |: gnd) }
-;;
-
-let hierarchical scope =
-  let module Scoped = Hierarchy.In_scope (I) (O) in
-  Scoped.hierarchical ~scope ~name:"my_circuit" create
-;;
-```
-
-## Toolchain
-
-- **OxCaml 5.2** - Jane Street's OCaml distribution
-- **Hardcaml** - Hardware design library
-- **Hardcaml_waveterm** - Waveform visualization
-- **Hardcaml_test_harness** - Testing utilities
-
-## Building and Pushing Docker Images
-
-The project uses pre-built base images from GitHub Container Registry. To build and push your own images:
-
-```bash
-# Build images locally
-make build-base    # Base image with OCaml toolchain
-make build-prod    # Production app image
-make build-docs    # Production docs image
-
-# Push to GitHub Container Registry
-make push-base     # Push base image
-make push-prod     # Push production app image
-make push-docs     # Push docs image
-
-make push-all      # Build and push all images
-```
-
-Images are tagged as `ghcr.io/<GITHUB_USERNAME>/<image-name>:latest`.
-Set `GITHUB_USERNAME` in your `.env` file to specify your GitHub username for image tagging.
-
-## Deployment
-
-See [DEPLOY.md](DEPLOY.md) for Railway setup.
-
-## Environment Variables
-
-Copy `.env.example` to `.env` and configure:
-
-- `RATE_LIMIT_PER_MINUTE`: API rate limit (default: 10)
-- `VITE_PUBLIC_POSTHOG_KEY`: PostHog API key (optional, for analytics)
-- `VITE_PUBLIC_POSTHOG_HOST`: PostHog host URL (optional)
-- `VITE_POSTHOG_ENABLED`: Enable/disable analytics (optional)
-- `GITHUB_USERNAME`: Only needed if building/pushing your own images (defaults to `treygilliland`)
-- `BASE_IMAGE`: Base image with OCaml toolchain (defaults to `ghcr.io/treygilliland/hardcaml-base:latest`)
-- `PROD_IMAGE`: Production app image (defaults to `ghcr.io/treygilliland/hardcaml-web-ide:latest`)
-- `DOCS_IMAGE`: Docs site image (defaults to `ghcr.io/treygilliland/hardcaml-docs:latest`)
-
-**Note:** Docker images are publicly available at `ghcr.io/treygilliland/`, so you can use them directly without configuration.
-
-See `.env.example` for all available options.
+- **Environment variables**: see `.env.example` (rate limiting, analytics, image names, etc.).
+- **Deployment**: see [`docs/DEPLOY.md`](docs/DEPLOY.md).

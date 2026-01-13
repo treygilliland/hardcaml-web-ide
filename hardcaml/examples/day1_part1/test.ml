@@ -8,7 +8,6 @@ module Harness = Cyclesim_harness.Make (Circuit.I) (Circuit.O)
 let passed = ref 0
 let failed = ref 0
 
-(* Parse a single command like "L68" or "R30" *)
 let parse_command (s : string) : bool * int =
   let s = String.strip s in
   if String.length s < 2 then failwith ("Invalid command: " ^ s);
@@ -23,14 +22,12 @@ let parse_command (s : string) : bool * int =
   (direction, value)
 ;;
 
-(* Parse input from the Input tab - each line is a command *)
 let parse_input input_string =
   String.split_lines input_string
   |> List.filter ~f:(fun s -> not (String.is_empty (String.strip s)))
   |> List.map ~f:parse_command
 ;;
 
-(* The input data is provided via the Input tab *)
 let input_data = {|INPUT_DATA|}
 
 let ( <--. ) = Bits.( <--. )
@@ -44,7 +41,7 @@ let run_testbench (sim : Harness.Sim.t) =
   printf "Processing %d commands\n" (List.length commands);
   
   let send_command (direction, value) =
-    inputs.Circuit.I.direction := if direction then Bits.vdd else Bits.gnd;
+    inputs.direction := if direction then Bits.vdd else Bits.gnd;
     inputs.value <--. value;
     inputs.command_valid := Bits.vdd;
     cycle ();
@@ -52,7 +49,6 @@ let run_testbench (sim : Harness.Sim.t) =
     cycle ()
   in
   
-  (* Initialize *)
   inputs.clear := Bits.vdd;
   cycle ();
   inputs.clear := Bits.gnd;
@@ -62,11 +58,9 @@ let run_testbench (sim : Harness.Sim.t) =
   inputs.start := Bits.gnd;
   cycle ();
   
-  (* Process all commands *)
   List.iter commands ~f:send_command;
   
-  (* Check result *)
-  let zero_count = Bits.to_unsigned_int !(outputs.Circuit.O.zero_count) in
+  let zero_count = Bits.to_unsigned_int !(outputs.zero_count) in
   let final_position = Bits.to_unsigned_int !(outputs.position) in
   
   if zero_count > 0 then begin

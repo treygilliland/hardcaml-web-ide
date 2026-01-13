@@ -6,9 +6,9 @@ Runs examples through compiler.compile_and_run() without HTTP.
 Must be run inside Docker where dune/opam environment exists.
 
 Usage:
-    python test_runner.py           # Run all examples
-    python test_runner.py counter   # Run specific example
-    python test_runner.py -v        # Verbose output
+    uv run python test_runner.py           # Run all examples
+    uv run python test_runner.py counter   # Run specific example
+    uv run python test_runner.py -v        # Verbose output
 """
 
 import argparse
