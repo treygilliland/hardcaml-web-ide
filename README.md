@@ -17,7 +17,7 @@ The [Hardcaml](https://github.com/janestreet/hardcaml) library and logo are deve
 ```bash
 make dev      # Start all development services (backend :8000, frontend :5173, docs :4321)
 make test     # Run tests in docker containers
-make up       # Start production services
+make up       # Start production services (service :8000, docs :8080)
 make down     # Stop all services
 make logs     # View logs from all services
 make clean    # Stop services and remove volumes
@@ -29,28 +29,22 @@ make clean    # Stop services and remove volumes
 - **Work on the backend compile API / test runner**: see [`api/README.md`](api/README.md).
 - **Write OCaml/Hardcaml circuits and run dune tests directly**: see [`hardcaml/README.md`](hardcaml/README.md).
 - **Work on the frontend**: see [`frontend/README.md`](frontend/README.md).
-- **Read Nand2Tetris implementation notes**: see [`docs/Nand2Tetris.md`](docs/Nand2Tetris.md).
 - **Deploy**: see [`docs/DEPLOY.md`](docs/DEPLOY.md).
 
 ## Project Structure
 
 ```
-├── api/                  		# FastAPI compilation and server backend
+├── api/                  		# FastAPI compilation and server backend (see api/README.md)
 ├── frontend/             		# pnpm workspace (see frontend/README.md)
-│   ├── ui/               		# @hardcaml/ui    - shared components
-│   ├── ide/              		# @hardcaml/ide   - main IDE app
-│   └── docs/             		# @hardcaml/docs  - Astro docs site
-├── hardcaml/             		# hardcaml source code
-│   ├── examples/         		# Example circuits
+│   ├── ui/               		#   @hardcaml/ui    - shared components
+│   ├── ide/              		#   @hardcaml/ide   - main IDE app
+│   └── docs/             		#   @hardcaml/docs  - Astro docs site
+├── hardcaml/             		# hardcaml source code (see hardcaml/README.md)
+│   ├── examples/         		#   Example circuits
+│   ├── aoc/              		#   Advent of Code solutions
+│   ├── n2t/              		#   Nand2Tetris solutions and stubs for exercises
+│   ├── build-templates/ 		  # Dune project templates
 │   └── build-cache/      		# Pre-built dune project
-├── Dockerfile            		# App image (uses base)
-├── Dockerfile.base       		# Base image (OCaml toolchain)
-├── docker-compose.yml    		# Production services
-├── docker-compose.dev.yml    # Development services
-├── frontend/
-│   ├── Dockerfile.docs         # Docs site image
-│   └── Dockerfile.frontend.dev # Frontend dev image
-└── .github/workflows/          # GitHub Actions (builds base image)
 ```
 
 ## Architecture
@@ -63,7 +57,8 @@ The project is split into:
    - `@hardcaml/ide` - Main IDE application (React + Vite)
    - `@hardcaml/docs` - Documentation site (Astro Starlight)
 
-The frontend uses a pnpm workspace to share code between the IDE and docs site. The IDE app is bundled with the API in production, while the docs site runs as a separate service in both development and production.
+The frontend uses a pnpm workspace to share code between the IDE and docs site.
+The IDE app is bundled with the API in production, while the docs site runs as a separate service in both development and production.
 
 See [frontend/README.md](frontend/README.md) for details on the frontend architecture and development workflow.
 
@@ -87,6 +82,19 @@ See [frontend/README.md](frontend/README.md) for details on the frontend archite
 ## Development
 
 All development happens in Docker containers with hot reload enabled. The `make dev` command starts three services:
+
+### Docker Configuration
+
+```
+├── Dockerfile            		# App image (uses base)
+├── Dockerfile.base       		# Base image (OCaml toolchain)
+├── docker-compose.yml    		# Production services
+├── docker-compose.dev.yml    # Development services
+├── frontend/
+│   ├── Dockerfile.docs         # Docs site image
+│   └── Dockerfile.frontend.dev # Frontend dev image
+└── railway.json                # Railway deployment config
+```
 
 | Service  | URL            | Hot Reload       | Description        |
 | -------- | -------------- | ---------------- | ------------------ |

@@ -1,0 +1,143 @@
+---
+title: "Day 2: Mirror Numbers"
+description: Find numbers where first half of digits equals second half
+---
+
+## Problem
+
+Find numbers where:
+- The digit count is **even**
+- The **first half** of digits equals the **second half**
+
+Examples:
+- `1212` → "12" == "12" ✓
+- `123456` → "123" != "456" ✗
+- `1221` → "12" == "21" ✗ (not equal)
+
+Sum all matching numbers.
+
+## Example
+
+Given numbers: `1212`, `1234`, `1221`, `1331`
+
+- `1212`: 4 digits, "12" == "12" ✓ → add 1212
+- `1234`: 4 digits, "12" != "34" ✗
+- `1221`: 4 digits, "12" != "21" ✗
+- `1331`: 4 digits, "13" != "31" ✗
+
+Sum = 1212
+
+## Circuit Interface
+
+```ocaml
+module I = struct
+  type 'a t =
+    { clock : 'a
+    ; clear : 'a
+    ; start : 'a                              (* Reset accumulator *)
+    ; digits : 'a [@bits 40]                   (* 10 BCD digits, MSB-first, left-padded *)
+    ; digit_count : 'a [@bits 4]              (* Number of valid digits (1-10) *)
+    ; value : 'a [@bits 40]                    (* The number value to add if match *)
+    ; number_valid : 'a                       (* Pulse when a number is ready *)
+    }
+  [@@deriving hardcaml]
+end
+
+module O = struct
+  type 'a t =
+    { sum : 'a [@bits 64]                     (* Running sum of matching numbers *)
+    ; match_count : 'a [@bits 32]              (* Count of matching numbers *)
+    }
+  [@@deriving hardcaml]
+end
+```
+
+## Key Implementation Details
+
+### Digit Extraction
+
+Digits are packed into a 40-bit signal (10 digits × 4 bits each). Extract individual digits:
+
+```ocaml
+let get_digit ~digits ~index =
+  let start_bit = (max_digits - 1 - index) * digit_bits in
+  select digits ~high:(start_bit + digit_bits - 1) ~low:start_bit
+;;
+```
+
+For a 4-digit number like `1212` stored at indices 6-9:
+- First half: digits at indices 6, 7
+- Second half: digits at indices 8, 9
+
+### Mirror Check
+
+Check if first half equals second half for a specific digit count:
+
+```ocaml
+let check_mirror_for_length ~digits ~digit_count ~n =
+  if n mod 2 <> 0 then gnd  (* Must be even length *)
+  else
+    let offset = max_digits - n in
+    let half = n / 2 in
+    let matches = 
+      List.init half ~f:(fun i ->
+        let d1 = get_digit ~digits ~index:(offset + i) in
+        let d2 = get_digit ~digits ~index:(offset + i + half) in
+        d1 ==: d2)
+    in
+    let length_matches = digit_count ==: of_int_trunc ~width:count_bits n in
+    length_matches &: reduce ~f:( &: ) matches
+;;
+```
+
+### Check All Valid Lengths
+
+Since numbers can have 2, 4, 6, 8, or 10 digits, check all possibilities:
+
+```ocaml
+let check_mirror ~digits ~digit_count =
+  let checks = List.map [2; 4; 6; 8; 10] ~f:(fun n ->
+    check_mirror_for_length ~digits ~digit_count ~n)
+  in
+  reduce ~f:( |: ) checks
+;;
+```
+
+### State Machine
+
+```ocaml
+compile
+  [ when_ start
+      [ sum <-- zero sum_bits
+      ; match_count <-- zero 32
+      ]
+  ; when_ number_valid
+      [ when_ is_match 
+          [ sum <-- sum.value +: value_extended
+          ; match_count <-- match_count.value +: one 32
+          ]
+      ]
+  ];
+```
+
+## Testing
+
+The test harness provides numbers with their digit representations:
+
+```ocaml
+(* Number 1212: 4 digits, "12" == "12" *)
+inputs.digits := (* BCD representation of 1212 *)
+inputs.digit_count := Bits.of_int ~width:4 4;
+inputs.value := Bits.of_int ~width:40 1212;
+inputs.number_valid := Bits.vdd;
+Cyclesim.cycle sim;
+(* sum = 1212, match_count = 1 *)
+```
+
+[Try it in IDE →](https://hardcaml.tg3.dev#day2_part1)
+
+## Part 2
+
+Part 2 extends the problem with different matching criteria. The circuit structure is similar but uses different comparison logic.
+
+[Try Part 2 →](https://hardcaml.tg3.dev#day2_part2)

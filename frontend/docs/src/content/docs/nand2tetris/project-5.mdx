@@ -1,0 +1,221 @@
+---
+title: "Project 5: CPU and Computer"
+description: Build the Hack CPU and complete computer
+---
+
+In this project, you'll build the CPU and complete computer system, bringing together all the chips from previous projects.
+
+## Overview
+
+Project 5 consists of three main components:
+
+1. **Memory** - Maps RAM, Screen, and Keyboard into a unified memory space
+2. **CPU** - Executes Hack machine language instructions
+3. **Computer** - Combines CPU, ROM, and Memory into a complete system
+
+## Memory
+
+The Memory chip maps different address ranges to different components:
+
+| Address Range | Component |
+|--------------|-----------|
+| 0-16383 | RAM (RAM16K) |
+| 16384-24575 | Screen (8K memory-mapped display) |
+| 24576 | Keyboard (single register) |
+
+### Implementation
+
+```ocaml
+let create scope ({ clock; clear; outM; writeM; addressM; key } : _ I.t) : _ O.t =
+  let open N2t_chips in
+  
+  (* Determine which component to access *)
+  let is_ram = addressM <: of_int_trunc ~width:15 16384 in
+  let is_screen = (addressM >=: of_int_trunc ~width:15 16384) &: 
+                  (addressM <: of_int_trunc ~width:15 24576) in
+  let is_keyboard = addressM ==: of_int_trunc ~width:15 24576 in
+  
+  (* RAM access *)
+  let ram_out = ram16k_ scope clock clear outM writeM addressM in
+  
+  (* Screen access (simplified - actual screen is more complex) *)
+  let screen_out = (* screen implementation *) in
+  
+  (* Keyboard *)
+  let keyboard_out = key in
+  
+  (* Select output based on address *)
+  let out = mux16_ scope ram_out screen_out is_screen in
+  let out = mux16_ scope out keyboard_out is_keyboard in
+  
+  { out }
+```
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_memory)
+
+## CPU
+
+The CPU executes Hack machine language instructions. It has two instruction formats:
+
+### A-Instruction (MSB = 0)
+
+Loads a 15-bit value into the A register:
+
+```
+0 v v v v v v v v v v v v v v v
+```
+
+### C-Instruction (MSB = 1)
+
+Performs computation, stores result, and optionally jumps:
+
+```
+1 1 1 a c1 c2 c3 c4 c5 c6 d1 d2 d3 j1 j2 j3
+```
+
+**Control bits:**
+- `a` (bit 12): ALU uses M if 1, A if 0
+- `c1-c6` (bits 11-6): ALU control (zx, nx, zy, ny, f, no)
+- `d1-d3` (bits 5-3): Destination (A, D, M)
+- `j1-j3` (bits 2-0): Jump condition (lt, eq, gt)
+
+### CPU Implementation
+
+```ocaml
+let create scope (i : _ I.t) : _ O.t =
+  let open N2t_chips in
+  let spec = Reg_spec.create ~clock:i.clock ~clear:i.clear () in
+  
+  (* Decode instruction *)
+  let is_c_instr = bit i.instruction ~pos:15 in
+  let is_a_instr = ~:is_c_instr in
+  
+  (* Extract control bits *)
+  let a_bit = bit i.instruction ~pos:12 in
+  let zx = bit i.instruction ~pos:11 in
+  let nx = bit i.instruction ~pos:10 in
+  let zy = bit i.instruction ~pos:9 in
+  let ny = bit i.instruction ~pos:8 in
+  let f = bit i.instruction ~pos:7 in
+  let no = bit i.instruction ~pos:6 in
+  let d1 = bit i.instruction ~pos:5 in  (* A register *)
+  let d2 = bit i.instruction ~pos:4 in  (* D register *)
+  let d3 = bit i.instruction ~pos:3 in  (* M register *)
+  let j1 = bit i.instruction ~pos:2 in
+  let j2 = bit i.instruction ~pos:1 in
+  let j3 = bit i.instruction ~pos:0 in
+  
+  (* A and D registers *)
+  let a_reg = wire 16 in
+  let d_reg = wire 16 in
+  
+  (* Select A or M for ALU input *)
+  let a_or_m = mux16_ scope a_reg i.inM (is_c_instr &: a_bit) in
+  
+  (* ALU computation *)
+  let alu_out, zr, ng = alu_ scope d_reg a_or_m zx nx zy ny f no in
+  
+  (* Load A register: A-instruction OR C-instruction with d1 *)
+  let load_a = or_ scope is_a_instr (and_ scope is_c_instr d1) in
+  let a_in = mux16_ scope alu_out i.instruction is_a_instr in
+  a_reg <-- reg spec ~enable:load_a a_in;
+  
+  (* Load D register: C-instruction with d2 *)
+  let load_d = and_ scope is_c_instr d2 in
+  d_reg <-- reg spec ~enable:load_d alu_out;
+  
+  (* Jump logic *)
+  let pos = and_ scope (~:ng) (~:zr) in  (* out > 0 *)
+  let jlt = and_ scope j1 ng in          (* out < 0 *)
+  let jeq = and_ scope j2 zr in          (* out == 0 *)
+  let jgt = and_ scope j3 pos in         (* out > 0 *)
+  let do_jump = or_ scope jlt (or_ scope jeq jgt) in
+  let load_pc = and_ scope is_c_instr do_jump in
+  
+  (* Program Counter *)
+  let pc_out = pc_ scope i.clock i.clear a_reg load_pc vdd i.reset in
+  
+  { outM = alu_out
+  ; writeM = and_ scope is_c_instr d3
+  ; addressM = select a_reg ~high:14 ~low:0
+  ; pc = select pc_out ~high:14 ~low:0
+  }
+```
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_cpu)
+
+## Computer
+
+The Computer combines CPU, ROM32K, and Memory into a complete system:
+
+```ocaml
+let create scope (i : _ I.t) : _ O.t =
+  let open N2t_chips in
+  
+  (* PC wire for feedback *)
+  let pc_wire = wire 15 in
+  
+  (* ROM: program memory, addressed by PC *)
+  let instruction = rom32k_ scope i.clock pc_wire in
+  
+  (* Memory output wire *)
+  let mem_out = wire 16 in
+  
+  (* CPU: executes instructions *)
+  let outM, writeM, addressM, pc = 
+    cpu_ scope i.clock i.clear mem_out instruction i.reset in
+  
+  (* Connect PC back to ROM *)
+  pc_wire <-- pc;
+  
+  (* Memory: RAM, Screen, Keyboard *)
+  let mem = memory_ scope i.clock i.clear outM writeM addressM i.key in
+  mem_out <-- mem;
+  
+  { pc; addressM; outM; writeM }
+```
+
+[Try it in IDE →](https://hardcaml.tg3.dev#n2t_computer)
+
+## Key Concepts
+
+### Instruction Execution Cycle
+
+1. **Fetch**: CPU reads instruction from ROM at address PC
+2. **Decode**: Determine if A-instruction or C-instruction
+3. **Execute**: 
+   - A-instruction: Load value into A register
+   - C-instruction: Compute with ALU, store results, check jump condition
+4. **Update PC**: Increment PC, or load from A if jump condition met
+
+### Register Updates
+
+- **A register**: Updated on A-instruction or C-instruction with `d1=1`
+- **D register**: Updated on C-instruction with `d2=1`
+- **M (memory)**: Written on C-instruction with `d3=1`
+
+### Jump Conditions
+
+The jump bits `j1`, `j2`, `j3` correspond to:
+- `j1`: Jump if ALU output < 0 (negative)
+- `j2`: Jump if ALU output == 0 (zero)
+- `j3`: Jump if ALU output > 0 (positive)
+
+### Combinational Outputs
+
+**Important**: `outM` is combinational and recomputes after register updates. If a C-instruction writes to D and then uses D in the next instruction, `outM` will reflect the NEW D value, not the value used during the clock edge.
+
+## Testing Tips
+
+1. **Start with simple instructions**: Test `@5` (A-instruction) first
+2. **Test ALU operations**: Use `D=A`, `D=D+A`, etc.
+3. **Test jumps**: Use `0;JMP` to jump unconditionally
+4. **Test memory**: Use `M=D` to write, then `D=M` to read back
+5. **Watch waveforms**: Visualize register updates and PC changes
+
+## Next Steps
+
+Congratulations! You've built a complete computer from NAND gates. You can now:
+- Write programs in Hack assembly
+- Run them on your computer
+- Explore the [Advent of Code](/advent-of-code/overview) section to see Hardcaml solving algorithmic problems

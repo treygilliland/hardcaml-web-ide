@@ -1,0 +1,125 @@
+---
+title: "Day 1: Dial Rotation"
+description: Count how many times a rotating dial lands on position 0
+---
+
+## Problem
+
+A dial has positions 0-99 (circular, so 99 wraps to 0). The dial starts at position 50.
+
+You receive a series of rotation commands:
+- **Left (L)**: Rotate left by a given amount
+- **Right (R)**: Rotate right by a given amount
+
+Count how many times the dial lands on position 0 after all rotations.
+
+## Example
+
+Starting at position 50:
+- `R 25` → 50 + 25 = 75
+- `L 10` → 75 - 10 = 65
+- `R 100` → 65 + 100 = 165 → 165 mod 100 = 65
+- `L 65` → 65 - 65 = 0 ✓ (count this!)
+
+## Circuit Interface
+
+```ocaml
+module I = struct
+  type 'a t =
+    { clock : 'a
+    ; clear : 'a
+    ; start : 'a              (* Pulse to initialize/reset *)
+    ; direction : 'a          (* 0 = Left, 1 = Right *)
+    ; value : 'a [@bits 10]   (* Rotation amount 0-999 *)
+    ; command_valid : 'a      (* Pulse when command is ready *)
+    }
+  [@@deriving hardcaml]
+end
+
+module O = struct
+  type 'a t =
+    { zero_count : 'a [@bits 16]    (* Number of times dial hit 0 *)
+    ; position : 'a [@bits 7]       (* Current dial position *)
+    }
+  [@@deriving hardcaml]
+end
+```
+
+## Key Implementation Details
+
+### Modular Arithmetic
+
+Since we need `value mod 100`, and hardware doesn't have division, we use repeated subtraction:
+
+```ocaml
+let mod_100 ~width x =
+  let hundred = of_int_trunc ~width 100 in
+  let sub_if_ge y = mux2 (y >=: hundred) (y -: hundred) y in
+  Fn.apply_n_times ~n:9 sub_if_ge x
+;;
+```
+
+This subtracts 100 up to 9 times (since max input is 999), ensuring the result is in range 0-99.
+
+### Rotation Logic
+
+**Right rotation**: `(position + value) mod 100`
+
+```ocaml
+let sum = pos_extended +: val_extended in
+let right_result = mux2 (sum >=: hundred) (sum -: hundred) sum in
+```
+
+**Left rotation**: `(position - value + 100) mod 100`
+
+```ocaml
+let pos_plus_100 = pos_extended +: hundred in
+let left_diff = pos_plus_100 -: val_extended in
+let left_result = mux2 (left_diff >=: hundred) (left_diff -: hundred) left_diff in
+```
+
+### State Machine
+
+```ocaml
+compile
+  [ when_ start
+      [ position <-- of_int_trunc ~width:position_bits 50
+      ; zero_count <-- zero count_bits
+      ]
+  ; when_ command_valid
+      [ position <-- new_position_truncated
+      ; when_ is_zero [ zero_count <-- zero_count.value +: one count_bits ]
+      ]
+  ];
+```
+
+## Testing
+
+The test harness feeds commands one at a time:
+
+```ocaml
+(* Start at position 50 *)
+inputs.start := Bits.vdd;
+Cyclesim.cycle sim;
+
+(* Right 25: 50 + 25 = 75 *)
+inputs.direction := Bits.vdd;
+inputs.value := Bits.of_int ~width:10 25;
+inputs.command_valid := Bits.vdd;
+Cyclesim.cycle sim;
+(* position = 75 *)
+
+(* Left 75: 75 - 75 = 0 *)
+inputs.direction := Bits.gnd;
+inputs.value := Bits.of_int ~width:10 75;
+Cyclesim.cycle sim;
+(* position = 0, zero_count = 1 *)
+```
+
+[Try it in IDE →](https://hardcaml.tg3.dev#day1_part1)
+
+## Part 2
+
+Part 2 extends the problem with additional constraints. The circuit structure is similar but tracks additional state.
+
+[Try Part 2 →](https://hardcaml.tg3.dev#day1_part2)

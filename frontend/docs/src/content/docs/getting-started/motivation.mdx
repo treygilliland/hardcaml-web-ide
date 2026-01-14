@@ -1,0 +1,32 @@
+---
+title: Motivation
+description: Why I built this
+---
+
+In December 2025, I was working through the Advent of Code when I saw an ad for Jane Street's Advent of FPGA in the sidebar.
+I had already planned to work through Nand2Tetris over the holidays to learn more about computer architecture and how it connects to software.
+After completing Advent of Code in Python and finishing Nand2Tetris, I decided to take a swing at the Advent of FPGA.
+
+## Grokking FPGAs
+
+I was completely new to OCaml, FPGAs, and RTL languages, so I learned an immense amount.
+It felt like learning to program all over again.
+Resources like [HDLBits](https://hdlbits.01xz.net/), [nandland.com](https://nandland.com/), [Real World OCaml](https://dev.realworldocaml.org/), and the various [Jane Street Hardcaml resources](https://www.janestreet.com/web-app/hardcaml-docs/introduction/why) were incredibly helpful as I was learning.
+
+## Advent of FPGA
+
+I only made it through Day 1-3 and Day 12, and heavily relied on AI for Day 3 part 2.
+I may revisit to tackle more problems in the future, but the experience was invaluable.
+
+## Building a Hardcaml Web IDE
+
+The biggest hurdle was getting the toolchain set up.
+It was an endeavor, and I wanted to build a project that would make it easier for more people to get their hands on Hardcaml.
+There's a pre-existing [template project](https://github.com/janestreet/hardcaml_template_project/tree/with-extensions) from Jane Street, but setting up the development environment still requires significant effort.
+
+This web-based IDE can also be used as a playground for [OxCaml](https://oxcaml.org/get-oxcaml/).
+The OxCaml homepage currently notes that a GitHub Codespace takes 30+ minutes to initialize, so a web-based IDE is much quicker for a new user to get started!
+
+## Next Steps
+
+Future work includes LSP integration, client-side compilation, and reformatting circuits to run on real hardware.
