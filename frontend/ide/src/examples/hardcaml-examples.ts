@@ -13,25 +13,30 @@ import fibonacciCircuit from "@hardcaml-examples/examples/fibonacci/circuit.ml?r
 import fibonacciInterface from "@hardcaml-examples/examples/fibonacci/circuit.mli?raw";
 import fibonacciTest from "@hardcaml-examples/examples/fibonacci/test.ml?raw";
 
-// OCaml Basics - Hello Types
-import helloTypesCircuit from "@hardcaml-examples/examples/ocaml_basics/hello_types/circuit.ml?raw";
-import helloTypesInterface from "@hardcaml-examples/examples/ocaml_basics/hello_types/circuit.mli?raw";
-import helloTypesTest from "@hardcaml-examples/examples/ocaml_basics/hello_types/test.ml?raw";
+// OCaml Basics - Hello Nand Gate
+import helloNandCircuit from "@hardcaml-examples/examples/ocaml_basics/nand/circuit.ml?raw";
+import helloNandInterface from "@hardcaml-examples/examples/ocaml_basics/nand/circuit.mli?raw";
+import helloNandTest from "@hardcaml-examples/examples/ocaml_basics/nand/test.ml?raw";
 
-// OCaml Basics - Hello Modules
-import helloModulesCircuit from "@hardcaml-examples/examples/ocaml_basics/hello_modules/circuit.ml?raw";
-import helloModulesInterface from "@hardcaml-examples/examples/ocaml_basics/hello_modules/circuit.mli?raw";
-import helloModulesTest from "@hardcaml-examples/examples/ocaml_basics/hello_modules/test.ml?raw";
+// OCaml Basics - Types
+import helloTypesCircuit from "@hardcaml-examples/examples/ocaml_basics/types/circuit.ml?raw";
+import helloTypesInterface from "@hardcaml-examples/examples/ocaml_basics/types/circuit.mli?raw";
+import helloTypesTest from "@hardcaml-examples/examples/ocaml_basics/types/test.ml?raw";
 
-// OCaml Basics - Hello Patterns
-import helloPatternsCircuit from "@hardcaml-examples/examples/ocaml_basics/hello_patterns/circuit.ml?raw";
-import helloPatternsInterface from "@hardcaml-examples/examples/ocaml_basics/hello_patterns/circuit.mli?raw";
-import helloPatternsTest from "@hardcaml-examples/examples/ocaml_basics/hello_patterns/test.ml?raw";
+// OCaml Basics - Modules
+import helloModulesCircuit from "@hardcaml-examples/examples/ocaml_basics/modules/circuit.ml?raw";
+import helloModulesInterface from "@hardcaml-examples/examples/ocaml_basics/modules/circuit.mli?raw";
+import helloModulesTest from "@hardcaml-examples/examples/ocaml_basics/modules/test.ml?raw";
 
-// OCaml Basics - Hello Operators
-import helloOperatorsCircuit from "@hardcaml-examples/examples/ocaml_basics/hello_operators/circuit.ml?raw";
-import helloOperatorsInterface from "@hardcaml-examples/examples/ocaml_basics/hello_operators/circuit.mli?raw";
-import helloOperatorsTest from "@hardcaml-examples/examples/ocaml_basics/hello_operators/test.ml?raw";
+// OCaml Basics - Patterns
+import helloPatternsCircuit from "@hardcaml-examples/examples/ocaml_basics/patterns/circuit.ml?raw";
+import helloPatternsInterface from "@hardcaml-examples/examples/ocaml_basics/patterns/circuit.mli?raw";
+import helloPatternsTest from "@hardcaml-examples/examples/ocaml_basics/patterns/test.ml?raw";
+
+// OCaml Basics - Operators
+import helloOperatorsCircuit from "@hardcaml-examples/examples/ocaml_basics/operators/circuit.ml?raw";
+import helloOperatorsInterface from "@hardcaml-examples/examples/ocaml_basics/operators/circuit.mli?raw";
+import helloOperatorsTest from "@hardcaml-examples/examples/ocaml_basics/operators/test.ml?raw";
 
 // Day 1 Part 1
 import day1Part1Circuit from "@hardcaml-examples/aoc/day1_part1/circuit.ml?raw";
@@ -343,10 +348,11 @@ export interface HardcamlExample {
 export type ExampleKey =
   | "counter"
   | "fibonacci"
-  | "hello_types"
-  | "hello_modules"
-  | "hello_patterns"
-  | "hello_operators"
+  | "nand"
+  | "types"
+  | "modules"
+  | "patterns"
+  | "operators"
   | "day1_part1"
   | "day1_part2"
   | "day2_part1"
@@ -459,8 +465,19 @@ const fibonacciExample: HardcamlExample = {
   test: fibonacciTest,
 };
 
+const helloNandExample: HardcamlExample = {
+  name: "Hello Nand Gate",
+  description:
+    "Your first Hardcaml circuit! A simple NAND gate - the fundamental building block of digital logic",
+  difficulty: "beginner",
+  category: "ocaml_basics",
+  circuit: helloNandCircuit,
+  interface: helloNandInterface,
+  test: helloNandTest,
+};
+
 const helloTypesExample: HardcamlExample = {
-  name: "Hello Types",
+  name: "Types",
   description:
     "Learn basic OCaml types, functions, and records with a simple pass-through circuit",
   difficulty: "beginner",
@@ -471,7 +488,7 @@ const helloTypesExample: HardcamlExample = {
 };
 
 const helloModulesExample: HardcamlExample = {
-  name: "Hello Modules",
+  name: "Modules",
   description:
     "Learn OCaml modules, struct, sig, and open! with an AND gate circuit",
   difficulty: "beginner",
@@ -482,7 +499,7 @@ const helloModulesExample: HardcamlExample = {
 };
 
 const helloPatternsExample: HardcamlExample = {
-  name: "Hello Patterns",
+  name: "Patterns",
   description:
     "Learn pattern matching and record destructuring with a multiplexer circuit",
   difficulty: "beginner",
@@ -493,7 +510,7 @@ const helloPatternsExample: HardcamlExample = {
 };
 
 const helloOperatorsExample: HardcamlExample = {
-  name: "Hello Operators",
+  name: "Operators",
   description:
     "Learn Hardcaml infix operators (AND, OR, XOR, NOT, addition, equality) with a combinational logic circuit",
   difficulty: "beginner",
@@ -1537,10 +1554,11 @@ const n2tComputerSolutionExample: HardcamlExample = {
 export const examples: Record<ExampleKey, HardcamlExample> = {
   counter: counterExample,
   fibonacci: fibonacciExample,
-  hello_types: helloTypesExample,
-  hello_modules: helloModulesExample,
-  hello_patterns: helloPatternsExample,
-  hello_operators: helloOperatorsExample,
+  nand: helloNandExample,
+  types: helloTypesExample,
+  modules: helloModulesExample,
+  patterns: helloPatternsExample,
+  operators: helloOperatorsExample,
   day1_part1: day1Part1Example,
   day1_part2: day1Part2Example,
   day2_part1: day2Part1Example,

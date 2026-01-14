@@ -42,4 +42,4 @@ let create _scope (i : _ I.t) : _ O.t =
 (* Hierarchical wrapper for Hardcaml *)
 let hierarchical scope =
   let module Scoped = Hierarchy.In_scope (I) (O) in
-  Scoped.hierarchical ~scope ~name:"hello_types" create
+  Scoped.hierarchical ~scope ~name:"types" create

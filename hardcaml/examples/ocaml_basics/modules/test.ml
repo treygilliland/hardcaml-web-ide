@@ -9,7 +9,7 @@ let passed = ref 0
 let failed = ref 0
 
 let test_and outputs expected =
-  let out = Bits.to_int !(outputs.Circuit.O.out) in
+  let out = Bits.to_int_trunc !(outputs.Circuit.O.out) in
   if out = expected then begin
     incr passed;
     printf "PASS: out = %d\n" out

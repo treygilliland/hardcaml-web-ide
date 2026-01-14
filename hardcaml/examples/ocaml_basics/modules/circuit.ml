@@ -37,4 +37,4 @@ let hierarchical scope =
   (* Create a local module Scoped *)
   let module Scoped = Hierarchy.In_scope (I) (O) in
   (* Use the module's hierarchical function *)
-  Scoped.hierarchical ~scope ~name:"hello_modules" create
+  Scoped.hierarchical ~scope ~name:"modules" create

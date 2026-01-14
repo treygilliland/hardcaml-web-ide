@@ -63,4 +63,4 @@ let create _scope ({ a; b } : _ I.t) : _ O.t =
 
 let hierarchical scope =
   let module Scoped = Hierarchy.In_scope (I) (O) in
-  Scoped.hierarchical ~scope ~name:"hello_operators" create
+  Scoped.hierarchical ~scope ~name:"operators" create
