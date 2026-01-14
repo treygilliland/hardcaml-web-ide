@@ -8,6 +8,9 @@ module Harness = Cyclesim_harness.Make (Circuit.I) (Circuit.O)
 let passed = ref 0
 let failed = ref 0
 
+(* Expected answer for the test input. Update this value when using different input. *)
+let expected_answer = 357
+
 (* Parse a line of digits into a list of ints *)
 let parse_line (s : string) : int list =
   let s = String.strip s in
@@ -22,24 +25,6 @@ let parse_input input_string =
   |> List.map ~f:parse_line
 ;;
 
-(* Compute expected result using the Python algorithm *)
-let compute_expected (lines : int list list) : int =
-  List.fold lines ~init:0 ~f:(fun acc nums ->
-    if List.length nums < 2 then acc
-    else
-      let nums_excl_last = List.take nums (List.length nums - 1) in
-      let x = List.fold nums_excl_last ~init:0 ~f:Int.max in
-      let i = 
-        match List.findi nums_excl_last ~f:(fun _ v -> v = x) with
-        | Some (idx, _) -> idx
-        | None -> 0
-      in
-      let nums_after_i = List.drop nums (i + 1) in
-      let y = List.fold nums_after_i ~init:0 ~f:Int.max in
-      acc + (x * 10 + y)
-  )
-;;
-
 let input_data = {|INPUT_DATA|}
 
 let ( <--. ) = Bits.( <--. )
@@ -50,9 +35,8 @@ let run_testbench (sim : Harness.Sim.t) =
   let cycle ?n () = Cyclesim.cycle ?n sim in
   
   let lines = parse_input input_data in
-  let expected = compute_expected lines in
   printf "Processing %d lines\n" (List.length lines);
-  printf "Expected result: %d\n" expected;
+  printf "Expected result: %d\n" expected_answer;
   
   (* Helper to send a single digit *)
   let send_digit d =
@@ -95,12 +79,12 @@ let run_testbench (sim : Harness.Sim.t) =
   let result = Bits.to_int_trunc !(outputs.result) in
   printf "Circuit result: %d\n" result;
   
-  if result = expected then begin
+  if result = expected_answer then begin
     incr passed;
     printf "PASS: result = %d\n" result
   end else begin
     incr failed;
-    printf "FAIL: result = %d, expected = %d\n" result expected
+    printf "FAIL: result = %d, expected = %d\n" result expected_answer
   end;
 
   cycle ~n:2 ()

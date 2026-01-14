@@ -8,8 +8,8 @@ The Hardcaml Web IDE runs entirely in your browser - no installation required!
 ## Using the IDE
 
 1. **Go to** [hardcaml.tg3.dev](https://hardcaml.tg3.dev)
-2. **Select an example** from the dropdown in the top-right
-3. **Edit the code** in the editor tabs (circuit.ml, circuit.mli, test.ml)
+2. **Select an example** from the Circuit file tree on the left
+3. **Edit the code** in the editor tabs (circuit.ml, circuit.mli, test.ml, input.txt)
 4. **Click Run** to compile and simulate
 
 ## Understanding the Interface
@@ -17,9 +17,9 @@ The Hardcaml Web IDE runs entirely in your browser - no installation required!
 ### Editor Tabs
 
 - **circuit.ml** - Your circuit implementation
-- **circuit.mli** - Module interface (defines I/O signals)
+- **circuit.mli** - Module interface (defines I/O circuit layout)
 - **test.ml** - Test harness with expect tests
-- **input.txt** - Optional input data for some examples
+- **input.txt** - Input data for some examples (optional)
 
 ### Output Panel
 
@@ -64,11 +64,11 @@ let%expect_test "my_test" =
   let sim = Sim.create (Circuit.hierarchical (Scope.create ())) in
   let waves, sim = Waveform.create sim in
   let inputs = Cyclesim.inputs sim in
-  
+
   (* Set inputs and run cycles *)
   inputs.my_input := Bits.of_int ~width:8 42;
   Cyclesim.cycle sim;
-  
+
   (* Display waveform *)
   Waveform.expect waves;
   [%expect {| |}]  (* Fill in after first run *)
@@ -76,10 +76,10 @@ let%expect_test "my_test" =
 
 ## Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| `Ctrl+Enter` | Run code |
-| `Ctrl+S` | Save (auto-saved to browser) |
+| Shortcut     | Action                       |
+| ------------ | ---------------------------- |
+| `Ctrl+Enter` | Run code                     |
+| `Ctrl+S`     | Save (auto-saved to browser) |
 
 ## Next Steps
 

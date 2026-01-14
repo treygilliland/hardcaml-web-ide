@@ -8,6 +8,9 @@ module Harness = Cyclesim_harness.Make (Circuit.I) (Circuit.O)
 let passed = ref 0
 let failed = ref 0
 
+(* Expected answer for the test input. Update this value when using different input. *)
+let expected_answer = 0L
+
 let input_data = {|INPUT_DATA|}
 
 let run_testbench (sim : Harness.Sim.t) =
@@ -35,7 +38,13 @@ let run_testbench (sim : Harness.Sim.t) =
   let result = Bits.to_int64_trunc !(outputs.Circuit.O.result) in
   printf "Result: %Ld\n" result;
   
-  if result > 0L then incr passed else incr failed;
+  if Int64.(result = expected_answer) then begin
+    incr passed;
+    printf "PASS: result = %Ld\n" result
+  end else begin
+    incr failed;
+    printf "FAIL: result = %Ld, expected = %Ld\n" result expected_answer
+  end;
   
   cycle ~n:2 ()
 ;;

@@ -8,6 +8,9 @@ module Harness = Cyclesim_harness.Make (Circuit.I) (Circuit.O)
 let passed = ref 0
 let failed = ref 0
 
+(* Expected answer for the test input. Update this value when using different input. *)
+let expected_answer = 1227775554L
+
 (* Parse a range string like "11-22" into (lo, hi) tuple *)
 let parse_range (s : string) : int64 * int64 =
   let parts = String.split s ~on:'-' in
@@ -89,12 +92,12 @@ let run_testbench (sim : Harness.Sim.t) =
   let sum = Bits.to_int64_trunc !(outputs.Circuit.O.sum) in
   let match_count = Bits.to_int_trunc !(outputs.match_count) in
   
-  if match_count > 0 then begin
+  if Int64.(sum = expected_answer) then begin
     incr passed;
     printf "PASS: sum = %Ld (match_count = %d)\n" sum match_count
   end else begin
     incr failed;
-    printf "Result: sum = %Ld, match_count = %d\n" sum match_count
+    printf "FAIL: sum = %Ld, expected = %Ld (match_count = %d)\n" sum expected_answer match_count
   end;
   
   cycle ~n:2 ()

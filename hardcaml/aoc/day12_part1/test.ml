@@ -8,6 +8,9 @@ module Harness = Cyclesim_harness.Make (Circuit.I) (Circuit.O)
 let passed = ref 0
 let failed = ref 0
 
+(* Expected answer for the test input. Update this value when using different input. *)
+let expected_answer = 427
+
 (* Parse a problem line like "41x38: 26 26 29 23 21 30" *)
 let parse_problem (s : string) : int * int * int =
   let s = String.strip s in
@@ -79,12 +82,12 @@ let run_testbench (sim : Harness.Sim.t) =
   
   printf "Answer: %d regions can fit all presents\n" possible_count;
   
-  if possible_count > 0 then begin
+  if possible_count = expected_answer then begin
     incr passed;
     printf "PASS: possible_count = %d\n" possible_count
   end else begin
     incr failed;
-    printf "FAIL: possible_count = %d, expected > 0\n" possible_count
+    printf "FAIL: possible_count = %d, expected = %d\n" possible_count expected_answer
   end;
 
   cycle ~n:2 ()

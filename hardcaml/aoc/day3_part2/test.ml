@@ -8,6 +8,9 @@ module Harness = Cyclesim_harness.Make (Circuit.I) (Circuit.O)
 let passed = ref 0
 let failed = ref 0
 
+(* Expected answer for the test input. Update this value when using different input. *)
+let expected_answer = 3121910778619L
+
 (* Parse a line of digits into a list of ints *)
 let parse_line (s : string) : int list =
   let s = String.strip s in
@@ -22,38 +25,6 @@ let parse_input input_string =
   |> List.map ~f:parse_line
 ;;
 
-(* Compute expected result using the Python algorithm *)
-let compute_line_result (nums : int list) : Int64.t =
-  let len = List.length nums in
-  if len < 12 then 0L
-  else
-    let nums_arr = Array.of_list nums in
-    let rec find_digits i n acc =
-      if n < 0 then acc
-      else
-        (* Search from i+1 to len-n-1 *)
-        let start_idx = i + 1 in
-        let end_idx = len - n in
-        let subset = Array.sub nums_arr ~pos:start_idx ~len:(end_idx - start_idx) in
-        let x = Array.fold subset ~init:0 ~f:Int.max in
-        let x_idx = 
-          match Array.findi subset ~f:(fun _ v -> v = x) with
-          | Some (idx, _) -> start_idx + idx
-          | None -> start_idx
-        in
-        let power = Int64.of_float (Float.int_pow 10.0 n) in
-        let contribution = Int64.(of_int x * power) in
-        find_digits x_idx (n - 1) Int64.(acc + contribution)
-    in
-    find_digits (-1) 11 0L
-;;
-
-let compute_expected (lines : int list list) : Int64.t =
-  List.fold lines ~init:0L ~f:(fun acc nums ->
-    Int64.(acc + compute_line_result nums)
-  )
-;;
-
 let input_data = {|INPUT_DATA|}
 
 let ( <--. ) = Bits.( <--. )
@@ -64,9 +35,8 @@ let run_testbench (sim : Harness.Sim.t) =
   let cycle ?n () = Cyclesim.cycle ?n sim in
   
   let lines = parse_input input_data in
-  let expected = compute_expected lines in
   printf "Processing %d lines\n" (List.length lines);
-  printf "Expected result: %Ld\n" expected;
+  printf "Expected result: %Ld\n" expected_answer;
   
   (* Helper to send a single digit *)
   let send_digit d =
@@ -112,12 +82,12 @@ let run_testbench (sim : Harness.Sim.t) =
   let result = Bits.to_int64_trunc !(outputs.result) in
   printf "Circuit result: %Ld\n" result;
   
-  if Int64.(result = expected) then begin
+  if Int64.(result = expected_answer) then begin
     incr passed;
     printf "PASS: result = %Ld\n" result
   end else begin
     incr failed;
-    printf "FAIL: result = %Ld, expected = %Ld\n" result expected
+    printf "FAIL: result = %Ld, expected = %Ld\n" result expected_answer
   end;
 
   cycle ~n:2 ()

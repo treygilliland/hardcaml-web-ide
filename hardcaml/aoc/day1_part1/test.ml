@@ -8,6 +8,9 @@ module Harness = Cyclesim_harness.Make (Circuit.I) (Circuit.O)
 let passed = ref 0
 let failed = ref 0
 
+(* Expected answer for the test input. Update this value when using different input. *)
+let expected_answer = 3
+
 let parse_command (s : string) : bool * int =
   let s = String.strip s in
   if String.length s < 2 then failwith ("Invalid command: " ^ s);
@@ -63,12 +66,12 @@ let run_testbench (sim : Harness.Sim.t) =
   let zero_count = Bits.to_unsigned_int !(outputs.zero_count) in
   let final_position = Bits.to_unsigned_int !(outputs.position) in
   
-  if zero_count > 0 then begin
+  if zero_count = expected_answer then begin
     incr passed;
     printf "PASS: zero_count = %d (position = %d)\n" zero_count final_position
   end else begin
     incr failed;
-    printf "FAIL: zero_count = %d, expected > 0\n" zero_count
+    printf "FAIL: zero_count = %d, expected = %d\n" zero_count expected_answer
   end;
 
   cycle ~n:2 ()
