@@ -1,25 +1,13 @@
-import { ExampleSelector } from "@ide/components/ExampleSelector";
-import {
-  getExamplesByCategory,
-  type ExampleKey,
-} from "@ide/examples/hardcaml-examples";
 import styles from "./Header.module.scss";
 
 interface HeaderProps {
-  exampleKey: ExampleKey;
-  onExampleChange: (key: ExampleKey) => void;
   onResetAll: () => void;
 }
 
-const examplesByCategory = getExamplesByCategory();
 const DOCS_URL =
   import.meta.env.VITE_DOCS_URL || "https://docs.hardcaml.tg3.dev";
 
-export function Header({
-  exampleKey,
-  onExampleChange,
-  onResetAll,
-}: HeaderProps) {
+export function Header({ onResetAll }: HeaderProps) {
   const handleResetAll = () => {
     if (
       confirm(
@@ -52,11 +40,6 @@ export function Header({
         >
           Reset All
         </button>
-        <ExampleSelector
-          value={exampleKey}
-          examplesByCategory={examplesByCategory}
-          onChange={onExampleChange}
-        />
       </div>
     </header>
   );
