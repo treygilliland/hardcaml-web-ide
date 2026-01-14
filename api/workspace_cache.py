@@ -114,34 +114,44 @@ class WorkspaceCache:
         workspace_path = self.cache_root / session_id
         if workspace_path.exists():
             shutil.rmtree(workspace_path)
-        
+
         # Check template contents
         template_build = template_dir / "_build"
         template_src = template_dir / "src"
         template_test = template_dir / "test"
-        
+
         src_files = list(template_src.glob("*.ml")) if template_src.exists() else []
         test_files = list(template_test.glob("*.ml")) if template_test.exists() else []
-        build_size = sum(f.stat().st_size for f in template_build.rglob("*") if f.is_file()) if template_build.exists() else 0
-        
+        build_size = (
+            sum(f.stat().st_size for f in template_build.rglob("*") if f.is_file())
+            if template_build.exists()
+            else 0
+        )
+
         log.info(
             f"Creating workspace: template={template_dir}, "
             f"has_build={template_build.exists()} ({build_size // 1024}KB), "
             f"src={[f.name for f in src_files]}, test={[f.name for f in test_files]}"
         )
-        
+
         t0 = time.time()
         shutil.copytree(template_dir, workspace_path)
         copy_time = int((time.time() - t0) * 1000)
-        
+
         # Verify _build was copied
         workspace_build = workspace_path / "_build"
         if workspace_build.exists():
-            ws_build_size = sum(f.stat().st_size for f in workspace_build.rglob("*") if f.is_file())
-            log.info(f"Workspace created ({session_id[:8]}): copy_time={copy_time}ms, _build={ws_build_size // 1024}KB")
+            ws_build_size = sum(
+                f.stat().st_size for f in workspace_build.rglob("*") if f.is_file()
+            )
+            log.info(
+                f"Workspace created ({session_id[:8]}): copy_time={copy_time}ms, _build={ws_build_size // 1024}KB"
+            )
         else:
-            log.info(f"Workspace created ({session_id[:8]}): copy_time={copy_time}ms, NO _build copied")
-        
+            log.info(
+                f"Workspace created ({session_id[:8]}): copy_time={copy_time}ms, NO _build copied"
+            )
+
         return workspace_path
 
     def _evict_slot(self, session_id: str) -> None:
@@ -193,7 +203,7 @@ class WorkspaceCache:
                 file_path = src_dir / filename
             else:
                 continue  # Skip unknown file types
-            
+
             # Skip writing if content hasn't changed (preserves mtime for dune)
             if file_path.exists():
                 try:
@@ -203,7 +213,7 @@ class WorkspaceCache:
                 except Exception:
                     # If read fails, write anyway
                     pass
-            
+
             file_path.write_text(content)
 
     def get_stats(self) -> dict:

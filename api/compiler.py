@@ -61,7 +61,9 @@ STANDARD_TEMPLATE_DIR = TEMPLATE_DIR / "standard"
 N2T_TEMPLATE_DIR = TEMPLATE_DIR / "n2t"
 
 # Log template resolution at module load
-log.info(f"Template resolution: MOUNTED={TEMPLATE_DIR_MOUNTED.exists()}, DOCKER={TEMPLATE_DIR_DOCKER.exists()}")
+log.info(
+    f"Template resolution: MOUNTED={TEMPLATE_DIR_MOUNTED.exists()}, DOCKER={TEMPLATE_DIR_DOCKER.exists()}"
+)
 log.info(f"Using template directory: {TEMPLATE_DIR}")
 
 # Markers for parsing output
@@ -85,9 +87,7 @@ def _is_n2t_project(files: dict[str, str]) -> bool:
     N2T projects have a main circuit module that is NOT circuit.ml
     (e.g., add16.ml, register.ml, etc.)
     """
-    circuit_files = [
-        f for f in files.keys() if f.endswith(".ml") and f != "test.ml"
-    ]
+    circuit_files = [f for f in files.keys() if f.endswith(".ml") and f != "test.ml"]
     # If main circuit is not circuit.ml, it's N2T
     return "circuit.ml" not in circuit_files
 
@@ -443,13 +443,17 @@ def compile_and_run(
                     tests_passed=cached_result.tests_passed,
                     tests_failed=cached_result.tests_failed,
                 )
-            log.info(f"[compile] Result cache hit: session={session_id[:8] if session_id else 'none'}")
+            log.info(
+                f"[compile] Result cache hit: session={session_id[:8] if session_id else 'none'}"
+            )
             return cached_result
 
         is_n2t = _is_n2t_project(files)
         project_type = "n2t" if is_n2t else "standard"
         file_names = list(files.keys())
-        log.info(f"[compile] Starting: session={session_id[:8] if session_id else 'none'}, type={project_type}, files={file_names}")
+        log.info(
+            f"[compile] Starting: session={session_id[:8] if session_id else 'none'}, type={project_type}, files={file_names}"
+        )
 
         # Get or create build directory
         t0 = time.time()
@@ -457,19 +461,21 @@ def compile_and_run(
             # Use session-based cached workspace
             template_dir = N2T_TEMPLATE_DIR if is_n2t else STANDARD_TEMPLATE_DIR
             log.info(f"[compile] Using template: {template_dir}")
-            
+
             cache = get_workspace_cache()
-            build_dir, cache_hit = cache.get_or_create(
-                session_id, is_n2t, template_dir
-            )
+            build_dir, cache_hit = cache.get_or_create(session_id, is_n2t, template_dir)
             log.info(
                 f"[timing] get_workspace (cache_hit={cache_hit}): "
                 f"{int((time.time() - t0) * 1000)}ms"
             )
-            
+
             # Check workspace state
             ws_build_dir = build_dir / "_build"
-            ws_src_files = list((build_dir / "src").glob("*.ml")) if (build_dir / "src").exists() else []
+            ws_src_files = (
+                list((build_dir / "src").glob("*.ml"))
+                if (build_dir / "src").exists()
+                else []
+            )
             log.info(
                 f"[compile] Workspace: path={build_dir}, has_build={ws_build_dir.exists()}, "
                 f"src_files={[f.name for f in ws_src_files]}"
@@ -500,12 +506,18 @@ def compile_and_run(
         dune_cache_root = os.getenv("DUNE_CACHE_ROOT", "/tmp/dune-cache")
         dune_env["DUNE_CACHE"] = "enabled"
         dune_env["DUNE_CACHE_ROOT"] = dune_cache_root
-        
+
         # Check dune cache state
         dune_cache_path = Path(dune_cache_root)
         cache_exists = dune_cache_path.exists()
-        cache_size = sum(f.stat().st_size for f in dune_cache_path.rglob("*") if f.is_file()) if cache_exists else 0
-        log.info(f"[compile] Dune cache: path={dune_cache_root}, exists={cache_exists}, size={cache_size // 1024}KB")
+        cache_size = (
+            sum(f.stat().st_size for f in dune_cache_path.rglob("*") if f.is_file())
+            if cache_exists
+            else 0
+        )
+        log.info(
+            f"[compile] Dune cache: path={dune_cache_root}, exists={cache_exists}, size={cache_size // 1024}KB"
+        )
 
         # Build and run tests
         # Note: No --force flag to allow dune's incremental build cache
@@ -520,7 +532,7 @@ def compile_and_run(
         )
         dune_time = int((time.time() - t0) * 1000)
         log.info(f"[timing] dune build @runtest: {dune_time}ms (exit={returncode})")
-        
+
         # Log if there were any errors
         if returncode != 0 and stderr:
             # Just first 500 chars of error for debugging
@@ -613,10 +625,10 @@ def compile_and_run(
             tests_passed=parsed.tests_passed,
             tests_failed=parsed.tests_failed,
         )
-        
+
         # Cache successful result
         result_cache.put(cache_key_files, result)
-        
+
         return result
 
     except Exception as e:

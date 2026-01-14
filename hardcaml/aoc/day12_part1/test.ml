@@ -8,35 +8,85 @@ module Harness = Cyclesim_harness.Make (Circuit.I) (Circuit.O)
 let passed = ref 0
 let failed = ref 0
 
+(* Parse a problem line like "41x38: 26 26 29 23 21 30" *)
+let parse_problem (s : string) : int * int * int =
+  let s = String.strip s in
+  let parts = String.lsplit2_exn s ~on:':' in
+  let dims, counts_str = parts in
+  (* Parse dimensions "WxH" *)
+  let dim_parts = String.lsplit2_exn dims ~on:'x' in
+  let width = Int.of_string (fst dim_parts) in
+  let height = Int.of_string (snd dim_parts) in
+  (* Parse counts and sum them *)
+  let counts = 
+    String.strip counts_str
+    |> String.split ~on:' '
+    |> List.filter ~f:(fun s -> not (String.is_empty s))
+    |> List.map ~f:Int.of_string
+  in
+  let total_count = List.fold counts ~init:0 ~f:(+) in
+  (width, height, total_count)
+;;
+
+let parse_input input_string =
+  let lines = String.split_lines input_string in
+  (* Skip first 30 lines (shape definitions), problems start at line 31 (index 30) *)
+  let problem_lines = List.drop lines 30 in
+  List.filter_map problem_lines ~f:(fun line ->
+    let line = String.strip line in
+    if String.is_empty line then None
+    else Some (parse_problem line))
+;;
+
 let input_data = {|INPUT_DATA|}
+
+let ( <--. ) = Bits.( <--. )
 
 let run_testbench (sim : Harness.Sim.t) =
   let inputs = Cyclesim.inputs sim in
   let outputs = Cyclesim.outputs sim in
   let cycle ?n () = Cyclesim.cycle ?n sim in
   
-  printf "Input data:\n%s\n" input_data;
+  let problems = parse_input input_data in
+  printf "Processing %d problems\n" (List.length problems);
+  
+  let send_problem (width, height, total_count) =
+    inputs.width <--. width;
+    inputs.height <--. height;
+    inputs.total_count <--. total_count;
+    inputs.problem_valid := Bits.vdd;
+    cycle ();
+    inputs.problem_valid := Bits.gnd;
+    cycle ()
+  in
   
   (* Reset *)
-  inputs.Circuit.I.clear := Bits.vdd;
+  inputs.clear := Bits.vdd;
   cycle ();
   inputs.clear := Bits.gnd;
   cycle ();
   
-  (* Start *)
+  (* Start - initialize counter *)
   inputs.start := Bits.vdd;
   cycle ();
   inputs.start := Bits.gnd;
   cycle ();
   
-  (* TODO: Add test logic here *)
-  cycle ~n:10 ();
+  (* Process all problems *)
+  List.iter problems ~f:send_problem;
   
-  let result = Bits.to_int64_trunc !(outputs.Circuit.O.result) in
-  printf "Result: %Ld\n" result;
+  let possible_count = Bits.to_unsigned_int !(outputs.possible_count) in
   
-  if result > 0L then incr passed else incr failed;
+  printf "Answer: %d regions can fit all presents\n" possible_count;
   
+  if possible_count > 0 then begin
+    incr passed;
+    printf "PASS: possible_count = %d\n" possible_count
+  end else begin
+    incr failed;
+    printf "FAIL: possible_count = %d, expected > 0\n" possible_count
+  end;
+
   cycle ~n:2 ()
 ;;
 
