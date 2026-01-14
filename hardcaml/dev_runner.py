@@ -13,21 +13,9 @@ from __future__ import annotations
 import argparse
 import subprocess
 import sys
-from dataclasses import dataclass
 from pathlib import Path
 
-
-@dataclass(frozen=True)
-class Example:
-    id: str
-    files: dict[str, str]  # filename -> content (as staged into dune project)
-    src_module_files: list[
-        str
-    ]  # which files belong in build/src (for cleanup/reporting)
-
-
-def _read_text(path: Path) -> str:
-    return path.read_text()
+from examples_manifest import Example, load_example, list_examples
 
 
 def _hardcaml_root() -> Path:
@@ -36,107 +24,12 @@ def _hardcaml_root() -> Path:
     return Path(__file__).resolve().parent
 
 
-def _standard_example_roots() -> list[Path]:
-    return [
-        _hardcaml_root() / "examples",
-        _hardcaml_root() / "aoc",
-    ]
-
-
-def _standard_example_dir(example_id: str) -> Path:
-    for root in _standard_example_roots():
-        p = root / example_id
-        if p.exists():
-            return p
-    raise FileNotFoundError(f"Unknown example id: {example_id}")
-
-
 def _default_build_dir() -> Path:
     opt = Path("/opt/build-cache")
     if opt.exists():
         return opt
     # fallback for running outside the container
     return _hardcaml_root() / "build-cache"
-
-
-def _build_cache_root() -> Path:
-    # The "authoritative" build-cache sources live in the repo under hardcaml/build-cache.
-    return _hardcaml_root() / "build-cache"
-
-
-def _n2t_chips_dir() -> Path:
-    return _build_cache_root() / "lib" / "n2t_chips"
-
-
-def _standard_example_ids() -> list[str]:
-    ids: list[str] = []
-    for root in _standard_example_roots():
-        if not root.exists():
-            continue
-        for p in sorted(root.iterdir()):
-            if not p.is_dir():
-                continue
-            if (p / "circuit.ml").exists() and (p / "test.ml").exists():
-                ids.append(p.name)
-    return ids
-
-
-def _n2t_chip_names() -> list[str]:
-    chips_dir = _hardcaml_root() / "n2t" / "solutions"
-    if not chips_dir.exists():
-        return []
-    names: list[str] = []
-    for p in sorted(chips_dir.glob("*.ml")):
-        names.append(p.stem)
-    return names
-
-
-def load_standard_example(example_id: str) -> Example:
-    ex_dir = _standard_example_dir(example_id)
-    files = {
-        "circuit.ml": _read_text(ex_dir / "circuit.ml"),
-        "circuit.mli": _read_text(ex_dir / "circuit.mli"),
-        "test.ml": _read_text(ex_dir / "test.ml"),
-    }
-    input_file = ex_dir / "input.txt"
-    if input_file.exists():
-        inp = _read_text(input_file)
-        files["input.txt"] = inp
-        files["test.ml"] = files["test.ml"].replace("INPUT_DATA", inp)
-
-    return Example(
-        id=example_id,
-        files=files,
-        src_module_files=["circuit.ml", "circuit.mli"],
-    )
-
-
-def load_n2t_example(chip: str, *, use_stub: bool) -> Example:
-    ex_root = _hardcaml_root() / "n2t"
-    impl_dir = ex_root / ("stubs" if use_stub else "solutions")
-    impl_file = impl_dir / f"{chip}.ml"
-    if not impl_file.exists():
-        raise FileNotFoundError(f"Missing implementation file: {impl_file}")
-
-    chips_dir = _n2t_chips_dir()
-    interface_file = chips_dir / f"{chip}.mli"
-    test_file = chips_dir / f"{chip}_test.ml"
-
-    if not interface_file.exists():
-        raise FileNotFoundError(f"Missing interface file: {interface_file}")
-    if not test_file.exists():
-        raise FileNotFoundError(f"Missing test file: {test_file}")
-
-    files = {
-        f"{chip}.ml": _read_text(impl_file),
-        f"{chip}.mli": _read_text(interface_file),
-        "test.ml": _read_text(test_file),
-    }
-    return Example(
-        id=f"n2t_{chip}" if not use_stub else f"n2t_stub_{chip}",
-        files=files,
-        src_module_files=[f"{chip}.ml", f"{chip}.mli"],
-    )
 
 
 def stage_into_build_dir(example: Example, build_dir: Path) -> None:
@@ -207,14 +100,19 @@ def main(argv: list[str]) -> int:
     args = parser.parse_args(argv)
 
     if args.list:
-        print("Standard examples:")
-        for ex in _standard_example_ids():
-            print(f"  - {ex}")
-        chips = _n2t_chip_names()
-        if chips:
+        examples = list_examples()
+        standard_examples = [eid for eid in examples if not eid.startswith("n2t_")]
+        n2t_examples = [eid for eid in examples if eid.startswith("n2t_")]
+        
+        if standard_examples:
+            print("Standard examples:")
+            for ex_id in standard_examples:
+                print(f"  - {ex_id}")
+        
+        if n2t_examples:
             print("\nN2T chips (use ids like n2t_<chip>):")
-            for chip in chips:
-                print(f"  - n2t_{chip}")
+            for ex_id in n2t_examples:
+                print(f"  - {ex_id}")
         return 0
 
     if not args.example_id:
@@ -227,11 +125,7 @@ def main(argv: list[str]) -> int:
             "Run inside the dev container (so /opt/build-cache exists) or pass --build-dir."
         )
 
-    if args.example_id.startswith("n2t_"):
-        chip = args.example_id[len("n2t_") :]
-        example = load_n2t_example(chip, use_stub=args.use_stub)
-    else:
-        example = load_standard_example(args.example_id)
+    example = load_example(args.example_id, use_stub=args.use_stub)
 
     stage_into_build_dir(example, build_dir)
     print(f"Staged {example.id} into {build_dir}")

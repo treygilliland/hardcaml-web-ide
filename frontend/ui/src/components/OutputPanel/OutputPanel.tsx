@@ -2,11 +2,17 @@ import { useState, useCallback } from "react";
 import type { CompileResult } from "@ui/shared-types/compiler";
 import styles from "./OutputPanel.module.scss";
 
-interface OutputPanelProps {
+export interface OutputPanelProps {
   result: CompileResult | null;
+  generateVcd?: boolean;
+  onGenerateVcdChange?: (value: boolean) => void;
 }
 
-export function OutputPanel({ result }: OutputPanelProps) {
+export function OutputPanel({
+  result,
+  generateVcd = true,
+  onGenerateVcdChange,
+}: OutputPanelProps) {
   const [copiedOutput, setCopiedOutput] = useState(false);
   const [copiedWaveform, setCopiedWaveform] = useState(false);
 
@@ -104,11 +110,29 @@ export function OutputPanel({ result }: OutputPanelProps) {
                 {copiedWaveform ? "✓" : "⧉"}
               </button>
             )}
-            {result?.waveform_vcd && (
-              <button className={styles.downloadBtn} onClick={handleDownloadVcd}>
-                ⬇ Download VCD
-              </button>
-            )}
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={generateVcd}
+                onChange={(e) => onGenerateVcdChange?.(e.target.checked)}
+                className={styles.checkbox}
+              />
+              Generate VCD
+            </label>
+            <button
+              className={styles.downloadBtn}
+              onClick={handleDownloadVcd}
+              disabled={!result?.waveform_vcd}
+              title={
+                !generateVcd
+                  ? "Enable 'Generate VCD' and run again"
+                  : !result?.waveform_vcd
+                    ? "Run your code to generate VCD"
+                    : "Download VCD file"
+              }
+            >
+              ⬇ Download VCD
+            </button>
           </div>
         </div>
         <div className={styles.waveformContent}>

@@ -71,19 +71,3 @@
     display: block;
   }
 }
-
-.resetAllBtn {
-  background: transparent;
-  color: #dc2626;
-  border: none;
-  padding: var(--spacing-sm) var(--spacing-md);
-  font-size: var(--font-size-sm);
-  font-weight: 400;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: color var(--transition-fast);
-
-  &:hover:not(:disabled) {
-    color: #b91c1c;
-  }
-}

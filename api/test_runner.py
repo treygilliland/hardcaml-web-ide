@@ -28,7 +28,11 @@ def run_example(example, verbose: bool = False) -> bool:
         print(f"Running: {example.id}")
         print(f"{'=' * 60}")
 
-    result = compile_and_run(files=example.files, timeout_seconds=60)
+    result = compile_and_run(
+        files=example.files,
+        timeout_seconds=60,
+        project_type=example.project_type,
+    )
 
     if result.success:
         passed = result.tests_passed or 0

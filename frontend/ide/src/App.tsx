@@ -20,6 +20,7 @@ function App() {
   const editor = useEditorState(examples[initialKey], initialKey);
   const compiler = useCompiler();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [generateVcd, setGenerateVcd] = useState(true);
   const previousResultRef = useRef(compiler.result);
 
   useEffect(() => {
@@ -64,6 +65,7 @@ function App() {
       input: editor.hasInput ? editor.files.input : undefined,
       circuitFilename: editor.filenames.circuit,
       interfaceFilename: editor.filenames.interface,
+      includeVcd: generateVcd,
     });
   };
 
@@ -79,7 +81,7 @@ function App() {
 
   return (
     <div className="app">
-      <Header onResetAll={handleResetAll} />
+      <Header />
       <div className="app-body">
         <Sidebar
           value={exampleKey}
@@ -97,10 +99,15 @@ function App() {
             hasInput={editor.hasInput}
             hasChanges={editor.hasChanges}
             onReset={handleReset}
+            onResetAll={handleResetAll}
             onRun={handleRun}
             loading={compiler.loading}
           />
-          <OutputPanel result={compiler.result} />
+          <OutputPanel
+            result={compiler.result}
+            generateVcd={generateVcd}
+            onGenerateVcdChange={setGenerateVcd}
+          />
         </main>
       </div>
       {toastMessage && (

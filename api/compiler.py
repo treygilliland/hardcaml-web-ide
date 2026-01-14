@@ -110,6 +110,8 @@ def _is_n2t_project(files: dict[str, str]) -> bool:
 
     N2T projects have a main circuit module that is NOT circuit.ml
     (e.g., add16.ml, register.ml, etc.)
+
+    This is a fallback when project_type is not explicitly provided.
     """
     circuit_files = [f for f in files.keys() if f.endswith(".ml") and f != "test.ml"]
     # If main circuit is not circuit.ml, it's N2T
@@ -235,13 +237,23 @@ let write_vcd_if_requested waves =
 """)
 
 
-def setup_project(build_dir: Path, files: dict[str, str]) -> None:
+def setup_project(
+    build_dir: Path, files: dict[str, str], project_type: str | None = None
+) -> None:
     """
     Set up the project structure with user files.
 
     Selects appropriate template (standard vs N2T) and copies selectively.
+
+    Args:
+        build_dir: Directory to set up the project in
+        files: User files to write
+        project_type: Optional project type ("standard" or "n2t"). If None, inferred from files.
     """
-    is_n2t = _is_n2t_project(files)
+    if project_type is None:
+        is_n2t = _is_n2t_project(files)
+    else:
+        is_n2t = project_type == "n2t"
 
     # Select template directory
     if is_n2t:
@@ -409,6 +421,7 @@ def compile_and_run(
     timeout_seconds: int = 30,
     include_vcd: bool = True,
     session_id: Optional[str] = None,
+    project_type: Optional[str] = None,
 ) -> CompileResult:
     """
     Compile and run Hardcaml code.
@@ -423,6 +436,7 @@ def compile_and_run(
         timeout_seconds: Max time for build
         include_vcd: Whether to generate VCD output
         session_id: Optional browser session ID for workspace caching
+        project_type: Optional project type ("standard" or "n2t"). If None, inferred from files.
     """
     build_dir = None
     use_temp_dir = session_id is None
@@ -472,7 +486,11 @@ def compile_and_run(
             )
             return cached_result
 
-        is_n2t = _is_n2t_project(files)
+        # Determine project type
+        if project_type is None:
+            is_n2t = _is_n2t_project(files)
+        else:
+            is_n2t = project_type == "n2t"
         project_type = "n2t" if is_n2t else "standard"
         file_names = list(files.keys())
         log.info(
@@ -516,7 +534,7 @@ def compile_and_run(
 
             # Set up project (copy template + write user files)
             t0 = time.time()
-            setup_project(build_dir, files)
+            setup_project(build_dir, files, project_type=project_type)
             log.info(f"[timing] setup_project: {int((time.time() - t0) * 1000)}ms")
 
         # Set up VCD path if requested

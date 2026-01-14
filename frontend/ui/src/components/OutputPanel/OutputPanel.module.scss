@@ -177,9 +177,38 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, opacity 0.15s;
 
   &:hover:not(:disabled) {
     background: var(--hardcaml-accent-hover, #0055aa);
   }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--hardcaml-text-secondary, #888);
+  cursor: pointer;
+  user-select: none;
+  padding-left: 8px;
+  border-left: 1px solid var(--hardcaml-border, #333);
+  margin-left: 4px;
+
+  &:hover {
+    color: var(--hardcaml-text, #e0e0e0);
+  }
+}
+
+.checkbox {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--hardcaml-accent, #0066cc);
+  cursor: pointer;
 }

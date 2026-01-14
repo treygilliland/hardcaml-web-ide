@@ -29,6 +29,15 @@ The Web IDE backend uses the same structure: it copies `/opt/build-cache` into a
 
 If you want to test “through the backend” (same temp-dir isolation + output parsing the IDE uses), run `api/test_runner.py` as described in [`../api/README.md`](../api/README.md).
 
+## Example manifest
+
+All examples (standard, AOC, and N2T) are managed through a unified manifest system:
+
+- `examples_manifest.py`: Single source of truth for loading and listing examples
+  - Used by both `dev_runner.py` (for local development) and `api/test_runner.py` (for API testing)
+  - Provides consistent example loading across all code paths
+  - Handles standard examples, AOC examples, and N2T chips (with stub/solution variants)
+
 ## Minimal circuit template
 
 Most examples follow this pattern: define `I`/`O` interfaces, a `create` function, and a `hierarchical` wrapper.
@@ -90,11 +99,14 @@ These are volume-mounted from `hardcaml-web-ide/hardcaml/`.
 
 `/hardcaml/dev_runner.py <example_id>`:
 
+- loads the example using the unified `examples_manifest.py` module
 - clears previously-staged `*.ml`/`*.mli` from `/opt/build-cache/src`
 - writes the selected example’s circuit modules into `/opt/build-cache/src`
 - writes the selected example’s `test.ml` to `/opt/build-cache/test/test.ml`
 - for AoC examples with `input.txt`, it injects the input by replacing `INPUT_DATA` in `test.ml`
 - runs `dune build @runtest --auto-promote` (pass `--no-run` to only stage files)
+
+The dev runner shares the same example loading logic as the API test runner, ensuring consistent behavior between local development and automated testing.
 
 ## N2T stubs vs solutions (dev runner)
 

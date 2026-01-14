@@ -70,6 +70,23 @@
   }
 }
 
+.resetAllBtn {
+  background: var(--color-bg-elevated);
+  color: #dc2626;
+  border: 1px solid #dc2626;
+  padding: 10px 24px;
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+
+  &:hover:not(:disabled) {
+    background: #dc2626;
+    color: var(--color-text-white);
+  }
+}
+
 .resetBtn {
   background: var(--color-bg-elevated);
   color: #dc2626;

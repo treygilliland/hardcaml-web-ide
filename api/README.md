@@ -55,20 +55,23 @@ Example request body:
 
 The compile pipeline is implemented in `compiler.py`:
 
-1. **Create an isolated build dir** under the OS temp directory.
-2. **Populate a dune project**:
-   - Preferred path: copy the prebuilt dune project from `BUILD_CACHE_DIR = /opt/build-cache` (fast in Docker).
-   - Fallback path (for local dev without the image cache): synthesize a minimal dune project structure.
-3. **Write user files**:
+1. **Create an isolated build dir** under the OS temp directory (or use session-cached workspace).
+2. **Determine project type**:
+   - If `project_type` is provided (from `Example.project_type`), use it directly.
+   - Otherwise, infer from filenames: N2T projects don't have `circuit.ml`.
+3. **Populate a dune project**:
+   - Preferred path: copy the prebuilt dune project template from `build-templates/` (standard or n2t variant).
+   - Fallback path (for local dev without templates): synthesize a minimal dune project structure.
+4. **Write user files**:
    - `test.ml` is written to `<build_dir>/test/test.ml`
    - any `*.ml` / `*.mli` is written to `<build_dir>/src/<filename>`
-4. **Run dune**:
-   - `dune build @runtest --auto-promote`
-5. **Parse output**:
+5. **Run dune**:
+   - `dune build @runtest`
+6. **Parse output**:
    - Pulls out PASS/FAIL lines and an optional summary line (see “Output contract” below)
    - Extracts waveform text between markers
-   - Optionally reads VCD content from `/tmp/waveform.vcd`
-6. **Return `CompileResult`**, then **best-effort cleanup** of the build dir.
+   - Optionally reads VCD content from the build directory
+7. **Return `CompileResult`**, then **best-effort cleanup** of the build dir (unless using session cache).
 
 ## Output + waveform contract
 
@@ -128,15 +131,26 @@ There are two “test runner” paths:
 
 - **Direct runner**: `test_runner.py`
   - Calls `compiler.compile_and_run()` directly (no HTTP).
-  - Uses the example manifest in `tests/examples.py`.
+  - Uses the unified example manifest from `hardcaml/examples_manifest.py` (via `tests/examples.py` wrapper).
   - Intended to run **inside the Docker environment** where dune/opam/toolchain exist.
 - **API integration tests**: `tests/test_examples.py`
   - Uses FastAPI `TestClient` to exercise `/compile` end-to-end.
-  - Also uses `tests/examples.py` to provide realistic circuit/test input.
+  - Also uses the unified example manifest to provide realistic circuit/test input.
 
 If you want the fastest “OCaml programmer” iteration loop (stage files into `/opt/build-cache` and run dune), use `hardcaml/dev_runner.py` documented in [`../hardcaml/README.md`](../hardcaml/README.md).
 
-The example manifest (`tests/examples.py`) loads two categories:
+### Example manifest
+
+The example manifest system provides a single source of truth for all examples:
+
+- **Shared module**: `hardcaml/examples_manifest.py`
+  - Unified loading logic used by both `dev_runner.py` and `test_runner.py`
+  - Ensures consistent behavior between local development and automated testing
+- **API wrapper**: `tests/examples.py`
+  - Thin wrapper around `examples_manifest.py` for backward compatibility
+  - Re-exports all necessary functions and constants
+
+The manifest loads two categories:
 
 - `STANDARD_EXAMPLES`: from `hardcaml/examples/<example_id>/...` and `hardcaml/aoc/<example_id>/...` (`{circuit.ml,circuit.mli,test.ml}` + optional `input.txt`)
   - If `input.txt` exists, it replaces `INPUT_DATA` in `test.ml`.

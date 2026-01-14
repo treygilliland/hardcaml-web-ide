@@ -1,5 +1,9 @@
 import { OcamlEditor } from "@hardcaml/ui";
-import type { EditorFiles, EditorFilenames, TabType } from "@ide/hooks/useEditorState";
+import type {
+  EditorFiles,
+  EditorFilenames,
+  TabType,
+} from "@ide/hooks/useEditorState";
 import styles from "./EditorPanel.module.scss";
 
 interface TabConfig {
@@ -30,6 +34,7 @@ interface EditorPanelProps {
   hasInput: boolean;
   hasChanges: boolean;
   onReset: () => void;
+  onResetAll: () => void;
   onRun: () => void;
   loading: boolean;
 }
@@ -43,9 +48,19 @@ export function EditorPanel({
   hasInput,
   hasChanges,
   onReset,
+  onResetAll,
   onRun,
   loading,
 }: EditorPanelProps) {
+  const handleResetAll = () => {
+    if (
+      confirm(
+        "Reset all examples to their original state? This cannot be undone."
+      )
+    ) {
+      onResetAll();
+    }
+  };
   const getTabLabel = (tabId: string): string => {
     if (tabId === "circuit") return filenames.circuit;
     if (tabId === "interface") return filenames.interface;
@@ -60,7 +75,9 @@ export function EditorPanel({
         {TABS.map((tab) => (
           <button
             key={tab.id}
-            className={`${styles.tab} ${activeTab === tab.id ? styles.active : ""}`}
+            className={`${styles.tab} ${
+              activeTab === tab.id ? styles.active : ""
+            }`}
             onClick={() => onTabChange(tab.id)}
           >
             {getTabLabel(tab.id)}
@@ -69,7 +86,9 @@ export function EditorPanel({
         {hasInput && (
           <button
             key={INPUT_TAB.id}
-            className={`${styles.tab} ${activeTab === INPUT_TAB.id ? styles.active : ""}`}
+            className={`${styles.tab} ${
+              activeTab === INPUT_TAB.id ? styles.active : ""
+            }`}
             onClick={() => onTabChange(INPUT_TAB.id)}
           >
             {getTabLabel(INPUT_TAB.id)}
@@ -85,17 +104,20 @@ export function EditorPanel({
       </div>
       <div className={styles.toolbar}>
         <button
+          className={styles.resetAllBtn}
+          onClick={handleResetAll}
+          title="Reset all examples to original state"
+        >
+          ↺ Reset All
+        </button>
+        <button
           className={styles.resetBtn}
           onClick={onReset}
           disabled={!hasChanges}
         >
           ↺ Reset
         </button>
-        <button
-          className={styles.runBtn}
-          onClick={onRun}
-          disabled={loading}
-        >
+        <button className={styles.runBtn} onClick={onRun} disabled={loading}>
           {loading ? "⏳ Compiling..." : "▶ Run"}
         </button>
       </div>

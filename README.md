@@ -34,17 +34,17 @@ make clean    # Stop services and remove volumes
 ## Project Structure
 
 ```
-├── api/                  		# FastAPI compilation and server backend (see api/README.md)
-├── frontend/             		# pnpm workspace (see frontend/README.md)
-│   ├── ui/               		#   @hardcaml/ui    - shared components
-│   ├── ide/              		#   @hardcaml/ide   - main IDE app
-│   └── docs/             		#   @hardcaml/docs  - Astro docs site
-├── hardcaml/             		# hardcaml source code (see hardcaml/README.md)
-│   ├── examples/         		#   Example circuits
-│   ├── aoc/              		#   Advent of Code solutions
-│   ├── n2t/              		#   Nand2Tetris solutions and stubs for exercises
-│   ├── build-templates/ 		  # Dune project templates
-│   └── build-cache/      		# Pre-built dune project
+├── api/                      # FastAPI compilation and server backend (see api/README.md)
+├── frontend/                 # pnpm workspace (see frontend/README.md)
+│   ├── ui/                   #   @hardcaml/ui    - shared components
+│   ├── ide/                  #   @hardcaml/ide   - main IDE app
+│   └── docs/                 #   @hardcaml/docs  - Astro docs site
+├── hardcaml/                 # hardcaml source code (see hardcaml/README.md)
+│   ├── examples/             #   Example circuits
+│   ├── aoc/                  #   Advent of Code solutions
+│   ├── n2t/                  #   Nand2Tetris solutions and stubs for exercises
+│   ├── build-templates/      #   Dune project templates
+│   └── build-cache/          #   Pre-compiled dune project for fast builds
 ```
 
 ## Architecture
@@ -86,10 +86,10 @@ All development happens in Docker containers with hot reload enabled. The `make 
 ### Docker Configuration
 
 ```
-├── Dockerfile            		# App image (uses base)
-├── Dockerfile.base       		# Base image (OCaml toolchain)
-├── docker-compose.yml    		# Production services
-├── docker-compose.dev.yml    # Development services
+├── Dockerfile                  # App image (uses base)
+├── Dockerfile.base             # Base image (OCaml toolchain)
+├── docker-compose.yml          # Production services
+├── docker-compose.dev.yml      # Development services
 ├── frontend/
 │   ├── Dockerfile.docs         # Docs site image
 │   └── Dockerfile.frontend.dev # Frontend dev image
