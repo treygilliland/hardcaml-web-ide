@@ -51,6 +51,7 @@ export function ExampleSelector({
       ExampleCategory,
       { key: ExampleKey; example: HardcamlExample }[]
     > = {
+      ocaml_basics: [],
       hardcaml: [],
       advent: [],
       n2t: [],

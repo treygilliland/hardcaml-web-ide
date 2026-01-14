@@ -13,6 +13,26 @@ import fibonacciCircuit from "@hardcaml-examples/examples/fibonacci/circuit.ml?r
 import fibonacciInterface from "@hardcaml-examples/examples/fibonacci/circuit.mli?raw";
 import fibonacciTest from "@hardcaml-examples/examples/fibonacci/test.ml?raw";
 
+// OCaml Basics - Hello Types
+import helloTypesCircuit from "@hardcaml-examples/examples/ocaml_basics/hello_types/circuit.ml?raw";
+import helloTypesInterface from "@hardcaml-examples/examples/ocaml_basics/hello_types/circuit.mli?raw";
+import helloTypesTest from "@hardcaml-examples/examples/ocaml_basics/hello_types/test.ml?raw";
+
+// OCaml Basics - Hello Modules
+import helloModulesCircuit from "@hardcaml-examples/examples/ocaml_basics/hello_modules/circuit.ml?raw";
+import helloModulesInterface from "@hardcaml-examples/examples/ocaml_basics/hello_modules/circuit.mli?raw";
+import helloModulesTest from "@hardcaml-examples/examples/ocaml_basics/hello_modules/test.ml?raw";
+
+// OCaml Basics - Hello Patterns
+import helloPatternsCircuit from "@hardcaml-examples/examples/ocaml_basics/hello_patterns/circuit.ml?raw";
+import helloPatternsInterface from "@hardcaml-examples/examples/ocaml_basics/hello_patterns/circuit.mli?raw";
+import helloPatternsTest from "@hardcaml-examples/examples/ocaml_basics/hello_patterns/test.ml?raw";
+
+// OCaml Basics - Hello Operators
+import helloOperatorsCircuit from "@hardcaml-examples/examples/ocaml_basics/hello_operators/circuit.ml?raw";
+import helloOperatorsInterface from "@hardcaml-examples/examples/ocaml_basics/hello_operators/circuit.mli?raw";
+import helloOperatorsTest from "@hardcaml-examples/examples/ocaml_basics/hello_operators/test.ml?raw";
+
 // Day 1 Part 1
 import day1Part1Circuit from "@hardcaml-examples/aoc/day1_part1/circuit.ml?raw";
 import day1Part1Interface from "@hardcaml-examples/aoc/day1_part1/circuit.mli?raw";
@@ -287,9 +307,10 @@ import n2tComputerTest from "@hardcaml-examples/build-cache/lib/n2t_chips/comput
 
 // Types
 
-export type ExampleCategory = "hardcaml" | "advent" | "n2t" | "n2t_solutions";
+export type ExampleCategory = "ocaml_basics" | "hardcaml" | "advent" | "n2t" | "n2t_solutions";
 
 export const categoryLabels: Record<ExampleCategory, string> = {
+  ocaml_basics: "Hardcaml Basics",
   hardcaml: "Hardcaml Examples",
   advent: "Advent of FPGA",
   n2t: "Nand2Tetris",
@@ -322,6 +343,10 @@ export interface HardcamlExample {
 export type ExampleKey =
   | "counter"
   | "fibonacci"
+  | "hello_types"
+  | "hello_modules"
+  | "hello_patterns"
+  | "hello_operators"
   | "day1_part1"
   | "day1_part2"
   | "day2_part1"
@@ -432,6 +457,50 @@ const fibonacciExample: HardcamlExample = {
   circuit: fibonacciCircuit,
   interface: fibonacciInterface,
   test: fibonacciTest,
+};
+
+const helloTypesExample: HardcamlExample = {
+  name: "Hello Types",
+  description:
+    "Learn basic OCaml types, functions, and records with a simple pass-through circuit",
+  difficulty: "beginner",
+  category: "ocaml_basics",
+  circuit: helloTypesCircuit,
+  interface: helloTypesInterface,
+  test: helloTypesTest,
+};
+
+const helloModulesExample: HardcamlExample = {
+  name: "Hello Modules",
+  description:
+    "Learn OCaml modules, struct, sig, and open! with an AND gate circuit",
+  difficulty: "beginner",
+  category: "ocaml_basics",
+  circuit: helloModulesCircuit,
+  interface: helloModulesInterface,
+  test: helloModulesTest,
+};
+
+const helloPatternsExample: HardcamlExample = {
+  name: "Hello Patterns",
+  description:
+    "Learn pattern matching and record destructuring with a multiplexer circuit",
+  difficulty: "beginner",
+  category: "ocaml_basics",
+  circuit: helloPatternsCircuit,
+  interface: helloPatternsInterface,
+  test: helloPatternsTest,
+};
+
+const helloOperatorsExample: HardcamlExample = {
+  name: "Hello Operators",
+  description:
+    "Learn Hardcaml infix operators (AND, OR, XOR, NOT, addition, equality) with a combinational logic circuit",
+  difficulty: "beginner",
+  category: "ocaml_basics",
+  circuit: helloOperatorsCircuit,
+  interface: helloOperatorsInterface,
+  test: helloOperatorsTest,
 };
 
 const day1Part1Example: HardcamlExample = {
@@ -1468,6 +1537,10 @@ const n2tComputerSolutionExample: HardcamlExample = {
 export const examples: Record<ExampleKey, HardcamlExample> = {
   counter: counterExample,
   fibonacci: fibonacciExample,
+  hello_types: helloTypesExample,
+  hello_modules: helloModulesExample,
+  hello_patterns: helloPatternsExample,
+  hello_operators: helloOperatorsExample,
   day1_part1: day1Part1Example,
   day1_part2: day1Part2Example,
   day2_part1: day2Part1Example,
@@ -1573,6 +1646,7 @@ export const getExamplesByCategory = (): Record<
     ExampleCategory,
     { key: ExampleKey; example: HardcamlExample }[]
   > = {
+    ocaml_basics: [],
     hardcaml: [],
     advent: [],
     n2t: [],

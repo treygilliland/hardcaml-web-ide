@@ -1,0 +1,287 @@
+---
+title: OCaml Introduction for Hardcaml
+description: Learn the minimal OCaml concepts you need to use Hardcaml
+---
+
+This guide covers the essential OCaml concepts you need to know to write Hardcaml circuits. We focus only on what's necessary for Hardcaml, keeping it minimal and practical.
+
+## Basic Syntax
+
+### Comments
+
+OCaml uses `(* ... *)` for comments:
+
+```ocaml
+(* This is a comment *)
+let x = 5 (* Inline comment *)
+```
+
+### Let Bindings
+
+Use `let` to bind values to names:
+
+```ocaml
+let x = 5
+let y = 10
+let sum = x + y
+```
+
+### Functions
+
+Functions are defined with `let` and can have parameters:
+
+```ocaml
+let add a b = a + b
+let result = add 3 4  (* result = 7 *)
+```
+
+Functions can also use type annotations:
+
+```ocaml
+let add (a : int) (b : int) : int = a + b
+```
+
+## Types
+
+### Type Annotations
+
+You can explicitly annotate types using `: type`:
+
+```ocaml
+let x : int = 5
+let name : string = "Hardcaml"
+```
+
+### Type Parameters
+
+OCaml uses type parameters (like generics) with `'a`, `'b`, etc.:
+
+```ocaml
+type 'a t = { value : 'a }
+```
+
+This means `t` is a type that can hold any type `'a`. In Hardcaml, we use this pattern extensively:
+
+```ocaml
+type 'a t = { clock : 'a; data : 'a }
+```
+
+Here, `'a` could be `Signal.t` (for the circuit) or `Bits.t` (for simulation).
+
+## Records
+
+Records are like structs in other languages:
+
+```ocaml
+type point = { x : int; y : int }
+
+let p = { x = 3; y = 4 }
+let x_coord = p.x
+```
+
+In Hardcaml, we use records for input/output interfaces:
+
+```ocaml
+module I = struct
+  type 'a t = { a : 'a; b : 'a }
+end
+
+module O = struct
+  type 'a t = { out : 'a }
+end
+```
+
+## Modules
+
+Modules are OCaml's way of organizing code. Hardcaml uses them extensively.
+
+### Defining Modules
+
+```ocaml
+module MyModule = struct
+  let value = 42
+  let add x y = x + y
+end
+```
+
+### Module Signatures
+
+Signatures (`.mli` files) define what a module exposes:
+
+```ocaml
+module MyModule : sig
+  val value : int
+  val add : int -> int -> int
+end
+```
+
+### Opening Modules
+
+Use `open` to bring module contents into scope:
+
+```ocaml
+open Core
+open Hardcaml
+open Signal
+```
+
+The `open!` syntax (with `!`) forces the open even if there are name conflicts.
+
+### Local Modules
+
+You can define modules locally:
+
+```ocaml
+let create scope =
+  let module Scoped = Hierarchy.In_scope (I) (O) in
+  Scoped.hierarchical ~scope ~name:"my_circuit" create
+```
+
+## Pattern Matching
+
+Pattern matching lets you destructure values. With records:
+
+```ocaml
+let create scope ({ clock; clear; enable } : _ I.t) =
+  (* clock, clear, and enable are now available *)
+  ...
+```
+
+This is equivalent to:
+
+```ocaml
+let create scope (i : _ I.t) =
+  let clock = i.clock in
+  let clear = i.clear in
+  let enable = i.enable in
+  ...
+```
+
+## Attributes
+
+Attributes are metadata attached to code. Hardcaml uses them extensively.
+
+### `[@@deriving hardcaml]`
+
+This attribute generates boilerplate code for Hardcaml:
+
+```ocaml
+module I = struct
+  type 'a t = { a : 'a; b : 'a }
+  [@@deriving hardcaml]
+end
+```
+
+This automatically generates functions to convert between `Signal.t` and `Bits.t` versions of the type.
+
+### `[@bits n]`
+
+This attribute specifies the bit width of a signal:
+
+```ocaml
+type 'a t = { data : 'a [@bits 16] }
+```
+
+This tells Hardcaml that `data` is a 16-bit signal.
+
+## Hardcaml Operators
+
+Hardcaml provides infix operators for hardware operations:
+
+- `&:` - Bitwise AND
+- `|:` - Bitwise OR
+- `^:` - Bitwise XOR
+- `~:` - Bitwise NOT
+- `+:` - Addition
+- `-:` - Subtraction
+- `==:` - Equality comparison
+- `<>:` - Inequality comparison
+
+Example:
+
+```ocaml
+let out = i.a &: i.b  (* AND gate *)
+let sum = a +: b      (* Adder *)
+let eq = a ==: b      (* Equality check *)
+```
+
+## Optional Labeled Arguments
+
+OCaml supports labeled arguments with `~`:
+
+```ocaml
+let create ~clock ~clear ~enable = ...
+```
+
+You can call it with labels:
+
+```ocaml
+create ~clock:clk ~clear:rst ~enable:en
+```
+
+Or use the shorthand when the variable name matches:
+
+```ocaml
+let clock = ... in
+let clear = ... in
+create ~clock ~clear ~enable:en
+```
+
+Hardcaml uses this pattern:
+
+```ocaml
+let spec = Reg_spec.create ~clock ~clear ()
+```
+
+## Local Bindings with `let ... in`
+
+Use `let ... in` for local bindings:
+
+```ocaml
+let result =
+  let x = 5 in
+  let y = 10 in
+  x + y
+```
+
+This is common in Hardcaml:
+
+```ocaml
+let create scope i =
+  let spec = Reg_spec.create ~clock:i.clock ~clear:i.clear () in
+  let counter = reg spec ~width:8 i.data in
+  { out = counter }
+```
+
+## Putting It All Together
+
+Here's a complete Hardcaml example with annotations:
+
+```ocaml
+(* Open required modules *)
+open! Core
+open! Hardcaml
+open! Signal
+
+(* Define input interface *)
+module I = struct
+  type 'a t = { a : 'a; b : 'a }  (* Record type with type parameter *)
+  [@@deriving hardcaml]            (* Generate Hardcaml boilerplate *)
+end
+
+(* Define output interface *)
+module O = struct
+  type 'a t = { out : 'a }
+  [@@deriving hardcaml]
+end
+
+(* Circuit creation function *)
+let create _scope (i : _ I.t) : _ O.t =  (* Pattern match on input *)
+  { out = i.a &: i.b }  (* Use Hardcaml AND operator *)
+```
+
+## Next Steps
+
+- Try the [Hardcaml Basics Examples](/getting-started/ocaml-introduction#examples) in the IDE
+- Read [Your First Circuit](/tutorials/first-circuit) tutorial
+- Explore the [Hardcaml Examples](/getting-started/quick-start) in the IDE
