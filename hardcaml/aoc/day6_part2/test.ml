@@ -46,7 +46,7 @@ let print_waves_and_save_vcd waves =
   print_endline "===WAVEFORM_END===";
   printf "===TEST_SUMMARY===\n";
   printf "TESTS: %d passed, %d failed\n" !passed !failed;
-  Waveform.Serialize.marshall_vcd waves "/tmp/waveform.vcd"
+  Harness_utils.write_vcd_if_requested waves
 ;;
 
 let%expect_test "Day 6 Part 2" =

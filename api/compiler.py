@@ -16,6 +16,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
+from result_cache import get_result_cache
+from workspace_cache import get_workspace_cache
+
 log = logging.getLogger(__name__)
 
 
@@ -39,6 +42,28 @@ class CompileResult:
 # Build cache directory (pre-built in Docker image for fast compilation)
 BUILD_CACHE_DIR = Path("/opt/build-cache")
 
+# Template directories for standard vs N2T builds
+# In dev mode with docker-compose, /hardcaml is mounted from host (has latest stubs)
+# In production, use /opt/build-templates from Docker image
+TEMPLATE_DIR_MOUNTED = Path("/hardcaml/build-templates")  # Docker volume mount
+TEMPLATE_DIR_DOCKER = Path("/opt/build-templates")
+TEMPLATE_DIR_REPO = Path(__file__).parent.parent / "hardcaml" / "build-templates"
+
+# Prefer mounted templates (dev mode) since they may have pre-built _build/
+if TEMPLATE_DIR_MOUNTED.exists():
+    TEMPLATE_DIR = TEMPLATE_DIR_MOUNTED
+elif TEMPLATE_DIR_DOCKER.exists():
+    TEMPLATE_DIR = TEMPLATE_DIR_DOCKER
+else:
+    TEMPLATE_DIR = TEMPLATE_DIR_REPO
+
+STANDARD_TEMPLATE_DIR = TEMPLATE_DIR / "standard"
+N2T_TEMPLATE_DIR = TEMPLATE_DIR / "n2t"
+
+# Log template resolution at module load
+log.info(f"Template resolution: MOUNTED={TEMPLATE_DIR_MOUNTED.exists()}, DOCKER={TEMPLATE_DIR_DOCKER.exists()}")
+log.info(f"Using template directory: {TEMPLATE_DIR}")
+
 # Markers for parsing output
 WAVEFORM_START = "===WAVEFORM_START==="
 WAVEFORM_END = "===WAVEFORM_END==="
@@ -53,46 +78,155 @@ def create_build_dir() -> Path:
     return build_dir
 
 
-def setup_project(build_dir: Path, files: dict[str, str]) -> None:
+def _is_n2t_project(files: dict[str, str]) -> bool:
     """
-    Set up the project structure with user files.
+    Determine if this is an N2T project based on filenames.
 
-    Copies the build cache and injects user files.
+    N2T projects have a main circuit module that is NOT circuit.ml
+    (e.g., add16.ml, register.ml, etc.)
     """
-    # Copy build cache structure
-    if BUILD_CACHE_DIR.exists():
-        shutil.copytree(BUILD_CACHE_DIR, build_dir, dirs_exist_ok=True)
-    else:
-        # Fallback: create structure from scratch (for local development)
-        (build_dir / "src").mkdir(exist_ok=True)
-        (build_dir / "test").mkdir(exist_ok=True)
+    circuit_files = [
+        f for f in files.keys() if f.endswith(".ml") and f != "test.ml"
+    ]
+    # If main circuit is not circuit.ml, it's N2T
+    return "circuit.ml" not in circuit_files
 
-        # Create dune-project
-        (build_dir / "dune-project").write_text("""(lang dune 3.11)
+
+def _copy_template_selectively(
+    template_dir: Path, build_dir: Path, is_n2t: bool
+) -> None:
+    """
+    Copy template directory to build_dir, including pre-built _build/ for faster first builds.
+    """
+    if not template_dir.exists():
+        # Fallback: use old build-cache if templates don't exist
+        if BUILD_CACHE_DIR.exists():
+            _copy_build_cache_selectively(BUILD_CACHE_DIR, build_dir, is_n2t)
+        else:
+            _create_fallback_structure(build_dir, is_n2t)
+        return
+
+    # Copy dune-project
+    if (template_dir / "dune-project").exists():
+        shutil.copy2(template_dir / "dune-project", build_dir / "dune-project")
+
+    # Copy src/ and test/ directories
+    for subdir in ["src", "test"]:
+        src_subdir = template_dir / subdir
+        if src_subdir.exists():
+            shutil.copytree(src_subdir, build_dir / subdir, dirs_exist_ok=True)
+
+    # Copy lib/n2t_chips only for N2T projects
+    if is_n2t:
+        n2t_lib_src = template_dir / "lib" / "n2t_chips"
+        if n2t_lib_src.exists():
+            (build_dir / "lib").mkdir(exist_ok=True)
+            shutil.copytree(
+                n2t_lib_src, build_dir / "lib" / "n2t_chips", dirs_exist_ok=True
+            )
+
+    # Copy pre-built _build/ directory for faster first builds
+    # Try template's own _build first, then fall back to build-cache's _build
+    template_build = template_dir / "_build"
+    build_cache_build = BUILD_CACHE_DIR / "_build"
+    if template_build.exists():
+        shutil.copytree(template_build, build_dir / "_build", dirs_exist_ok=True)
+    elif build_cache_build.exists():
+        # Use build-cache's _build as fallback - has pre-compiled deps
+        shutil.copytree(build_cache_build, build_dir / "_build", dirs_exist_ok=True)
+
+
+def _copy_build_cache_selectively(
+    cache_dir: Path, build_dir: Path, is_n2t: bool
+) -> None:
+    """Copy build cache selectively, including _build/ for faster first builds."""
+    # Copy dune-project
+    if (cache_dir / "dune-project").exists():
+        shutil.copy2(cache_dir / "dune-project", build_dir / "dune-project")
+
+    # Copy src/ and test/ directories
+    for subdir in ["src", "test"]:
+        src_subdir = cache_dir / subdir
+        if src_subdir.exists():
+            shutil.copytree(src_subdir, build_dir / subdir, dirs_exist_ok=True)
+
+    # Copy lib/n2t_chips only for N2T projects
+    if is_n2t:
+        n2t_lib_src = cache_dir / "lib" / "n2t_chips"
+        if n2t_lib_src.exists():
+            (build_dir / "lib").mkdir(exist_ok=True)
+            shutil.copytree(
+                n2t_lib_src, build_dir / "lib" / "n2t_chips", dirs_exist_ok=True
+            )
+
+    # Copy pre-built _build/ directory for faster first builds
+    cache_build = cache_dir / "_build"
+    if cache_build.exists():
+        shutil.copytree(cache_build, build_dir / "_build", dirs_exist_ok=True)
+
+
+def _create_fallback_structure(build_dir: Path, is_n2t: bool) -> None:
+    """Create minimal dune project structure as fallback."""
+    (build_dir / "src").mkdir(exist_ok=True)
+    (build_dir / "test").mkdir(exist_ok=True)
+
+    # Create dune-project
+    (build_dir / "dune-project").write_text("""(lang dune 3.11)
 (name user_project)
 """)
 
-        # Create src/dune
-        (build_dir / "src" / "dune").write_text("""(library
+    # Create src/dune
+    libs = "core hardcaml"
+    if is_n2t:
+        libs += " n2t_chips"
+    (build_dir / "src" / "dune").write_text(f"""(library
  (name user_circuit)
- (libraries core hardcaml)
+ (libraries {libs})
  (preprocess
   (pps ppx_hardcaml ppx_jane)))
 """)
 
-        # Create test/dune
-        (build_dir / "test" / "dune").write_text("""(library
+    # Create test/dune
+    test_libs = "core hardcaml hardcaml_waveterm hardcaml_test_harness"
+    if is_n2t:
+        test_libs += " n2t_chips"
+    test_libs += " user_circuit"
+    (build_dir / "test" / "dune").write_text(f"""(library
  (name user_test)
  (libraries 
-   core 
-   hardcaml 
-   hardcaml_waveterm
-   hardcaml_test_harness
-   user_circuit)
+   {test_libs})
+ (wrapped false)
  (inline_tests)
  (preprocess
   (pps ppx_hardcaml ppx_jane ppx_expect)))
 """)
+
+    # Create test/harness_utils.ml
+    (build_dir / "test" / "harness_utils.ml").write_text("""open! Hardcaml_waveterm
+
+let write_vcd_if_requested waves =
+  match Sys.getenv_opt "HARDCAML_VCD_PATH" with
+  | Some path -> Waveform.Serialize.marshall_vcd waves path
+  | None -> ()
+""")
+
+
+def setup_project(build_dir: Path, files: dict[str, str]) -> None:
+    """
+    Set up the project structure with user files.
+
+    Selects appropriate template (standard vs N2T) and copies selectively.
+    """
+    is_n2t = _is_n2t_project(files)
+
+    # Select template directory
+    if is_n2t:
+        template_dir = N2T_TEMPLATE_DIR
+    else:
+        template_dir = STANDARD_TEMPLATE_DIR
+
+    # Copy template structure (excluding _build/ and optionally n2t_chips/)
+    _copy_template_selectively(template_dir, build_dir, is_n2t)
 
     # Write user files
     src_dir = build_dir / "src"
@@ -203,15 +337,26 @@ def parse_output(output_text: str) -> ParsedOutput:
     )
 
 
-def read_vcd_file() -> Optional[str]:
+def read_vcd_file(build_dir: Optional[Path] = None) -> Optional[str]:
     """
     Read the VCD file generated by the test.
     Returns the VCD content as a string, or None if not found.
     """
-    vcd_path = Path("/tmp/waveform.vcd")
+    # Try per-build path first (from env var)
+    vcd_path = os.getenv("HARDCAML_VCD_PATH")
+    if vcd_path:
+        try:
+            path = Path(vcd_path)
+            if path.exists():
+                return path.read_text()
+        except Exception:
+            pass
+
+    # Fallback to legacy global path (for backwards compatibility)
+    legacy_path = Path("/tmp/waveform.vcd")
     try:
-        if vcd_path.exists():
-            return vcd_path.read_text()
+        if legacy_path.exists():
+            return legacy_path.read_text()
     except Exception:
         pass
     return None
@@ -235,40 +380,151 @@ def parse_error(stderr: str) -> tuple[str, str]:
         return "compile_error", stderr
 
 
-def compile_and_run(files: dict[str, str], timeout_seconds: int = 30) -> CompileResult:
+def compile_and_run(
+    files: dict[str, str],
+    timeout_seconds: int = 30,
+    include_vcd: bool = True,
+    session_id: Optional[str] = None,
+) -> CompileResult:
     """
     Compile and run Hardcaml code.
 
-    1. Create isolated build directory
+    1. Get or create build directory (cached if session_id provided)
     2. Set up project with user files
     3. Run dune build @runtest
     4. Parse and return results
+
+    Args:
+        files: Map of filename to content
+        timeout_seconds: Max time for build
+        include_vcd: Whether to generate VCD output
+        session_id: Optional browser session ID for workspace caching
     """
     build_dir = None
+    use_temp_dir = session_id is None
+    cache_hit = False
     total_start = time.time()
 
     try:
-        # Create build directory
-        t0 = time.time()
-        build_dir = create_build_dir()
-        log.info(f"[timing] create_build_dir: {int((time.time() - t0) * 1000)}ms")
+        # Check result cache first (before any work)
+        result_cache = get_result_cache()
+        # Include include_vcd in cache key since it affects the result
+        cache_key_files = {**files, "__include_vcd__": str(include_vcd)}
+        cached_result = result_cache.get(cache_key_files)
+        if cached_result:
+            # Return cached result, but adjust VCD if needed
+            if not include_vcd and cached_result.waveform_vcd:
+                # Create a copy without VCD if it wasn't requested
+                cached_result = CompileResult(
+                    success=cached_result.success,
+                    output=cached_result.output,
+                    waveform=cached_result.waveform,
+                    waveform_vcd=None,  # Don't include VCD if not requested
+                    error_type=cached_result.error_type,
+                    error_message=cached_result.error_message,
+                    stage=cached_result.stage,
+                    compile_time_ms=0,  # Cached, so no compile time
+                    run_time_ms=cached_result.run_time_ms,
+                    tests_passed=cached_result.tests_passed,
+                    tests_failed=cached_result.tests_failed,
+                )
+            else:
+                # Use cached result as-is, but mark compile_time_ms as 0 for cache hit
+                cached_result = CompileResult(
+                    success=cached_result.success,
+                    output=cached_result.output,
+                    waveform=cached_result.waveform,
+                    waveform_vcd=cached_result.waveform_vcd if include_vcd else None,
+                    error_type=cached_result.error_type,
+                    error_message=cached_result.error_message,
+                    stage=cached_result.stage,
+                    compile_time_ms=0,  # Cached, so no compile time
+                    run_time_ms=cached_result.run_time_ms,
+                    tests_passed=cached_result.tests_passed,
+                    tests_failed=cached_result.tests_failed,
+                )
+            log.info(f"[compile] Result cache hit: session={session_id[:8] if session_id else 'none'}")
+            return cached_result
 
-        # Set up project (copy build cache + write user files)
+        is_n2t = _is_n2t_project(files)
+        project_type = "n2t" if is_n2t else "standard"
+        file_names = list(files.keys())
+        log.info(f"[compile] Starting: session={session_id[:8] if session_id else 'none'}, type={project_type}, files={file_names}")
+
+        # Get or create build directory
         t0 = time.time()
-        setup_project(build_dir, files)
-        log.info(f"[timing] setup_project: {int((time.time() - t0) * 1000)}ms")
+        if session_id:
+            # Use session-based cached workspace
+            template_dir = N2T_TEMPLATE_DIR if is_n2t else STANDARD_TEMPLATE_DIR
+            log.info(f"[compile] Using template: {template_dir}")
+            
+            cache = get_workspace_cache()
+            build_dir, cache_hit = cache.get_or_create(
+                session_id, is_n2t, template_dir
+            )
+            log.info(
+                f"[timing] get_workspace (cache_hit={cache_hit}): "
+                f"{int((time.time() - t0) * 1000)}ms"
+            )
+            
+            # Check workspace state
+            ws_build_dir = build_dir / "_build"
+            ws_src_files = list((build_dir / "src").glob("*.ml")) if (build_dir / "src").exists() else []
+            log.info(
+                f"[compile] Workspace: path={build_dir}, has_build={ws_build_dir.exists()}, "
+                f"src_files={[f.name for f in ws_src_files]}"
+            )
+
+            # Update user files in the workspace
+            t0 = time.time()
+            cache.update_workspace(session_id, files)
+            log.info(f"[timing] update_workspace: {int((time.time() - t0) * 1000)}ms")
+        else:
+            # Legacy: use temp directory (no caching)
+            build_dir = create_build_dir()
+            log.info(f"[timing] create_build_dir: {int((time.time() - t0) * 1000)}ms")
+
+            # Set up project (copy template + write user files)
+            t0 = time.time()
+            setup_project(build_dir, files)
+            log.info(f"[timing] setup_project: {int((time.time() - t0) * 1000)}ms")
+
+        # Set up VCD path if requested
+        vcd_path = None
+        dune_env = {}
+        if include_vcd:
+            vcd_path = build_dir / "waveform.vcd"
+            dune_env["HARDCAML_VCD_PATH"] = str(vcd_path)
+
+        # Enable dune shared cache for faster builds
+        dune_cache_root = os.getenv("DUNE_CACHE_ROOT", "/tmp/dune-cache")
+        dune_env["DUNE_CACHE"] = "enabled"
+        dune_env["DUNE_CACHE_ROOT"] = dune_cache_root
+        
+        # Check dune cache state
+        dune_cache_path = Path(dune_cache_root)
+        cache_exists = dune_cache_path.exists()
+        cache_size = sum(f.stat().st_size for f in dune_cache_path.rglob("*") if f.is_file()) if cache_exists else 0
+        log.info(f"[compile] Dune cache: path={dune_cache_root}, exists={cache_exists}, size={cache_size // 1024}KB")
 
         # Build and run tests
         # Note: No --force flag to allow dune's incremental build cache
-        # Each request uses a fresh temp dir, but this helps if container stays warm
+        # Note: No --auto-promote - we don't want to rewrite test files
+        log.info(f"[compile] Running: dune build @runtest (cwd={build_dir})")
         t0 = time.time()
         returncode, stdout, stderr = run_command(
-            ["dune", "build", "@runtest", "--auto-promote"],
+            ["dune", "build", "@runtest"],
             cwd=build_dir,
             timeout=timeout_seconds,
+            env=dune_env,
         )
         dune_time = int((time.time() - t0) * 1000)
-        log.info(f"[timing] dune build @runtest: {dune_time}ms")
+        log.info(f"[timing] dune build @runtest: {dune_time}ms (exit={returncode})")
+        
+        # Log if there were any errors
+        if returncode != 0 and stderr:
+            # Just first 500 chars of error for debugging
+            log.info(f"[compile] dune stderr (first 500 chars): {stderr[:500]}")
 
         # Parse output
         t0 = time.time()
@@ -277,12 +533,18 @@ def compile_and_run(files: dict[str, str], timeout_seconds: int = 30) -> Compile
         log.info(f"[timing] parse_output: {int((time.time() - t0) * 1000)}ms")
 
         # Read VCD file if it was generated
-        vcd = read_vcd_file()
-        if vcd:
-            log.info(f"[timing] read VCD file: {len(vcd)} bytes")
+        vcd = None
+        if include_vcd:
+            vcd = read_vcd_file(build_dir)
+            if vcd:
+                log.info(f"[timing] read VCD file: {len(vcd)} bytes")
 
         total_time = int((time.time() - total_start) * 1000)
-        log.info(f"[timing] total (before cleanup): {total_time}ms")
+        log.info(
+            f"[timing] total (before cleanup): {total_time}ms | "
+            f"session={session_id[:8] if session_id else 'none'}, "
+            f"cache_hit={cache_hit}, dune={dune_time}ms"
+        )
 
         # Check for compile errors (as opposed to test failures)
         has_compile_error = "Error:" in stderr and "File" in stderr and "line" in stderr
@@ -342,7 +604,7 @@ def compile_and_run(files: dict[str, str], timeout_seconds: int = 30) -> Compile
                 tests_failed=1,
             )
 
-        return CompileResult(
+        result = CompileResult(
             success=True,
             output=parsed.test_output,
             waveform=parsed.waveform,
@@ -351,6 +613,11 @@ def compile_and_run(files: dict[str, str], timeout_seconds: int = 30) -> Compile
             tests_passed=parsed.tests_passed,
             tests_failed=parsed.tests_failed,
         )
+        
+        # Cache successful result
+        result_cache.put(cache_key_files, result)
+        
+        return result
 
     except Exception as e:
         return CompileResult(
@@ -361,8 +628,8 @@ def compile_and_run(files: dict[str, str], timeout_seconds: int = 30) -> Compile
         )
 
     finally:
-        # Cleanup build directory
-        if build_dir and build_dir.exists():
+        # Cleanup build directory (only for temp dirs, not cached workspaces)
+        if use_temp_dir and build_dir and build_dir.exists():
             t0 = time.time()
             try:
                 shutil.rmtree(build_dir)

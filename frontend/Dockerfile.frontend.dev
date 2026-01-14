@@ -25,7 +25,7 @@ COPY frontend/tsconfig.base.json ./
 
 EXPOSE 5173
 
+# Default CMD (overridden by docker-compose)
 # On container start, volumes will mount over /app
-# pnpm install will sync dependencies to match the mounted lockfile
-# This ensures dependencies are always in sync with the workspace
-CMD ["sh", "-c", "pnpm install --frozen-lockfile && pnpm --filter @hardcaml/ide dev"]
+# docker-compose handles dependency syncing and dev server startup
+CMD ["sh", "-c", "pnpm --filter @hardcaml/ide dev"]

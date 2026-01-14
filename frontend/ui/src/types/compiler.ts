@@ -15,4 +15,6 @@ export interface CompileResult {
 export interface CompileRequest {
   files: Record<string, string>;
   timeout_seconds?: number;
+  include_vcd?: boolean;
+  session_id?: string;
 }

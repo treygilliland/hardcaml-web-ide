@@ -12,6 +12,7 @@ from routes import router
 from slowapi.errors import RateLimitExceeded
 
 logging.basicConfig(level=logging.INFO, format="%(name)s: %(message)s")
+log = logging.getLogger(__name__)
 
 
 def create_app() -> FastAPI:

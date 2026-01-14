@@ -145,13 +145,16 @@ def stage_into_build_dir(example: Example, build_dir: Path) -> None:
     src_dir.mkdir(parents=True, exist_ok=True)
     test_dir.mkdir(parents=True, exist_ok=True)
 
+    # Files that should never be deleted in test/ (shared infrastructure)
+    preserved_test_files = {"harness_utils.ml"}
+
     # Clean up prior staged OCaml files (keep dune config files, etc).
     for p in src_dir.iterdir():
         if p.suffix in {".ml", ".mli"}:
             p.unlink()
-    test_ml = test_dir / "test.ml"
-    if test_ml.exists():
-        test_ml.unlink()
+    for p in test_dir.iterdir():
+        if p.suffix in {".ml", ".mli"} and p.name not in preserved_test_files:
+            p.unlink()
 
     # Write staged files.
     for filename, content in example.files.items():

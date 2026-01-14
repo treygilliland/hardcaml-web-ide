@@ -49,4 +49,9 @@ RUN opam install -y \
 COPY hardcaml/build-cache/ /opt/build-cache/
 RUN cd /opt/build-cache && dune build @runtest --force 2>/dev/null || true
 
+# Pre-build templates for faster first builds
+COPY hardcaml/build-templates/ /opt/build-templates/
+RUN cd /opt/build-templates/standard && dune build @runtest --force 2>/dev/null || true
+RUN cd /opt/build-templates/n2t && dune build @runtest --force 2>/dev/null || true
+
 WORKDIR /app

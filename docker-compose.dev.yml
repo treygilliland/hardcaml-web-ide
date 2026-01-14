@@ -39,17 +39,17 @@ services:
     ports:
       - "5173:5173"
     volumes:
-      # Mount code for live editing
-      # node_modules will be created in this mount on first pnpm install
+      # Mount code for live editing (node_modules built into image)
       - ./frontend:/app
       - ./hardcaml:/hardcaml
-      - frontend-node_modules:/app/node_modules
+      # Exclude node_modules from bind mount to use built-in ones
+      - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
       - DOCKER_ENV=true
       - CI=true
       - VITE_DOCS_URL=http://localhost:4321
-    command: sh -c "cd /app && pnpm install --frozen-lockfile --store-dir=/tmp/pnpm-store && pnpm --filter @hardcaml/ide dev"
+    command: pnpm --filter @hardcaml/ide dev
     depends_on:
       - backend
 
@@ -60,16 +60,14 @@ services:
     ports:
       - "4321:4321"
     volumes:
+      # Mount code for live editing (node_modules built into image)
       - ./frontend:/app
       - ./hardcaml:/hardcaml
-      - docs-node_modules:/app/node_modules
+      # Exclude node_modules from bind mount to use built-in ones
+      - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
       - DOCKER_ENV=true
       - CI=true
       - PUBLIC_IDE_URL=http://localhost:5173
-    command: sh -c "cd /app && pnpm install --frozen-lockfile --store-dir=/tmp/pnpm-store && pnpm --filter @hardcaml/docs dev --host 0.0.0.0 --port 4321"
-
-volumes:
-  docs-node_modules:
-  frontend-node_modules:
+    command: pnpm --filter @hardcaml/docs dev --host 0.0.0.0 --port 4321

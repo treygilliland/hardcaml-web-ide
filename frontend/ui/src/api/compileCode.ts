@@ -1,5 +1,20 @@
 import type { CompileResult, CompileRequest } from "@ui/shared-types/compiler";
 
+const SESSION_ID_KEY = "hardcaml-session-id";
+
+/**
+ * Get or create a persistent session ID for this browser.
+ * This enables the backend to cache build artifacts for faster incremental builds.
+ */
+function getSessionId(): string {
+  let sessionId = localStorage.getItem(SESSION_ID_KEY);
+  if (!sessionId) {
+    sessionId = crypto.randomUUID();
+    localStorage.setItem(SESSION_ID_KEY, sessionId);
+  }
+  return sessionId;
+}
+
 // Injects input data into test files that contain INPUT_DATA placeholder.
 // This is necessary because Hardcaml test files need to read input from files,
 // but we pass input data dynamically via the API.
@@ -15,6 +30,7 @@ export interface CompileOptions {
   circuitFilename?: string;
   interfaceFilename?: string;
   timeoutSeconds?: number;
+  includeVcd?: boolean;
   apiBase?: string;
 }
 
@@ -29,6 +45,7 @@ export async function compileCode(
     circuitFilename = "circuit.ml",
     interfaceFilename = "circuit.mli",
     timeoutSeconds = 60,
+    includeVcd = true,
     apiBase = "",
   } = options;
 
@@ -41,6 +58,8 @@ export async function compileCode(
       "test.ml": processedTest,
     },
     timeout_seconds: timeoutSeconds,
+    include_vcd: includeVcd,
+    session_id: getSessionId(),
   };
 
   if (input) {

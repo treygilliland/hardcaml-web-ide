@@ -5,6 +5,7 @@ from config import RATE_LIMIT_PER_MINUTE
 from fastapi import APIRouter, HTTPException, Request
 from rate_limit import limiter
 from schemas import CompileRequest, CompileResponse
+from workspace_cache import get_workspace_cache
 
 router = APIRouter()
 
@@ -13,6 +14,13 @@ router = APIRouter()
 async def health_check():
     """Health check endpoint."""
     return {"status": "healthy", "service": "hardcaml-web-ide"}
+
+
+@router.get("/cache/stats")
+async def cache_stats():
+    """Get workspace cache statistics (for debugging)."""
+    cache = get_workspace_cache()
+    return cache.get_stats()
 
 
 @router.post("/compile", response_model=CompileResponse)
@@ -29,7 +37,10 @@ async def compile_code(request: Request, compile_request: CompileRequest):
 
     try:
         result = compile_and_run(
-            files=compile_request.files, timeout_seconds=compile_request.timeout_seconds
+            files=compile_request.files,
+            timeout_seconds=compile_request.timeout_seconds,
+            include_vcd=compile_request.include_vcd,
+            session_id=compile_request.session_id,
         )
         return CompileResponse(
             success=result.success,

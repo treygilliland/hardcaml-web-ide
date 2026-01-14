@@ -13,6 +13,14 @@ class CompileRequest(BaseModel):
         le=120,
         description="Maximum time for compilation and test execution",
     )
+    include_vcd: bool = Field(
+        default=True,
+        description="Whether to generate VCD waveform file",
+    )
+    session_id: str | None = Field(
+        default=None,
+        description="Browser session ID for workspace caching (enables fast incremental builds)",
+    )
 
 
 class CompileResponse(BaseModel):
