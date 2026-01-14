@@ -49,22 +49,46 @@ TEMPLATE_DIR_MOUNTED = Path("/hardcaml/build-templates")  # Docker volume mount
 TEMPLATE_DIR_DOCKER = Path("/opt/build-templates")
 TEMPLATE_DIR_REPO = Path(__file__).parent.parent / "hardcaml" / "build-templates"
 
-# Prefer mounted templates (dev mode) since they may have pre-built _build/
-if TEMPLATE_DIR_MOUNTED.exists():
-    TEMPLATE_DIR = TEMPLATE_DIR_MOUNTED
-elif TEMPLATE_DIR_DOCKER.exists():
-    TEMPLATE_DIR = TEMPLATE_DIR_DOCKER
-else:
-    TEMPLATE_DIR = TEMPLATE_DIR_REPO
+# Cache for resolved template directories (lazy initialization)
+_template_dir_cache: Path | None = None
+_standard_template_dir_cache: Path | None = None
+_n2t_template_dir_cache: Path | None = None
 
-STANDARD_TEMPLATE_DIR = TEMPLATE_DIR / "standard"
-N2T_TEMPLATE_DIR = TEMPLATE_DIR / "n2t"
 
-# Log template resolution at module load
-log.info(
-    f"Template resolution: MOUNTED={TEMPLATE_DIR_MOUNTED.exists()}, DOCKER={TEMPLATE_DIR_DOCKER.exists()}"
-)
-log.info(f"Using template directory: {TEMPLATE_DIR}")
+def _get_template_dir() -> Path:
+    """Get the template directory, resolving lazily on first access."""
+    global _template_dir_cache
+    if _template_dir_cache is None:
+        # Prefer mounted templates (dev mode) since they may have pre-built _build/
+        if TEMPLATE_DIR_MOUNTED.exists():
+            _template_dir_cache = TEMPLATE_DIR_MOUNTED
+        elif TEMPLATE_DIR_DOCKER.exists():
+            _template_dir_cache = TEMPLATE_DIR_DOCKER
+        else:
+            _template_dir_cache = TEMPLATE_DIR_REPO
+
+        # Log template resolution on first access
+        log.info(
+            f"Template resolution: MOUNTED={TEMPLATE_DIR_MOUNTED.exists()}, DOCKER={TEMPLATE_DIR_DOCKER.exists()}"
+        )
+        log.info(f"Using template directory: {_template_dir_cache}")
+    return _template_dir_cache
+
+
+def _get_standard_template_dir() -> Path:
+    """Get the standard template directory, resolving lazily on first access."""
+    global _standard_template_dir_cache
+    if _standard_template_dir_cache is None:
+        _standard_template_dir_cache = _get_template_dir() / "standard"
+    return _standard_template_dir_cache
+
+
+def _get_n2t_template_dir() -> Path:
+    """Get the N2T template directory, resolving lazily on first access."""
+    global _n2t_template_dir_cache
+    if _n2t_template_dir_cache is None:
+        _n2t_template_dir_cache = _get_template_dir() / "n2t"
+    return _n2t_template_dir_cache
 
 # Markers for parsing output
 WAVEFORM_START = "===WAVEFORM_START==="
@@ -221,9 +245,9 @@ def setup_project(build_dir: Path, files: dict[str, str]) -> None:
 
     # Select template directory
     if is_n2t:
-        template_dir = N2T_TEMPLATE_DIR
+        template_dir = _get_n2t_template_dir()
     else:
-        template_dir = STANDARD_TEMPLATE_DIR
+        template_dir = _get_standard_template_dir()
 
     # Copy template structure (excluding _build/ and optionally n2t_chips/)
     _copy_template_selectively(template_dir, build_dir, is_n2t)
@@ -459,7 +483,7 @@ def compile_and_run(
         t0 = time.time()
         if session_id:
             # Use session-based cached workspace
-            template_dir = N2T_TEMPLATE_DIR if is_n2t else STANDARD_TEMPLATE_DIR
+            template_dir = _get_n2t_template_dir() if is_n2t else _get_standard_template_dir()
             log.info(f"[compile] Using template: {template_dir}")
 
             cache = get_workspace_cache()

@@ -1,6 +1,5 @@
 """API route handlers."""
 
-from compiler import compile_and_run
 from config import RATE_LIMIT_PER_MINUTE
 from fastapi import APIRouter, HTTPException, Request
 from rate_limit import limiter
@@ -27,6 +26,9 @@ async def cache_stats():
 @limiter.limit(f"{RATE_LIMIT_PER_MINUTE}/minute")
 async def compile_code(request: Request, compile_request: CompileRequest):
     """Compile and run Hardcaml code."""
+    # Lazy import to avoid loading compiler module at startup
+    from compiler import compile_and_run
+
     circuit_files = [
         f for f in compile_request.files.keys() if f.endswith(".ml") and f != "test.ml"
     ]

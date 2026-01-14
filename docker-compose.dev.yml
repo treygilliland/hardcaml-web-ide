@@ -1,5 +1,6 @@
 services:
   backend:
+    container_name: backend-dev
     build:
       context: .
       dockerfile: Dockerfile
@@ -33,6 +34,7 @@ services:
           memory: 2G
 
   frontend:
+    container_name: frontend-dev
     build:
       context: .
       dockerfile: frontend/Dockerfile.frontend.dev
@@ -54,6 +56,7 @@ services:
       - backend
 
   docs:
+    container_name: docs-dev
     build:
       context: .
       dockerfile: frontend/Dockerfile.frontend.dev

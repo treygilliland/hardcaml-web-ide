@@ -55,6 +55,15 @@ COPY api/ /app/
 # Copy built frontend
 COPY --from=frontend-builder /app/ide/dist /app/static
 
+# Pre-create cache directories for fast cold-start compilation
+RUN mkdir -p /tmp/hardcaml-workspaces /tmp/dune-cache && \
+    chmod 755 /tmp/hardcaml-workspaces /tmp/dune-cache
+
+# Pre-warm dune cache by running a build in the standard template
+# This populates the shared cache with common dependencies
+RUN cd /opt/build-templates/standard && \
+    DUNE_CACHE=enabled DUNE_CACHE_ROOT=/tmp/dune-cache dune build @runtest --force 2>/dev/null || true
+
 WORKDIR /app
 EXPOSE 8000
 
