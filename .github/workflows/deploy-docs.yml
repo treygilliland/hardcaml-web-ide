@@ -2,12 +2,14 @@ name: Deploy Docs to GitHub Pages
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [main]
-  #   paths:
-  #     - "frontend/docs/**"
-  #     - "frontend/ui/**"
-  #     - ".github/workflows/deploy-docs.yml"
+  push:
+    branches: [main]
+    paths:
+      - "frontend/docs/**"
+      - "frontend/ui/**"
+      - "frontend/ide/**"
+      - "hardcaml/**"
+      - ".github/workflows/deploy-docs.yml"
 
 permissions:
   contents: read

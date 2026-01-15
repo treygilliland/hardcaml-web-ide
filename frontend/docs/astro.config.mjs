@@ -8,20 +8,12 @@ import { existsSync } from "fs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Resolve hardcaml path - ensure absolute path resolution
-// In Docker dev: volume mounts ./hardcaml:/hardcaml, so check /hardcaml first
-// Otherwise: from /app/docs, go up one level to /app, then into hardcaml
-// This gives us /app/hardcaml (not /hardcaml which would be wrong)
-let hardcamlExamplesPath;
-if (existsSync("/hardcaml")) {
-  // Docker dev environment - hardcaml is mounted at /hardcaml
-  hardcamlExamplesPath = "/hardcaml";
-} else {
-  // Local dev or build - use relative path
-  hardcamlExamplesPath = path.resolve(__dirname, "../hardcaml");
-  // Ensure it's an absolute, normalized path
-  hardcamlExamplesPath = path.resolve(hardcamlExamplesPath);
-}
+// Resolve hardcaml path - consistent across all environments
+// From frontend/docs, go up two levels to repo root, then into hardcaml
+// Local dev: <repo-root>/frontend/docs -> <repo-root>/hardcaml
+// Docker dev: /workspace/frontend/docs -> /workspace/hardcaml
+// Docker prod build: /app/docs -> /app/hardcaml
+const hardcamlExamplesPath = path.resolve(__dirname, "../../hardcaml");
 
 // Validate that the hardcaml directory exists
 if (!existsSync(hardcamlExamplesPath)) {
