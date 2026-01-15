@@ -35,7 +35,7 @@ let create _scope (i : _ I.t) : _ O.t =
   { out = N2t_chips.Nand.nand i.a i.a }
 ```
 
-[Try it in IDE →](https://hardcaml.tg3.dev#n2t_not)
+[Try it in IDE →](/ide/#n2t_not)
 
 ### AND Gate
 
@@ -43,7 +43,7 @@ Output 1 only when both inputs are 1.
 
 **Hint:** `AND(a,b) = NOT(NAND(a,b))`
 
-[Try it in IDE →](https://hardcaml.tg3.dev#n2t_and)
+[Try it in IDE →](/ide/#n2t_and)
 
 ### OR Gate
 
@@ -51,7 +51,7 @@ Output 1 when at least one input is 1.
 
 **Hint:** Use De Morgan's law: `OR(a,b) = NAND(NOT(a), NOT(b))`
 
-[Try it in IDE →](https://hardcaml.tg3.dev#n2t_or)
+[Try it in IDE →](/ide/#n2t_or)
 
 ### XOR Gate
 
@@ -59,7 +59,7 @@ Output 1 when inputs differ.
 
 **Hint:** `XOR(a,b) = OR(AND(a,NOT(b)), AND(NOT(a),b))`
 
-[Try it in IDE →](https://hardcaml.tg3.dev#n2t_xor)
+[Try it in IDE →](/ide/#n2t_xor)
 
 ### MUX (Multiplexor)
 
@@ -71,7 +71,7 @@ if sel=0 then out=a else out=b
 
 **Hint:** `MUX(a,b,sel) = OR(AND(a,NOT(sel)), AND(b,sel))`
 
-[Try it in IDE →](https://hardcaml.tg3.dev#n2t_mux)
+[Try it in IDE →](/ide/#n2t_mux)
 
 ### DMUX (Demultiplexor)
 
@@ -81,7 +81,7 @@ Route input to one of two outputs based on sel.
 if sel=0 then {a=in, b=0} else {a=0, b=in}
 ```
 
-[Try it in IDE →](https://hardcaml.tg3.dev#n2t_dmux)
+[Try it in IDE →](/ide/#n2t_dmux)
 
 ## 16-bit Variants
 

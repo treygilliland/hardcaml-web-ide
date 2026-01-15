@@ -24,7 +24,7 @@ let create _scope (i : _ I.t) : _ O.t =
   { out = reg spec i.inp }
 ```
 
-[Try it in IDE →](https://hardcaml.tg3.dev#n2t_dff)
+[Try it in IDE →](/ide/#n2t_dff)
 
 ## Bit
 
@@ -36,7 +36,7 @@ let create _scope (i : _ I.t) : _ O.t =
   { out = reg spec ~enable:i.load i.inp }
 ```
 
-[Try it in IDE →](https://hardcaml.tg3.dev#n2t_bit)
+[Try it in IDE →](/ide/#n2t_bit)
 
 ## Register
 
@@ -46,7 +46,7 @@ let create _scope (i : _ I.t) : _ O.t =
 { out = reg spec ~enable:i.load i.inp }  (* inp is 16 bits *)
 ```
 
-[Try it in IDE →](https://hardcaml.tg3.dev#n2t_register)
+[Try it in IDE →](/ide/#n2t_register)
 
 ## RAM8
 
@@ -64,7 +64,7 @@ let r0 = N2t_chips.register_ scope i.clock i.clear i.inp loads.a in
 { out = N2t_chips.mux8way16_ scope r0 r1 r2 r3 r4 r5 r6 r7 i.address }
 ```
 
-[Try it in IDE →](https://hardcaml.tg3.dev#n2t_ram8)
+[Try it in IDE →](/ide/#n2t_ram8)
 
 ## Larger RAMs
 
@@ -102,7 +102,7 @@ let create scope (i : _ I.t) : _ O.t =
 
 **Note:** Use `reg_fb` for feedback loops.
 
-[Try it in IDE →](https://hardcaml.tg3.dev#n2t_pc)
+[Try it in IDE →](/ide/#n2t_pc)
 
 ## Timing in Hardcaml
 

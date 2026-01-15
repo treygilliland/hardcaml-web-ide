@@ -14,6 +14,6 @@
 		"DUNE_CACHE_ROOT": "/tmp/dune-cache",
 		"COMPILE_TIMEOUT_SECONDS": "30",
 		"RATE_LIMIT_PER_MINUTE": "10",
-		"CORS_ORIGINS": "https://hardcaml.tg3.dev"
+		"CORS_ORIGINS": "https://ide.hardcaml.tg3.dev"
 	}
 }

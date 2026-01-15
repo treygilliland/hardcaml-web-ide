@@ -9,11 +9,10 @@
 export const apiConfig = {
   /**
    * Base URL for the compilation API.
-   * - In production (GitHub Pages): points to Railway backend
-   * - In development: defaults to localhost
+   * - Defaults to production API server
    * - Can be overridden via PUBLIC_API_BASE_URL env var
    */
-  baseUrl: import.meta.env.PUBLIC_API_BASE_URL || "",
+  baseUrl: import.meta.env.PUBLIC_API_BASE_URL || "https://hardcaml.tg3.dev",
 } as const;
 
 /**
