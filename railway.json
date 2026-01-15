@@ -1,17 +1,19 @@
 {
 	"$schema": "https://railway.app/railway.schema.json",
 	"build": {
-		"dockerfilePath": "Dockerfile",
+		"dockerfilePath": "Dockerfile.backend",
 		"buildTarget": "prod"
 	},
 	"deploy": {
 		"restartPolicyType": "ON_FAILURE",
-		"restartPolicyMaxRetries": 10
+		"restartPolicyMaxRetries": 3
 	},
 	"env": {
 		"RESULT_CACHE_SIZE": "200",
 		"RESULT_CACHE_TTL": "3600",
 		"DUNE_CACHE_ROOT": "/tmp/dune-cache",
-		"COMPILE_TIMEOUT_SECONDS": "30"
+		"COMPILE_TIMEOUT_SECONDS": "30",
+		"RATE_LIMIT_PER_MINUTE": "10",
+		"CORS_ORIGINS": "https://hardcaml.tg3.dev"
 	}
 }

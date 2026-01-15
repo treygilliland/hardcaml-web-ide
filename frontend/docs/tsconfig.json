@@ -10,6 +10,18 @@
       ],
       "@components/*": [
         "src/components/*"
+      ],
+      "@ide/*": [
+        "../ide/src/*"
+      ],
+      "@ide": [
+        "../ide/src"
+      ],
+      "@ui/*": [
+        "../ui/src/*"
+      ],
+      "@hardcaml-examples": [
+        "../../hardcaml"
       ]
     }
   },

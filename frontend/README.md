@@ -19,8 +19,41 @@ frontend/
 | Package | Purpose | Consumers |
 |---------|---------|-----------|
 | `@hardcaml/ui` | Shared React components, hooks, API client | ide, docs |
-| `@hardcaml/ide` | Main IDE application | standalone |
-| `@hardcaml/docs` | Astro Starlight documentation | standalone |
+| `@hardcaml/ide` | Main IDE application | docs (integrated) |
+| `@hardcaml/docs` | Astro Starlight documentation with integrated IDE | standalone |
+
+## Current Architecture
+
+**The IDE is integrated into the docs site** and served from a single container. This simplifies deployment and maintenance while keeping the codebase organized for potential future separation.
+
+### Integration Details
+
+- The IDE React app is mounted in `docs/src/components/IDE.tsx` using React's `createRoot`
+- IDE code is imported via path aliases (`@ide/*`) configured in `docs/astro.config.mjs`
+- CSS files are imported using path aliases for maintainability
+- The IDE is accessible at `/ide` route in the docs site
+
+### Splitting Out the IDE (Future)
+
+The IDE package (`frontend/ide/`) is structured to be easily split out if needed:
+
+1. **Standalone configs are preserved:**
+   - `ide/vite.config.ts` - Vite configuration for standalone dev server
+   - `ide/index.html` - Standalone entry point
+   - `ide/package.json` - Already has build scripts configured
+
+2. **To run IDE standalone:**
+   ```bash
+   pnpm --filter ide dev
+   ```
+
+3. **To split out completely:**
+   - Create a separate Dockerfile for the IDE
+   - Update deployment configs to serve IDE separately
+   - The IDE already has its own build output (`ide/dist/`)
+   - Path aliases in `ide/vite.config.ts` are already configured
+
+The current integration approach keeps things simple while maintaining separation of concerns.
 
 ## Workspace-Only Usage
 
@@ -44,12 +77,14 @@ pnpm install
 ### Run applications
 
 ```bash
-# IDE
-pnpm dev
-
-# Docs site
+# Docs site (includes integrated IDE at /ide) - primary development workflow
 pnpm dev:docs
+
+# IDE standalone (for testing standalone deployment)
+pnpm --filter ide dev
 ```
+
+**Note:** The primary development workflow uses `pnpm dev:docs` which serves both docs and IDE. The standalone IDE dev server is available for testing but not used in production.
 
 ### Lint all packages
 
@@ -78,6 +113,8 @@ This ensures consistent theming across all consumers of the UI package.
 ## Documentation Site
 
 The docs site uses [Astro Starlight](https://starlight.astro.build/) for documentation. Content files are located in `docs/src/content/docs/`.
+
+The IDE is integrated into the docs site and accessible at the `/ide` route. The IDE makes API calls to the backend using the `PUBLIC_API_BASE_URL` environment variable.
 
 ### Adding a New Page
 

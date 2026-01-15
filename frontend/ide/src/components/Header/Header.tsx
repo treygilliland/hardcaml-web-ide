@@ -1,7 +1,7 @@
 import styles from "./Header.module.scss";
 
-const DOCS_URL =
-  import.meta.env.VITE_DOCS_URL || "https://docs.hardcaml.tg3.dev";
+// Docs are at the root of the same site
+const DOCS_URL = "/";
 
 export function Header() {
   return (
@@ -14,8 +14,6 @@ export function Header() {
         <a
           href={DOCS_URL}
           className={styles.docsLink}
-          target="_blank"
-          rel="noopener noreferrer"
         >
           📚 Docs
         </a>

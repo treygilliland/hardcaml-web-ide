@@ -2,12 +2,12 @@
   "name": "hardcaml-frontend",
   "private": true,
   "scripts": {
-    "dev": "pnpm --filter ide dev",
+    "dev": "pnpm dev:docs",
     "dev:docs": "pnpm --filter docs dev",
-    "build": "pnpm --filter ide build",
+    "build": "pnpm build:docs",
     "build:docs": "pnpm --filter docs build",
     "lint": "pnpm -r lint",
-    "preview": "pnpm --filter ide preview"
+    "preview": "pnpm --filter docs preview"
   },
   "devDependencies": {
     "typescript": "~5.9.3"

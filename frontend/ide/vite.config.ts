@@ -1,3 +1,10 @@
+/**
+ * Vite configuration for standalone IDE development.
+ *
+ * NOTE: The IDE is currently integrated into the docs site (frontend/docs).
+ * This config is kept for potential future standalone deployment.
+ * To run the IDE standalone: `pnpm --filter ide dev`
+ */
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";

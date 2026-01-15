@@ -1,12 +1,16 @@
 ---
-const ideUrl = import.meta.env.PUBLIC_IDE_URL || 'https://hardcaml.tg3.dev';
+// IDE is integrated into the docs site at /ide
+// In dev/compose (localhost), use current origin to preserve port
+// In production (GitHub Pages), use the production site URL
+const isLocalhost = Astro.url.hostname === 'localhost' || Astro.url.hostname === '127.0.0.1';
+const ideUrl = isLocalhost
+  ? new URL('/ide', Astro.url).href
+  : `${Astro.site || 'https://hardcaml.tg3.dev'}/ide`;
 ---
 
 <div class="social-icons">
   <a
     href={ideUrl}
-    target="_blank"
-    rel="noopener noreferrer"
     class="ide-button"
   >
     🚀 IDE

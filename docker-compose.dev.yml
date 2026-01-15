@@ -3,7 +3,7 @@ services:
     container_name: backend-dev
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.backend
       target: dev
       args:
         BASE_IMAGE: ${BASE_IMAGE:-ghcr.io/treygilliland/hardcaml-base:latest}
@@ -39,28 +39,6 @@ services:
       context: .
       dockerfile: frontend/Dockerfile.frontend.dev
     ports:
-      - "5173:5173"
-    volumes:
-      # Mount code for live editing (node_modules built into image)
-      - ./frontend:/app
-      - ./hardcaml:/hardcaml
-      # Exclude node_modules from bind mount to use built-in ones
-      - /app/node_modules
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-      - DOCKER_ENV=true
-      - CI=true
-      - VITE_DOCS_URL=http://localhost:4321
-    command: pnpm --filter @hardcaml/ide dev
-    depends_on:
-      - backend
-
-  docs:
-    container_name: docs-dev
-    build:
-      context: .
-      dockerfile: frontend/Dockerfile.frontend.dev
-    ports:
       - "4321:4321"
     volumes:
       # Mount code for live editing (node_modules built into image)
@@ -72,5 +50,5 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - DOCKER_ENV=true
       - CI=true
-      - PUBLIC_IDE_URL=http://localhost:5173
+      - PUBLIC_API_BASE_URL=http://localhost:8000
     command: pnpm --filter @hardcaml/docs dev --host 0.0.0.0 --port 4321

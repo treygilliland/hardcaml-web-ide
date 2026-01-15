@@ -2,14 +2,12 @@
 
 import logging
 
-from config import DEV_MODE, STATIC_DIR
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
 from rate_limit import limiter, rate_limit_exceeded_handler
 from routes import router
 from slowapi.errors import RateLimitExceeded
+from config import CORS_ORIGINS, validate_config
 
 logging.basicConfig(level=logging.INFO, format="%(name)s: %(message)s")
 log = logging.getLogger(__name__)
@@ -17,6 +15,12 @@ log = logging.getLogger(__name__)
 
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application."""
+    # Validate configuration on startup
+    validate_config()
+
+    log.info("Starting Hardcaml Web IDE API")
+    log.info(f"CORS allowed origins: {CORS_ORIGINS}")
+
     app = FastAPI(
         title="Hardcaml Web IDE",
         description="API for compiling and running Hardcaml circuits",
@@ -28,30 +32,13 @@ def create_app() -> FastAPI:
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=CORS_ORIGINS,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
 
     app.include_router(router)
-
-    if not DEV_MODE:
-        app.mount(
-            "/assets", StaticFiles(directory=STATIC_DIR / "assets"), name="assets"
-        )
-
-        @app.get("/")
-        async def serve_frontend():
-            return FileResponse(STATIC_DIR / "index.html")
-
-        @app.get("/favicon.png")
-        async def serve_favicon_png():
-            return FileResponse(STATIC_DIR / "favicon.png", media_type="image/png")
-
-        @app.get("/favicon.ico")
-        async def serve_favicon_ico():
-            return FileResponse(STATIC_DIR / "favicon.png", media_type="image/png")
 
     return app
 

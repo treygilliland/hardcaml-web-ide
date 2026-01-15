@@ -4,6 +4,9 @@ import { examples, getExample, type ExampleKey } from "@ide/examples/hardcaml-ex
 const DEFAULT_EXAMPLE: ExampleKey = "counter";
 
 export function getInitialExampleKey(): ExampleKey {
+  if (typeof window === "undefined") {
+    return DEFAULT_EXAMPLE;
+  }
   const hash = window.location.hash.slice(1);
   if (hash && examples[hash as ExampleKey]) {
     return hash as ExampleKey;

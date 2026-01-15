@@ -15,9 +15,9 @@ The [Hardcaml](https://github.com/janestreet/hardcaml) library and logo are deve
 ## Quick Start
 
 ```bash
-make dev      # Start all development services (backend :8000, frontend :5173, docs :4321)
+make dev      # Start all development services (backend :8000, frontend :4321)
 make test     # Run tests in docker containers
-make up       # Start production services (service :8000, docs :8080)
+make up       # Start production services (backend :8000, frontend :8080)
 make down     # Stop all services
 make logs     # View logs from all services
 make clean    # Stop services and remove volumes
@@ -25,7 +25,7 @@ make clean    # Stop services and remove volumes
 
 ## What do you want to do?
 
-- **Use the Web IDE locally**: run `make dev`, then open the IDE on `localhost:5173`.
+- **Use the Web IDE locally**: run `make dev`, then open the IDE at `localhost:4321/ide`.
 - **Work on the backend compile API / test runner**: see [`api/README.md`](api/README.md).
 - **Write OCaml/Hardcaml circuits and run dune tests directly**: see [`hardcaml/README.md`](hardcaml/README.md).
 - **Work on the frontend**: see [`frontend/README.md`](frontend/README.md).
@@ -51,14 +51,14 @@ make clean    # Stop services and remove volumes
 
 The project is split into:
 
-1. **Python FastAPI Backend** (`api/`) - Compiles and runs Hardcaml circuits, serves the IDE app in production
+1. **Python FastAPI Backend** (`api/`) - Compiles and runs Hardcaml circuits (API-only, no static files)
 2. **Frontend Workspace** (`frontend/`) - pnpm monorepo containing:
    - `@hardcaml/ui` - Shared React components, hooks, and API client
    - `@hardcaml/ide` - Main IDE application (React + Vite)
-   - `@hardcaml/docs` - Documentation site (Astro Starlight)
+   - `@hardcaml/docs` - Documentation site (Astro Starlight) with integrated IDE
 
 The frontend uses a pnpm workspace to share code between the IDE and docs site.
-The IDE app is bundled with the API in production, while the docs site runs as a separate service in both development and production.
+The IDE is integrated into the Astro docs site and deployed together via GitHub Pages, while the API runs separately on Railway.
 
 See [frontend/README.md](frontend/README.md) for details on the frontend architecture and development workflow.
 
@@ -66,41 +66,42 @@ See [frontend/README.md](frontend/README.md) for details on the frontend archite
 
 ### Development (`make dev`)
 
-| Service  | Port | Description                      |
-| -------- | ---- | -------------------------------- |
-| Backend  | 8000 | FastAPI server (hot reload)      |
-| Frontend | 5173 | Vite dev server (IDE)            |
-| Docs     | 4321 | Astro dev server (documentation) |
+| Service  | Port | Description                   |
+| -------- | ---- | ----------------------------- |
+| Backend  | 8000 | FastAPI server                |
+| Frontend | 4321 | Astro dev server (IDE + docs) |
 
 ### Production (`make up`)
 
-| Service | Port | Description                       |
-| ------- | ---- | --------------------------------- |
-| IDE/API | 8000 | FastAPI serving IDE + compile API |
-| Docs    | 8080 | nginx serving static docs site    |
+| Service  | Port | Description        |
+| -------- | ---- | ------------------ |
+| Backend  | 8000 | FastAPI server     |
+| Frontend | 8080 | nginx (IDE + docs) |
+
+**Note:** In production, the IDE and docs are deployed together as a static site via GitHub Pages. The API runs separately on Railway.
 
 ## Development
 
-All development happens in Docker containers with hot reload enabled. The `make dev` command starts three services:
+All development happens in Docker containers with hot reload enabled.
+The `make dev` command starts two services:
 
 ### Docker Configuration
 
 ```
-├── Dockerfile                  # App image (uses base)
+├── Dockerfile.backend          # Backend API image (uses base)
 ├── Dockerfile.base             # Base image (OCaml toolchain)
 ├── docker-compose.yml          # Production services
 ├── docker-compose.dev.yml      # Development services
 ├── frontend/
-│   ├── Dockerfile.docs         # Docs site image
+│   ├── Dockerfile.frontend     # Frontend production image (Astro + IDE)
 │   └── Dockerfile.frontend.dev # Frontend dev image
 └── railway.json                # Railway deployment config
 ```
 
-| Service  | URL            | Hot Reload       | Description        |
-| -------- | -------------- | ---------------- | ------------------ |
-| Backend  | localhost:8000 | uvicorn --reload | FastAPI server     |
-| Frontend | localhost:5173 | Vite HMR         | IDE application    |
-| Docs     | localhost:4321 | Astro dev server | Documentation site |
+| Service  | URL            | Hot Reload       | Description     |
+| -------- | -------------- | ---------------- | --------------- |
+| Backend  | localhost:8000 | uvicorn --reload | FastAPI server  |
+| Frontend | localhost:4321 | Astro dev server | IDE + Docs site |
 
 ### Starting Development
 
@@ -123,7 +124,7 @@ make dev  # Automatically rebuilds changed services
 All services use volume mounts for live code editing:
 
 - `./api` → `/app` (backend)
-- `./frontend` → `/app` (frontend & docs)
+- `./frontend` → `/app` (frontend)
 - `./hardcaml` → `/hardcaml` (all services)
 
 Changes to source files are immediately reflected in running containers.

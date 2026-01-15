@@ -4,3 +4,4 @@ export { OutputPanel, type OutputPanelProps } from "@ui/components/OutputPanel/O
 export { useCompiler, type UseCompilerReturn, type UseCompilerOptions } from "@ui/hooks/useCompiler";
 export { compileCode, type CompileOptions } from "@ui/api/compileCode";
 export type { CompileResult, CompileRequest } from "@ui/shared-types/compiler";
+export { apiConfig, getApiUrl } from "@ui/config";

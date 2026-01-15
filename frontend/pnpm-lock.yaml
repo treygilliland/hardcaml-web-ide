@@ -29,6 +29,9 @@ importers:
       astro:
         specifier: ^5.9.0
         version: 5.16.9(@types/node@24.10.7)(rollup@4.55.1)(sass-embedded@1.97.2)(sass@1.97.2)(typescript@5.9.3)
+      posthog-js:
+        specifier: ^1.318.1
+        version: 1.318.2
       react:
         specifier: ^19.2.0
         version: 19.2.3
@@ -57,9 +60,6 @@ importers:
       '@hardcaml/ui':
         specifier: workspace:*
         version: link:../ui
-      posthog-js:
-        specifier: ^1.318.1
-        version: 1.318.2
       react:
         specifier: ^19.2.0
         version: 19.2.3

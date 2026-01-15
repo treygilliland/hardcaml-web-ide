@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { compileCode, type CompileOptions } from "@ui/api/compileCode";
 import type { CompileResult } from "@ui/shared-types/compiler";
+import { apiConfig } from "@ui/config";
 
 export interface UseCompilerOptions {
   apiBase?: string;
@@ -14,7 +15,8 @@ export interface UseCompilerReturn {
 }
 
 export function useCompiler(options: UseCompilerOptions = {}): UseCompilerReturn {
-  const { apiBase } = options;
+  // Use centralized config if apiBase is not provided
+  const apiBase = options.apiBase ?? apiConfig.baseUrl;
   const [result, setResult] = useState<CompileResult | null>(null);
   const [loading, setLoading] = useState(false);
 

@@ -15,26 +15,6 @@ ENV UV_PROJECT_ENVIRONMENT=/opt/venv
 COPY api/pyproject.toml api/uv.lock /app/
 RUN cd /app && uv sync --frozen
 
-# --- Frontend build stage ---
-FROM node:24-alpine AS frontend-builder
-
-RUN npm install -g pnpm
-
-WORKDIR /app
-COPY frontend/package.json frontend/pnpm-workspace.yaml frontend/pnpm-lock.yaml ./
-COPY frontend/ui/package.json ./ui/
-COPY frontend/ide/package.json ./ide/
-COPY frontend/docs/package.json ./docs/
-RUN pnpm install --frozen-lockfile
-
-COPY frontend/tsconfig.base.json ./
-COPY frontend/ui/ ./ui/
-COPY frontend/ide/ ./ide/
-COPY hardcaml/ /hardcaml/
-
-WORKDIR /app/ide
-RUN pnpm build
-
 # --- Development stage ---
 FROM base AS dev
 
@@ -51,9 +31,6 @@ FROM base AS prod
 
 # Copy API code
 COPY api/ /app/
-
-# Copy built frontend
-COPY --from=frontend-builder /app/ide/dist /app/static
 
 # Pre-create cache directories for fast cold-start compilation
 RUN mkdir -p /tmp/hardcaml-workspaces /tmp/dune-cache && \

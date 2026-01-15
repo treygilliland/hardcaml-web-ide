@@ -23,9 +23,9 @@ COPY frontend/ide/ ./ide/
 COPY frontend/docs/ ./docs/
 COPY frontend/tsconfig.base.json ./
 
-EXPOSE 5173
+EXPOSE 4321
 
 # Default CMD (overridden by docker-compose)
 # On container start, volumes will mount over /app
 # docker-compose handles dependency syncing and dev server startup
-CMD ["sh", "-c", "pnpm --filter @hardcaml/ide dev"]
+CMD ["sh", "-c", "pnpm --filter @hardcaml/docs dev --host 0.0.0.0 --port 4321"]
