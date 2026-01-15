@@ -5,9 +5,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "frontend/docs/**"
-      - "frontend/ui/**"
-      - "frontend/ide/**"
+      - "frontend/**"
       - "hardcaml/**"
       - ".github/workflows/deploy-docs.yml"
 
@@ -55,7 +53,7 @@ jobs:
       - name: Build docs (with IDE)
         working-directory: frontend
         env:
-          PUBLIC_API_BASE_URL: ${{ secrets.PUBLIC_API_BASE_URL || 'https://api.hardcaml.tg3.dev' }}
+          PUBLIC_API_BASE_URL: ${{ secrets.PUBLIC_API_BASE_URL || 'https://hardcaml.tg3.dev' }}
         run: pnpm --filter @hardcaml/docs build
 
       - name: Deploy to Cloudflare Pages
