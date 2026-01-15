@@ -18,6 +18,11 @@ try:
 except Exception:
     RESULT_CACHE_TTL = 3600
 
+try:
+    COMPILE_TIMEOUT_SECONDS = int(os.environ.get("COMPILE_TIMEOUT_SECONDS", "300"))
+except Exception:
+    COMPILE_TIMEOUT_SECONDS = 300
+
 STATIC_DIR = Path("/app/static")
 if not STATIC_DIR.exists():
     STATIC_DIR = Path(__file__).parent.parent / "frontend" / "dist"

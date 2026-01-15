@@ -1,6 +1,6 @@
 """API route handlers."""
 
-from config import RATE_LIMIT_PER_MINUTE
+from config import COMPILE_TIMEOUT_SECONDS, RATE_LIMIT_PER_MINUTE
 from fastapi import APIRouter, HTTPException, Request
 from rate_limit import limiter
 from schemas import CompileRequest, CompileResponse
@@ -38,9 +38,11 @@ async def compile_code(request: Request, compile_request: CompileRequest):
         raise HTTPException(status_code=400, detail="Missing required file: test.ml")
 
     try:
+        # Use environment variable timeout, but allow request to override if it's less
+        timeout = min(compile_request.timeout_seconds, COMPILE_TIMEOUT_SECONDS)
         result = compile_and_run(
             files=compile_request.files,
-            timeout_seconds=compile_request.timeout_seconds,
+            timeout_seconds=timeout,
             include_vcd=compile_request.include_vcd,
             session_id=compile_request.session_id,
         )

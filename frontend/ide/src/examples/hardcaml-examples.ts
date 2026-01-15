@@ -38,6 +38,16 @@ import helloOperatorsCircuit from "@hardcaml-examples/examples/ocaml_basics/oper
 import helloOperatorsInterface from "@hardcaml-examples/examples/ocaml_basics/operators/circuit.mli?raw";
 import helloOperatorsTest from "@hardcaml-examples/examples/ocaml_basics/operators/test.ml?raw";
 
+// Playground - Oxcaml Playground
+import oxcamlPlaygroundMain from "@hardcaml-examples/examples/oxcaml_playground/main.ml?raw";
+import oxcamlPlaygroundInterface from "@hardcaml-examples/examples/oxcaml_playground/main.mli?raw";
+import oxcamlPlaygroundTest from "@hardcaml-examples/examples/oxcaml_playground/test.ml?raw";
+
+// Playground - Hardcaml Playground
+import hardcamlPlaygroundCircuit from "@hardcaml-examples/examples/hardcaml_playground/circuit.ml?raw";
+import hardcamlPlaygroundInterface from "@hardcaml-examples/examples/hardcaml_playground/circuit.mli?raw";
+import hardcamlPlaygroundTest from "@hardcaml-examples/examples/hardcaml_playground/test.ml?raw";
+
 // Day 1 Part 1
 import day1Part1Circuit from "@hardcaml-examples/aoc/day1_part1/circuit.ml?raw";
 import day1Part1Interface from "@hardcaml-examples/aoc/day1_part1/circuit.mli?raw";
@@ -312,11 +322,12 @@ import n2tComputerTest from "@hardcaml-examples/build-cache/lib/n2t_chips/comput
 
 // Types
 
-export type ExampleCategory = "ocaml_basics" | "hardcaml" | "advent" | "n2t" | "n2t_solutions";
+export type ExampleCategory = "ocaml_basics" | "hardcaml" | "playground" | "advent" | "n2t" | "n2t_solutions";
 
 export const categoryLabels: Record<ExampleCategory, string> = {
   ocaml_basics: "Hardcaml Basics",
   hardcaml: "Hardcaml Examples",
+  playground: "Playground",
   advent: "Advent of FPGA",
   n2t: "Nand2Tetris",
   n2t_solutions: "Nand2Tetris Solutions",
@@ -439,7 +450,9 @@ export type ExampleKey =
   | "n2t_ram16k_solution"
   | "n2t_memory_solution"
   | "n2t_cpu_solution"
-  | "n2t_computer_solution";
+  | "n2t_computer_solution"
+  | "oxcaml_playground"
+  | "hardcaml_playground";
 
 // Example definitions
 
@@ -518,6 +531,30 @@ const helloOperatorsExample: HardcamlExample = {
   circuit: helloOperatorsCircuit,
   interface: helloOperatorsInterface,
   test: helloOperatorsTest,
+};
+
+const oxcamlPlaygroundExample: HardcamlExample = {
+  name: "Oxcaml Playground",
+  description:
+    "A simple OCaml playground where you can experiment with OCaml features, data structures, algorithms, and more",
+  difficulty: "beginner",
+  category: "playground",
+  circuit: oxcamlPlaygroundMain,
+  circuitFilename: "main.ml",
+  interface: oxcamlPlaygroundInterface,
+  interfaceFilename: "main.mli",
+  test: oxcamlPlaygroundTest,
+};
+
+const hardcamlPlaygroundExample: HardcamlExample = {
+  name: "Hardcaml Playground",
+  description:
+    "A Hardcaml playground with a circuit and test file. Experiment with different Hardcaml features and create your own circuits",
+  difficulty: "beginner",
+  category: "playground",
+  circuit: hardcamlPlaygroundCircuit,
+  interface: hardcamlPlaygroundInterface,
+  test: hardcamlPlaygroundTest,
 };
 
 const day1Part1Example: HardcamlExample = {
@@ -1559,6 +1596,8 @@ export const examples: Record<ExampleKey, HardcamlExample> = {
   modules: helloModulesExample,
   patterns: helloPatternsExample,
   operators: helloOperatorsExample,
+  oxcaml_playground: oxcamlPlaygroundExample,
+  hardcaml_playground: hardcamlPlaygroundExample,
   day1_part1: day1Part1Example,
   day1_part2: day1Part2Example,
   day2_part1: day2Part1Example,
@@ -1669,6 +1708,7 @@ export const getExamplesByCategory = (): Record<
     advent: [],
     n2t: [],
     n2t_solutions: [],
+    playground: [],
   };
 
   for (const key of getExampleKeys()) {

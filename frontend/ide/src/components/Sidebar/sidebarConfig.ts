@@ -170,5 +170,8 @@ export function getSectionConfig(
         },
       ],
     },
+    playground: {
+      label: "Playground",
+    },
   };
 }

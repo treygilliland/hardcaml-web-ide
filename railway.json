@@ -11,6 +11,7 @@
 	"env": {
 		"RESULT_CACHE_SIZE": "200",
 		"RESULT_CACHE_TTL": "3600",
-		"DUNE_CACHE_ROOT": "/tmp/dune-cache"
+		"DUNE_CACHE_ROOT": "/tmp/dune-cache",
+		"COMPILE_TIMEOUT_SECONDS": "30"
 	}
 }
