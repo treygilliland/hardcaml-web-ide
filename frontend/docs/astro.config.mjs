@@ -19,7 +19,7 @@ const hardcamlExamplesPath = path.resolve(__dirname, "../../hardcaml");
 if (!existsSync(hardcamlExamplesPath)) {
   throw new Error(
     `hardcaml directory not found at ${hardcamlExamplesPath}. ` +
-    `Ensure hardcaml repo is cloned or mounted correctly.`
+      `Ensure hardcaml repo is cloned or mounted correctly.`
   );
 }
 
@@ -28,6 +28,11 @@ if (process.env.DEBUG_PATHS) {
   console.log("[astro.config] hardcamlExamplesPath:", hardcamlExamplesPath);
   console.log("[astro.config] __dirname:", __dirname);
   console.log("[astro.config] process.cwd():", process.cwd());
+  console.log("[astro.config] Environment variables:", {
+    VITE_PUBLIC_POSTHOG_KEY: process.env.VITE_PUBLIC_POSTHOG_KEY ? process.env.VITE_PUBLIC_POSTHOG_KEY.substring(0, 15) + "..." : "<not set>",
+    VITE_PUBLIC_POSTHOG_HOST: process.env.VITE_PUBLIC_POSTHOG_HOST || "<not set>",
+    VITE_POSTHOG_ENABLED: process.env.VITE_POSTHOG_ENABLED || "<not set>",
+  });
 }
 
 export default defineConfig({
@@ -104,6 +109,16 @@ export default defineConfig({
     mdx(),
   ],
   vite: {
+    // Explicitly define environment variables for Vite
+    // This ensures they're available in client-side code
+    // process.env is available in astro.config.mjs (see Astro docs)
+    // Vite will also automatically read .env files during build
+    // See: https://docs.astro.build/en/guides/environment-variables/#in-the-astro-config-file
+    define: {
+      "import.meta.env.VITE_PUBLIC_POSTHOG_KEY": JSON.stringify(process.env.VITE_PUBLIC_POSTHOG_KEY || ""),
+      "import.meta.env.VITE_PUBLIC_POSTHOG_HOST": JSON.stringify(process.env.VITE_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com"),
+      "import.meta.env.VITE_POSTHOG_ENABLED": JSON.stringify(process.env.VITE_POSTHOG_ENABLED || ""),
+    },
     resolve: {
       alias: [
         { find: /^@\/(.+)$/, replacement: path.resolve(__dirname, "src/$1") },
@@ -144,8 +159,8 @@ export default defineConfig({
     server: {
       fs: {
         allow: [
-          path.resolve(__dirname, ".."),  // Frontend workspace root
-          hardcamlExamplesPath,            // Hardcaml examples
+          path.resolve(__dirname, ".."), // Frontend workspace root
+          hardcamlExamplesPath, // Hardcaml examples
         ],
       },
     },

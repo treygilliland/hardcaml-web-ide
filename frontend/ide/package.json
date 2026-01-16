@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@hardcaml/ui": "workspace:*",
+    "@posthog/react": "^1.5.2",
+    "posthog-js": "^1.318.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

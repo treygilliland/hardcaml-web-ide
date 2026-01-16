@@ -17,12 +17,19 @@ export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
     return <>{children}</>;
   }
 
+  // Check if we have a valid API key
+  if (!analyticsConfig.apiKey || analyticsConfig.apiKey === "phc_default_key") {
+    return <>{children}</>;
+  }
+
   return (
     <PostHogProvider
       apiKey={analyticsConfig.apiKey}
       options={{
         api_host: analyticsConfig.host,
-        defaults: "2025-05-24",
+        person_profiles: "identified_only",
+        capture_pageview: true,
+        capture_pageleave: true,
         capture_exceptions: true,
         debug: analyticsConfig.debug,
       }}

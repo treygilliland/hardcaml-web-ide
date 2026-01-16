@@ -50,5 +50,6 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - DOCKER_ENV=true
       - CI=true
-      - PUBLIC_API_BASE_URL=http://localhost:8000
+      - PUBLIC_API_BASE_URL=${PUBLIC_API_BASE_URL:-http://localhost:8000}
+      - VITE_POSTHOG_ENABLED=false
     command: pnpm --filter @hardcaml/docs dev --host 0.0.0.0 --port 4321

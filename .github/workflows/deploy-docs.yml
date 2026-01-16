@@ -54,6 +54,9 @@ jobs:
         working-directory: frontend
         env:
           PUBLIC_API_BASE_URL: ${{ secrets.PUBLIC_API_BASE_URL || 'https://hardcaml.tg3.dev' }}
+          VITE_PUBLIC_POSTHOG_KEY: ${{ secrets.VITE_PUBLIC_POSTHOG_KEY }}
+          VITE_PUBLIC_POSTHOG_HOST: ${{ secrets.VITE_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com' }}
+          VITE_POSTHOG_ENABLED: ${{ secrets.VITE_POSTHOG_ENABLED }}
         run: pnpm --filter @hardcaml/docs build
 
       - name: Deploy to Cloudflare Pages

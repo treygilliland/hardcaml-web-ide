@@ -63,6 +63,12 @@ importers:
       '@hardcaml/ui':
         specifier: workspace:*
         version: link:../ui
+      '@posthog/react':
+        specifier: ^1.5.2
+        version: 1.5.2(@types/react@19.2.8)(posthog-js@1.318.2)(react@19.2.3)
+      posthog-js:
+        specifier: ^1.318.2
+        version: 1.318.2
       react:
         specifier: ^19.2.0
         version: 19.2.3
@@ -1181,6 +1187,16 @@ packages:
 
   '@posthog/core@1.9.1':
     resolution: {integrity: sha512-kRb1ch2dhQjsAapZmu6V66551IF2LnCbc1rnrQqnR7ArooVyJN9KOPXre16AJ3ObJz2eTfuP7x25BMyS2Y5Exw==}
+
+  '@posthog/react@1.5.2':
+    resolution: {integrity: sha512-KHdXbV1yba7Y2l8BVmwXlySWxqKVLNQ5ZiVvWOf7r3Eo7GIFxCM4CaNK/z83kKWn8KTskmKy7AGF6Hl6INWK3g==}
+    peerDependencies:
+      '@types/react': '>=16.8.0'
+      posthog-js: '>=1.257.2'
+      react: '>=16.8.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
 
   '@posthog/types@1.318.2':
     resolution: {integrity: sha512-/4m1DStpyaZStTJJ4b7RyftnFoSM/IWmVBTiWvdm2e2I8A8W3D4+YY7YkTpPtTinRZEhDQEZFjhlHdDgNCiNuA==}
@@ -4200,6 +4216,13 @@ snapshots:
   '@posthog/core@1.9.1':
     dependencies:
       cross-spawn: 7.0.6
+
+  '@posthog/react@1.5.2(@types/react@19.2.8)(posthog-js@1.318.2)(react@19.2.3)':
+    dependencies:
+      posthog-js: 1.318.2
+      react: 19.2.3
+    optionalDependencies:
+      '@types/react': 19.2.8
 
   '@posthog/types@1.318.2': {}
 

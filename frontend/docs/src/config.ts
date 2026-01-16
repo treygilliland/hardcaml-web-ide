@@ -11,8 +11,10 @@ export const isBrowser = typeof window !== "undefined";
 /**
  * Check if we're running on localhost
  */
-export const isLocalhost = isBrowser &&
-  (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+export const isLocalhost =
+  isBrowser &&
+  (window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1");
 
 /**
  * Analytics configuration (PostHog)
@@ -35,19 +37,22 @@ export const analyticsConfig = {
    */
   enabled: (() => {
     const explicitSetting = import.meta.env.VITE_POSTHOG_ENABLED;
+    const hasKey =
+      !!import.meta.env.VITE_PUBLIC_POSTHOG_KEY &&
+      import.meta.env.VITE_PUBLIC_POSTHOG_KEY !== "phc_default_key";
 
     // If explicitly set to 'false', disable everywhere
     if (explicitSetting === "false") {
       return false;
     }
 
-    // If explicitly set to 'true', enable everywhere (including localhost)
+    // If explicitly set to 'true', enable everywhere (including localhost) if key is provided
     if (explicitSetting === "true") {
-      return true;
+      return hasKey;
     }
 
-    // Default: enabled in production, disabled on localhost
-    return !isLocalhost;
+    // Default: enabled in production (not localhost) if key is provided
+    return !isLocalhost && hasKey;
   })(),
 
   /**

@@ -1,5 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { examples, getExample, type ExampleKey } from "@ide/examples/hardcaml-examples";
+import {
+  examples,
+  getExample,
+  type ExampleKey,
+} from "@ide/examples/hardcaml-examples";
 
 const DEFAULT_EXAMPLE: ExampleKey = "day1_part1";
 
@@ -22,7 +26,8 @@ export interface UseHashRouterReturn {
 export function useHashRouter(
   onExampleChange?: (key: ExampleKey) => void
 ): UseHashRouterReturn {
-  const [exampleKey, setExampleKeyState] = useState<ExampleKey>(getInitialExampleKey);
+  const [exampleKey, setExampleKeyState] =
+    useState<ExampleKey>(getInitialExampleKey);
 
   useEffect(() => {
     window.location.hash = exampleKey;
@@ -44,10 +49,13 @@ export function useHashRouter(
     return () => window.removeEventListener("hashchange", handleHashChange);
   }, [exampleKey, onExampleChange]);
 
-  const setExampleKey = useCallback((key: ExampleKey) => {
-    setExampleKeyState(key);
-    onExampleChange?.(key);
-  }, [onExampleChange]);
+  const setExampleKey = useCallback(
+    (key: ExampleKey) => {
+      setExampleKeyState(key);
+      onExampleChange?.(key);
+    },
+    [onExampleChange]
+  );
 
   return { exampleKey, setExampleKey };
 }

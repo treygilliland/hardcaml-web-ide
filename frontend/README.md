@@ -116,6 +116,16 @@ The docs site uses [Astro Starlight](https://starlight.astro.build/) for documen
 
 The IDE is integrated into the docs site and accessible at the `/ide` route. The IDE makes API calls to the backend using the `PUBLIC_API_BASE_URL` environment variable.
 
+### Analytics (PostHog)
+
+PostHog analytics is configured via environment variables. During Docker builds:
+1. Root `.env` file → Docker build args (via `docker-compose.yml`)
+2. Dockerfile creates `.env` in `frontend/docs/` from build args
+3. Vite reads `.env` during build + `astro.config.mjs` injects via `define`
+4. Values are baked into the client bundle at build time
+
+Set `VITE_PUBLIC_POSTHOG_KEY`, `VITE_PUBLIC_POSTHOG_HOST`, and `VITE_POSTHOG_ENABLED` in the root `.env` file.
+
 ### Adding a New Page
 
 1. **Create the content file** in `docs/src/content/docs/` following the directory structure:
