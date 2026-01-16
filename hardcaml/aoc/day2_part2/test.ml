@@ -44,7 +44,7 @@ let pack_digits (digits : int list) : int =
     acc lor (d lsl ((9 - i) * 4)))
 ;;
 
-let input_data = {|INPUT_DATA|}
+let input_data = In_channel.read_all "input.txt"
 
 let run_testbench (sim : Harness.Sim.t) =
   let inputs = Cyclesim.inputs sim in

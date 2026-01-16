@@ -89,7 +89,7 @@ The `make dev` command starts two services:
 
 ```
 ├── Dockerfile.backend          # Backend API image (uses base)
-├── Dockerfile.base             # Base image (OCaml toolchain)
+├── Dockerfile.backend.base     # Base image (OCaml toolchain)
 ├── docker-compose.yml          # Production services
 ├── docker-compose.dev.yml      # Development services
 ├── frontend/

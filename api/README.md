@@ -62,9 +62,9 @@ The compile pipeline is implemented in `compiler.py`:
 3. **Populate a dune project**:
    - Preferred path: copy the prebuilt dune project template from `build-templates/` (standard or n2t variant).
    - Fallback path (for local dev without templates): synthesize a minimal dune project structure.
-4. **Write user files**:
-   - `test.ml` is written to `<build_dir>/test/test.ml`
-   - any `*.ml` / `*.mli` is written to `<build_dir>/src/<filename>`
+4. **Write user files** (flat layout):
+   - `test.ml` is written to `<build_dir>/test.ml`
+   - any `*.ml` / `*.mli` is written to `<build_dir>/<filename>`
 5. **Run dune**:
    - `dune build @runtest`
 6. **Parse output**:

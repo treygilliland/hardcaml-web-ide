@@ -118,6 +118,35 @@ def _is_n2t_project(files: dict[str, str]) -> bool:
     return "circuit.ml" not in circuit_files
 
 
+def _get_circuit_modules(files: dict[str, str], is_n2t: bool) -> list[str] | None:
+    """
+    Determine which modules to include in the user_circuit library.
+    
+    Returns:
+        List of module names (without .ml extension), or None to let Dune auto-detect.
+    """
+    # Get all .ml files except test.ml and harness_utils.ml
+    circuit_files = [
+        f[:-3]  # Remove .ml extension
+        for f in files.keys()
+        if f.endswith(".ml") and f not in ("test.ml", "harness_utils.ml")
+    ]
+    
+    if not circuit_files:
+        # No circuit files found, let Dune auto-detect
+        return None
+    
+    if is_n2t:
+        # For N2T projects, include all circuit files
+        return circuit_files
+    else:
+        # For standard projects, only include circuit if it exists
+        if "circuit" in circuit_files:
+            return ["circuit"]
+        # If circuit.ml doesn't exist but we have other files, include them
+        return circuit_files if circuit_files else None
+
+
 def _copy_template_selectively(
     template_dir: Path, build_dir: Path, is_n2t: bool
 ) -> None:
@@ -129,18 +158,18 @@ def _copy_template_selectively(
         if BUILD_CACHE_DIR.exists():
             _copy_build_cache_selectively(BUILD_CACHE_DIR, build_dir, is_n2t)
         else:
-            _create_fallback_structure(build_dir, is_n2t)
+            _create_fallback_structure(build_dir, is_n2t, files=None)
         return
 
     # Copy dune-project
     if (template_dir / "dune-project").exists():
         shutil.copy2(template_dir / "dune-project", build_dir / "dune-project")
 
-    # Copy src/ and test/ directories
-    for subdir in ["src", "test"]:
-        src_subdir = template_dir / subdir
-        if src_subdir.exists():
-            shutil.copytree(src_subdir, build_dir / subdir, dirs_exist_ok=True)
+    # For flat layout, we don't copy src/test directories - we'll create dune file directly
+    # But we still need harness_utils.ml - copy it from template if it exists
+    template_harness = template_dir / "test" / "harness_utils.ml"
+    if template_harness.exists():
+        shutil.copy2(template_harness, build_dir / "harness_utils.ml")
 
     # Copy lib/n2t_chips only for N2T projects
     if is_n2t:
@@ -170,11 +199,10 @@ def _copy_build_cache_selectively(
     if (cache_dir / "dune-project").exists():
         shutil.copy2(cache_dir / "dune-project", build_dir / "dune-project")
 
-    # Copy src/ and test/ directories
-    for subdir in ["src", "test"]:
-        src_subdir = cache_dir / subdir
-        if src_subdir.exists():
-            shutil.copytree(src_subdir, build_dir / subdir, dirs_exist_ok=True)
+    # For flat layout, copy harness_utils.ml if it exists in test/
+    cache_harness = cache_dir / "test" / "harness_utils.ml"
+    if cache_harness.exists():
+        shutil.copy2(cache_harness, build_dir / "harness_utils.ml")
 
     # Copy lib/n2t_chips only for N2T projects
     if is_n2t:
@@ -191,44 +219,50 @@ def _copy_build_cache_selectively(
         shutil.copytree(cache_build, build_dir / "_build", dirs_exist_ok=True)
 
 
-def _create_fallback_structure(build_dir: Path, is_n2t: bool) -> None:
-    """Create minimal dune project structure as fallback."""
-    (build_dir / "src").mkdir(exist_ok=True)
-    (build_dir / "test").mkdir(exist_ok=True)
-
+def _create_fallback_structure(build_dir: Path, is_n2t: bool, files: dict[str, str] | None = None) -> None:
+    """Create minimal dune project structure as fallback (flat layout)."""
     # Create dune-project
     (build_dir / "dune-project").write_text("""(lang dune 3.11)
 (name user_project)
 """)
 
-    # Create src/dune
+    # Create flat dune file
     libs = "core hardcaml"
     if is_n2t:
         libs += " n2t_chips"
-    (build_dir / "src" / "dune").write_text(f"""(library
- (name user_circuit)
- (libraries {libs})
- (preprocess
-  (pps ppx_hardcaml ppx_jane)))
-""")
-
-    # Create test/dune
+    
     test_libs = "core hardcaml hardcaml_waveterm hardcaml_test_harness"
     if is_n2t:
         test_libs += " n2t_chips"
     test_libs += " user_circuit"
-    (build_dir / "test" / "dune").write_text(f"""(library
+    
+    # Determine circuit modules (use empty dict if files not provided)
+    files_dict = files or {}
+    circuit_modules = _get_circuit_modules(files_dict, is_n2t)
+    modules_line = f" (modules {' '.join(circuit_modules)})\n" if circuit_modules else ""
+    
+    # Only include input.txt dependency if it exists
+    has_input_txt = "input.txt" in files_dict
+    input_deps_line = " (deps input.txt)" if has_input_txt else ""
+    
+    (build_dir / "dune").write_text(f"""(library
+ (name user_circuit)
+ (libraries {libs}){modules_line}(preprocess
+  (pps ppx_hardcaml ppx_jane)))
+
+(library
  (name user_test)
  (libraries 
    {test_libs})
+ (modules test harness_utils)
  (wrapped false)
- (inline_tests)
+ (inline_tests{input_deps_line})
  (preprocess
   (pps ppx_hardcaml ppx_jane ppx_expect)))
 """)
 
-    # Create test/harness_utils.ml
-    (build_dir / "test" / "harness_utils.ml").write_text("""open! Hardcaml_waveterm
+    # Create harness_utils.ml in root
+    (build_dir / "harness_utils.ml").write_text("""open! Hardcaml_waveterm
 
 let write_vcd_if_requested waves =
   match Sys.getenv_opt "HARDCAML_VCD_PATH" with
@@ -261,18 +295,47 @@ def setup_project(
     else:
         template_dir = _get_standard_template_dir()
 
-    # Copy template structure (excluding _build/ and optionally n2t_chips/)
+    # Copy template structure (harness_utils.ml, lib/n2t_chips if N2T, _build/)
     _copy_template_selectively(template_dir, build_dir, is_n2t)
 
-    # Write user files
-    src_dir = build_dir / "src"
-    test_dir = build_dir / "test"
+    # Create flat dune file (overwrite any from template)
+    libs = "core hardcaml"
+    if is_n2t:
+        libs += " n2t_chips"
+    
+    test_libs = "core hardcaml hardcaml_waveterm hardcaml_test_harness"
+    if is_n2t:
+        test_libs += " n2t_chips"
+    test_libs += " user_circuit"
+    
+    # Determine circuit modules dynamically
+    circuit_modules = _get_circuit_modules(files, is_n2t)
+    modules_line = f" (modules {' '.join(circuit_modules)})\n" if circuit_modules else ""
+    
+    # Only include input.txt dependency if it exists
+    has_input_txt = "input.txt" in files
+    input_deps_line = " (deps input.txt)" if has_input_txt else ""
+    
+    (build_dir / "dune").write_text(f"""(library
+ (name user_circuit)
+ (libraries {libs}){modules_line}(preprocess
+  (pps ppx_hardcaml ppx_jane)))
 
+(library
+ (name user_test)
+ (libraries 
+   {test_libs})
+ (modules test harness_utils)
+ (wrapped false)
+ (inline_tests{input_deps_line})
+ (preprocess
+  (pps ppx_hardcaml ppx_jane ppx_expect)))
+""")
+
+    # Write user files to root (flat layout)
     for filename, content in files.items():
-        if filename == "test.ml":
-            (test_dir / "test.ml").write_text(content)
-        elif filename.endswith(".ml") or filename.endswith(".mli"):
-            (src_dir / filename).write_text(content)
+        if filename.endswith(".ml") or filename.endswith(".mli") or filename == "input.txt":
+            (build_dir / filename).write_text(content)
 
 
 def run_command(
@@ -514,8 +577,8 @@ def compile_and_run(
             # Check workspace state
             ws_build_dir = build_dir / "_build"
             ws_src_files = (
-                list((build_dir / "src").glob("*.ml"))
-                if (build_dir / "src").exists()
+                list(build_dir.glob("*.ml"))
+                if build_dir.exists()
                 else []
             )
             log.info(

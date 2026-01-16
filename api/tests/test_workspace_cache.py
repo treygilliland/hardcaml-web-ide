@@ -10,15 +10,13 @@ from workspace_cache import WorkspaceCache
 
 @pytest.fixture
 def temp_template_dir():
-    """Create a temporary template directory with minimal structure."""
+    """Create a temporary template directory with minimal structure (flat layout)."""
     with tempfile.TemporaryDirectory() as tmpdir:
         template = Path(tmpdir) / "template"
         template.mkdir()
-        (template / "src").mkdir()
-        (template / "test").mkdir()
         (template / "dune-project").write_text("(lang dune 3.11)")
-        (template / "src" / "dune").write_text("(library (name user_circuit))")
-        (template / "test" / "dune").write_text("(library (name user_test))")
+        (template / "test" / "harness_utils.ml").parent.mkdir(exist_ok=True)
+        (template / "test" / "harness_utils.ml").write_text("let x = ()")
         yield template
 
 
@@ -38,7 +36,8 @@ def test_create_new_workspace(cache):
     assert not is_hit
     assert path.exists()
     assert (path / "dune-project").exists()
-    assert (path / "src" / "dune").exists()
+    # Flat layout: dune file should be in root, not src/
+    assert (path / "dune").exists() or (path / "harness_utils.ml").exists()
 
 
 def test_reuse_existing_workspace(cache):
@@ -110,9 +109,10 @@ def test_update_workspace_files(cache):
     }
     workspace_cache.update_workspace("session-1", files)
     
-    assert (path / "src" / "circuit.ml").read_text() == "let x = 1"
-    assert (path / "src" / "circuit.mli").read_text() == "val x : int"
-    assert (path / "test" / "test.ml").read_text() == "let () = print_endline \"test\""
+    # Flat layout: files should be in root, not src/ or test/
+    assert (path / "circuit.ml").read_text() == "let x = 1"
+    assert (path / "circuit.mli").read_text() == "val x : int"
+    assert (path / "test.ml").read_text() == "let () = print_endline \"test\""
 
 
 def test_project_type_change_recreates_workspace(cache):

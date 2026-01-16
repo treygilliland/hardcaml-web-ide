@@ -122,3 +122,4 @@ let hierarchical scope =
   let module Scoped = Hierarchy.In_scope (I) (O) in
   Scoped.hierarchical ~scope ~name:"day02_part1" create
 ;;
+

@@ -31,7 +31,7 @@ let parse_input input_string =
   |> List.map ~f:parse_command
 ;;
 
-let input_data = {|INPUT_DATA|}
+let input_data = In_channel.read_all "input.txt"
 
 let ( <--. ) = Bits.( <--. )
 

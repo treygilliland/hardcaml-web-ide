@@ -21,8 +21,6 @@ const AOC_COMPLETED: ExampleKey[] = [
   "day1_part2",
   "day2_part1",
   "day2_part2",
-  "day3_part1",
-  "day3_part2",
   "day12_part1",
 ];
 

@@ -117,11 +117,8 @@ class WorkspaceCache:
 
         # Check template contents
         template_build = template_dir / "_build"
-        template_src = template_dir / "src"
-        template_test = template_dir / "test"
-
-        src_files = list(template_src.glob("*.ml")) if template_src.exists() else []
-        test_files = list(template_test.glob("*.ml")) if template_test.exists() else []
+        # For flat layout, check root for files
+        template_files = list(template_dir.glob("*.ml")) if template_dir.exists() else []
         build_size = (
             sum(f.stat().st_size for f in template_build.rglob("*") if f.is_file())
             if template_build.exists()
@@ -131,11 +128,23 @@ class WorkspaceCache:
         log.info(
             f"Creating workspace: template={template_dir}, "
             f"has_build={template_build.exists()} ({build_size // 1024}KB), "
-            f"src={[f.name for f in src_files]}, test={[f.name for f in test_files]}"
+            f"files={[f.name for f in template_files]}"
         )
 
         t0 = time.time()
         shutil.copytree(template_dir, workspace_path)
+        
+        # Remove src/ and test/ directories if they exist (we use flat layout)
+        for subdir in ["src", "test"]:
+            subdir_path = workspace_path / subdir
+            if subdir_path.exists():
+                shutil.rmtree(subdir_path)
+        
+        # Copy harness_utils.ml from test/ to root if it exists
+        template_harness = template_dir / "test" / "harness_utils.ml"
+        if template_harness.exists():
+            shutil.copy2(template_harness, workspace_path / "harness_utils.ml")
+        
         copy_time = int((time.time() - t0) * 1000)
 
         # Verify _build was copied
@@ -178,13 +187,11 @@ class WorkspaceCache:
         self,
         session_id: str,
         files: dict[str, str],
-        src_dir_name: str = "src",
-        test_dir_name: str = "test",
     ) -> None:
         """
-        Update user files in an existing workspace.
+        Update user files in an existing workspace (flat layout).
 
-        This writes the user's source files to the workspace,
+        This writes the user's source files to the workspace root,
         preserving the _build/ directory for incremental builds.
         """
         with self._global_lock:
@@ -192,15 +199,76 @@ class WorkspaceCache:
                 raise KeyError(f"No workspace for session {session_id}")
             slot = self._slots[session_id]
 
-        # Write files (no global lock needed, slot.path is stable)
-        src_dir = slot.path / src_dir_name
-        test_dir = slot.path / test_dir_name
+        # Ensure dune file exists (flat layout)
+        # Determine if this is an N2T project using same logic as compiler.py
+        circuit_files = [f for f in files.keys() if f.endswith(".ml") and f != "test.ml"]
+        is_n2t = "circuit.ml" not in circuit_files
+        
+        libs = "core hardcaml"
+        if is_n2t:
+            libs += " n2t_chips"
+        
+        test_libs = "core hardcaml hardcaml_waveterm hardcaml_test_harness"
+        if is_n2t:
+            test_libs += " n2t_chips"
+        test_libs += " user_circuit"
+        
+        # Determine circuit modules dynamically
+        circuit_modules = [
+            f[:-3]  # Remove .ml extension
+            for f in files.keys()
+            if f.endswith(".ml") and f not in ("test.ml", "harness_utils.ml")
+        ]
+        if is_n2t:
+            # For N2T projects, include all circuit files
+            modules_list = circuit_modules if circuit_modules else None
+        else:
+            # For standard projects, only include circuit if it exists
+            if "circuit" in circuit_modules:
+                modules_list = ["circuit"]
+            else:
+                modules_list = circuit_modules if circuit_modules else None
+        
+        modules_line = f" (modules {' '.join(modules_list)})\n" if modules_list else ""
+        
+        # Only include input.txt dependency if it exists
+        has_input_txt = "input.txt" in files
+        input_deps_line = " (deps input.txt)" if has_input_txt else ""
+        
+        dune_file = slot.path / "dune"
+        dune_content = f"""(library
+ (name user_circuit)
+ (libraries {libs}){modules_line}(preprocess
+  (pps ppx_hardcaml ppx_jane)))
 
+(library
+ (name user_test)
+ (libraries 
+   {test_libs})
+ (modules test harness_utils)
+ (wrapped false)
+ (inline_tests{input_deps_line})
+ (preprocess
+  (pps ppx_hardcaml ppx_jane ppx_expect)))
+"""
+        # Always write dune file (may change if project type changes)
+        dune_file.write_text(dune_content)
+        
+        # Ensure harness_utils.ml exists
+        harness_file = slot.path / "harness_utils.ml"
+        if not harness_file.exists():
+            harness_file.write_text("""open! Hardcaml_waveterm
+
+let write_vcd_if_requested waves =
+  match Sys.getenv_opt "HARDCAML_VCD_PATH" with
+  | Some path -> Waveform.Serialize.marshall_vcd waves path
+  | None -> ()
+""")
+
+        # Write files to root (flat layout)
         for filename, content in files.items():
-            if filename == "test.ml":
-                file_path = test_dir / "test.ml"
-            elif filename.endswith(".ml") or filename.endswith(".mli"):
-                file_path = src_dir / filename
+            if filename.endswith(".ml") or filename.endswith(".mli") or filename == "input.txt":
+                file_path = slot.path / filename
             else:
                 continue  # Skip unknown file types
 

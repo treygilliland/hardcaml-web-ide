@@ -41,7 +41,7 @@ let parse_input input_string =
     else Some (parse_problem line))
 ;;
 
-let input_data = {|INPUT_DATA|}
+let input_data = In_channel.read_all "input.txt"
 
 let ( <--. ) = Bits.( <--. )
 
