@@ -3,7 +3,7 @@
 This directory contains the OCaml sources used by the Hardcaml Web IDE:
 
 - `examples/`: small standalone example circuits and tests (e.g. counter, fibonacci)
-- `aoc/`: Advent of Code circuits and tests
+- `aoc/`: Advent of Code circuits and tests (each solution is a **standalone dune project**)
 - `n2t/`: Nand2Tetris student stubs + reference solutions
 - `build-cache/`: a **dune project** used as the compilation baseline inside the Web IDE
 
@@ -69,7 +69,40 @@ let hierarchical scope =
 ;;
 ```
 
-## Quickstart: run tests inside Docker
+## Quickstart: run tests
+
+### Option 1: Direct dune (AOC solutions only)
+
+AOC solutions in `aoc/` are **standalone dune projects** - each directory has its own `dune-project` and `dune` files. You can run them directly:
+
+**With local OCaml/opam:**
+
+```bash
+# Install dependencies (one-time setup)
+opam install hardcaml hardcaml-waveterm hardcaml-test-harness core
+
+# Run a specific AOC solution
+cd hardcaml/aoc/day1_part1
+dune build @runtest
+
+# Or from the project root
+cd hardcaml/aoc/day1_part1 && dune build @runtest
+```
+
+**Inside Docker (using the backend toolchain):**
+
+```bash
+make dev
+docker compose -f docker-compose.dev.yml exec backend bash
+
+# Inside the container, navigate to the solution directory
+cd /hardcaml/aoc/day1_part1
+dune build @runtest
+```
+
+The test harness reads `input.txt` automatically, so you can modify the input file and re-run tests without changing any code.
+
+### Option 2: Using hardcaml_runner.py (all examples)
 
 From `hardcaml-web-ide/`:
 
@@ -96,14 +129,29 @@ uv run python /api/hardcaml_runner.py
 uv run python /api/hardcaml_runner.py -v counter
 ```
 
+This method works for all example types (standard examples, AOC solutions, and N2T chips) and ensures consistency with the web IDE.
+
 ## Iterate on an existing example
 
 Examples live in:
 
 - `/hardcaml/examples/<example_id>/` (standalone examples like `counter`)
-- `/hardcaml/aoc/<example_id>/` (AoC examples like `day1_part1`)
+- `/hardcaml/aoc/<example_id>/` (AoC examples like `day1_part1` - each is a **standalone dune project**)
 
 These are volume-mounted from `hardcaml-web-ide/hardcaml/`.
+
+### AOC solutions: standalone dune projects
+
+Each AOC solution directory (e.g., `aoc/day1_part1/`) is a complete standalone dune project with:
+
+- `circuit.ml` / `circuit.mli`: Circuit implementation
+- `test.ml`: Test harness (reads `input.txt` automatically)
+- `input.txt`: Puzzle input data
+- `harness_utils.ml`: Test utilities
+- `dune-project` / `dune`: Dune configuration
+- `generate_verilog.ml` (optional): Verilog generation script
+
+You can run them directly with `dune build @runtest` from within each directory, or use `hardcaml_runner.py` for consistency with the web IDE workflow.
 
 ### What hardcaml_runner does
 
@@ -140,6 +188,8 @@ The web backend parses conventions out of dune/expect output:
 - If you write a VCD to `/tmp/waveform.vcd`, the API will return it as `waveform_vcd`
 
 See `examples/counter/test.ml` for a minimal pattern using `Hardcaml_test_harness` and `Hardcaml_waveterm`.
+
+For AOC solutions, see `aoc/day1_part1/test.ml` for an example that reads `input.txt` automatically.
 
 ## Nand2Tetris layout (stubs vs solutions vs library)
 

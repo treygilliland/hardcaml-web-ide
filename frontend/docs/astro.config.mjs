@@ -81,10 +81,9 @@ export default defineConfig({
           label: "Advent of Code",
           items: [
             { label: "Overview", slug: "advent-of-code/overview" },
-            { label: "Day 1: Dial Rotation", slug: "advent-of-code/day-1" },
-            { label: "Day 2: Mirror Numbers", slug: "advent-of-code/day-2" },
-            { label: "Day 3: Digit Processing", slug: "advent-of-code/day-3" },
-            { label: "Day 12: Shape Counting", slug: "advent-of-code/day-12" },
+            { label: "Day 1", slug: "advent-of-code/day-1" },
+            { label: "Day 2", slug: "advent-of-code/day-2" },
+            { label: "Day 12", slug: "advent-of-code/day-12" },
           ],
         },
         {
