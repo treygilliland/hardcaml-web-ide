@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { examples, getExample, type ExampleKey } from "@ide/examples/hardcaml-examples";
 
-const DEFAULT_EXAMPLE: ExampleKey = "counter";
+const DEFAULT_EXAMPLE: ExampleKey = "day1_part1";
 
 export function getInitialExampleKey(): ExampleKey {
   if (typeof window === "undefined") {
