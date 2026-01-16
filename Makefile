@@ -20,7 +20,7 @@ clean:
 test: test-dune test-api
 
 test-dune:
-	docker compose -f docker-compose.dev.yml exec -T backend uv run python test_runner.py
+	docker compose -f docker-compose.dev.yml exec -T backend uv run python hardcaml_runner.py
 
 test-api:
 	docker compose -f docker-compose.dev.yml exec -T backend uv run --extra test pytest tests/ -v --tb=short

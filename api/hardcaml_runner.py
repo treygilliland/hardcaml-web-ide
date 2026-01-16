@@ -1,14 +1,22 @@
 #!/usr/bin/env python3
 """
-Direct dune test runner for HardCaml examples.
+Hardcaml example runner - alternative to the web IDE.
 
-Runs examples through compiler.compile_and_run() without HTTP.
+Runs Hardcaml examples directly using the same compiler as the web IDE.
+This provides a command-line alternative to using the web IDE for running
+and testing Hardcaml circuits.
+
+Includes all examples exposed in the frontend:
+- All standard examples (ocaml_basics, hardcaml examples, advent examples)
+- All N2T solutions (excludes N2T stubs, matching frontend behavior)
+
 Must be run inside Docker where dune/opam environment exists.
 
 Usage:
-    uv run python test_runner.py           # Run all examples
-    uv run python test_runner.py counter   # Run specific example
-    uv run python test_runner.py -v        # Verbose output
+    uv run python hardcaml_runner.py           # Run all examples
+    uv run python hardcaml_runner.py counter   # Run specific example
+    uv run python hardcaml_runner.py -l        # List available examples
+    uv run python hardcaml_runner.py -v        # Verbose output
 """
 
 import argparse
@@ -49,7 +57,9 @@ def run_example(example, verbose: bool = False) -> bool:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run HardCaml dune tests directly")
+    parser = argparse.ArgumentParser(
+        description="Run Hardcaml examples - CLI alternative to the web IDE"
+    )
     parser.add_argument(
         "examples",
         nargs="*",
@@ -71,9 +81,18 @@ def main():
 
     if args.list:
         examples = get_all_testable_examples()
-        print("Available examples:")
-        for ex in examples:
-            print(f"  - {ex.id}")
+        print(f"Available examples ({len(examples)} total):")
+        # Group by project type for better readability
+        standard = [e for e in examples if e.project_type == "standard"]
+        n2t = [e for e in examples if e.project_type == "n2t"]
+        if standard:
+            print(f"\n  Standard examples ({len(standard)}):")
+            for ex in standard:
+                print(f"    - {ex.id}")
+        if n2t:
+            print(f"\n  N2T solutions ({len(n2t)}):")
+            for ex in n2t:
+                print(f"    - {ex.id}")
         return 0
 
     if args.examples:

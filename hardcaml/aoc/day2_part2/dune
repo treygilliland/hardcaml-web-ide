@@ -18,3 +18,10 @@
  (inline_tests (deps input.txt))
  (preprocess
   (pps ppx_hardcaml ppx_jane ppx_expect)))
+
+(executable
+ (name generate_verilog)
+ (libraries core hardcaml user_circuit)
+ (modules generate_verilog)
+ (preprocess
+  (pps ppx_hardcaml ppx_jane)))

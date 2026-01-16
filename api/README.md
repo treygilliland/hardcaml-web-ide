@@ -125,27 +125,28 @@ Rate limiting is done with `slowapi` in `rate_limit.py` and applied on `/compile
 - the client id uses `CF-Connecting-IP` when present (Cloudflare), otherwise the remote address
 - the 429 handler returns a JSON payload shaped like a compile failure (`success: False`, `error_type: "rate_limit"`) plus a `Retry-After` header
 
-## Tests + test runner
+## Running examples
 
-There are two “test runner” paths:
+There are two ways to run Hardcaml examples:
 
-- **Direct runner**: `test_runner.py`
-  - Calls `compiler.compile_and_run()` directly (no HTTP).
-  - Uses the unified example manifest from `hardcaml/examples_manifest.py` (via `tests/examples.py` wrapper).
-  - Intended to run **inside the Docker environment** where dune/opam/toolchain exist.
+- **CLI runner**: `hardcaml_runner.py` (recommended for local development)
+  - Command-line alternative to the web IDE
+  - Includes all examples exposed in the frontend (standard examples + N2T solutions, excludes N2T stubs)
+  - Calls `compiler.compile_and_run()` directly (no HTTP)
+  - Uses the unified example manifest from `hardcaml/examples_manifest.py` (via `tests/examples.py` wrapper)
+  - Intended to run **inside the Docker environment** where dune/opam/toolchain exist
+  - Uses the same `compile_and_run` function as the web IDE, ensuring consistency
 - **API integration tests**: `tests/test_examples.py`
-  - Uses FastAPI `TestClient` to exercise `/compile` end-to-end.
-  - Also uses the unified example manifest to provide realistic circuit/test input.
-
-If you want the fastest “OCaml programmer” iteration loop (stage files into `/opt/build-cache` and run dune), use `hardcaml/dev_runner.py` documented in [`../hardcaml/README.md`](../hardcaml/README.md).
+  - Uses FastAPI `TestClient` to exercise `/compile` end-to-end
+  - Also uses the unified example manifest to provide realistic circuit/test input
 
 ### Example manifest
 
 The example manifest system provides a single source of truth for all examples:
 
 - **Shared module**: `hardcaml/examples_manifest.py`
-  - Unified loading logic used by both `dev_runner.py` and `test_runner.py`
-  - Ensures consistent behavior between local development and automated testing
+  - Unified loading logic used by `hardcaml_runner.py` and the web IDE
+  - Ensures consistent behavior between CLI and web IDE
 - **API wrapper**: `tests/examples.py`
   - Thin wrapper around `examples_manifest.py` for backward compatibility
   - Re-exports all necessary functions and constants
@@ -163,8 +164,8 @@ From the repo root (recommended):
 ```bash
 make dev
 docker compose -f docker-compose.dev.yml exec backend uv run python -m pytest
-docker compose -f docker-compose.dev.yml exec backend uv run python test_runner.py -l
-docker compose -f docker-compose.dev.yml exec backend uv run python test_runner.py counter
+docker compose -f docker-compose.dev.yml exec backend uv run python hardcaml_runner.py -l
+docker compose -f docker-compose.dev.yml exec backend uv run python hardcaml_runner.py counter
 ```
 
 If you want to run the API server manually inside the backend container:

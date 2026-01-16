@@ -149,6 +149,9 @@ export function SidebarContent({
   return (
     <div className={styles.content}>
       {categories.map((category) => {
+        // Hide n2t stubs section (keep n2t_solutions visible)
+        if (category === "n2t") return null;
+
         const organized = organizedExamples[category];
         if (!organized) return null;
 

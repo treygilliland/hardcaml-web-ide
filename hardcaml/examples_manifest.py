@@ -19,11 +19,10 @@ class Example:
     id: str
     files: dict[str, str]  # filename -> content
     project_type: Literal["standard", "n2t"]
-    # Optional metadata for compatibility
+    # Optional metadata
     name: str | None = None
     circuit_filename: str | None = None
     interface_filename: str | None = None
-    src_module_files: list[str] | None = None  # For dev_runner compatibility
 
     def __post_init__(self):
         """Set defaults based on project_type if not provided."""
@@ -35,10 +34,6 @@ class Example:
                 object.__setattr__(self, "circuit_filename", "circuit.ml")
             if self.interface_filename is None:
                 object.__setattr__(self, "interface_filename", "circuit.mli")
-            if self.src_module_files is None:
-                object.__setattr__(
-                    self, "src_module_files", ["circuit.ml", "circuit.mli"]
-                )
         else:  # n2t
             # Extract chip name from id (e.g., "n2t_alu" -> "alu")
             chip_name = self.id.replace("n2t_stub_", "").replace("n2t_", "")
@@ -46,10 +41,6 @@ class Example:
                 object.__setattr__(self, "circuit_filename", f"{chip_name}.ml")
             if self.interface_filename is None:
                 object.__setattr__(self, "interface_filename", f"{chip_name}.mli")
-            if self.src_module_files is None:
-                object.__setattr__(
-                    self, "src_module_files", [f"{chip_name}.ml", f"{chip_name}.mli"]
-                )
 
 
 def _hardcaml_root() -> Path:
@@ -267,22 +258,26 @@ def list_examples() -> list[str]:
 
 
 def get_all_testable_examples() -> list[Example]:
-    """Get all examples that should pass tests (solutions only, no stubs).
+    """Get all examples that match what the frontend exposes (solutions only, no stubs).
 
-    This is used by the API test runner to get a curated list of examples.
+    This includes all standard examples (ocaml_basics, hardcaml, advent) and all N2T solutions.
+    Excludes N2T stubs to match the frontend behavior.
+
+    This is used by hardcaml_runner.py to get the same examples as the web IDE.
     """
     examples = []
 
-    # Use hardcoded STANDARD_EXAMPLES list for consistency with tests
-    for example_id in STANDARD_EXAMPLES:
+    # Get all standard examples (includes ocaml_basics, hardcaml examples, and advent examples)
+    # This matches what the frontend shows in ocaml_basics, hardcaml, and advent categories
+    for example_id in _standard_example_ids():
         try:
             examples.append(load_standard_example(example_id))
         except FileNotFoundError:
             # Skip if example doesn't exist
             pass
 
-    # Use hardcoded N2T_CHIPS list for consistency with tests
-    for chip_name in N2T_CHIPS:
+    # Get all N2T solutions (not stubs) - matches n2t_solutions category in frontend
+    for chip_name in _n2t_chip_names():
         try:
             examples.append(load_n2t_example(chip_name, use_stub=False))
         except FileNotFoundError:

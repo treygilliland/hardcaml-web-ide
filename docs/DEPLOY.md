@@ -1,5 +1,14 @@
 # Deployment
 
+## Architecture
+
+The project has two separate deployments:
+
+1. **IDE + Docs** - Combined Astro site deployed to GitHub Pages (static hosting)
+2. **API** - FastAPI backend deployed to Railway (API-only, no static files)
+
+The IDE is integrated into the Astro docs site and makes API calls to the Railway backend.
+
 ## Setup
 
 1. Copy `.env.example` to `.env`:
@@ -9,6 +18,7 @@
    ```
 
 2. Edit `.env` and set your configuration:
+   - `PUBLIC_API_BASE_URL`: API base URL (e.g., `https://hardcaml.tg3.dev`) - used by IDE
    - `VITE_PUBLIC_POSTHOG_KEY`: Your PostHog API key (optional, for analytics)
    - `RATE_LIMIT_PER_MINUTE`: API rate limit (default: 10)
    - `GITHUB_USERNAME`: Only needed if building/pushing your own images (defaults to `treygilliland`)
@@ -31,7 +41,32 @@ Add these rules in Cloudflare Dashboard (Security > WAF > Rate limiting rules):
 
 This provides defense-in-depth - Cloudflare blocks obvious abuse before it hits Railway.
 
-## Railway Deployment
+## IDE + Docs Deployment (GitHub Pages)
+
+The IDE and docs are deployed together as a static site via GitHub Actions.
+
+### Automatic Deployment
+
+The deployment workflow (`.github/workflows/deploy-docs.yml`) automatically:
+
+1. Builds the Astro site (which includes the IDE)
+2. Sets `PUBLIC_API_BASE_URL` environment variable (defaults to `https://hardcaml.tg3.dev`)
+3. Deploys to GitHub Pages
+
+### Manual Deployment
+
+1. **Set the API base URL** (if different from default):
+
+   - Add `PUBLIC_API_BASE_URL` as a GitHub secret, or
+   - Update the workflow to use your API URL
+
+2. **Trigger deployment**:
+   - Go to GitHub → Actions → "Deploy Docs to GitHub Pages" → Run workflow
+   - Or push to the configured branch (if auto-deploy is enabled)
+
+The IDE will be accessible at `/ide` on your GitHub Pages site.
+
+## API Deployment (Railway)
 
 Railway has build timeouts, so we use pre-built images on GitHub Container Registry.
 
@@ -109,25 +144,42 @@ Railway will pull the pre-built image directly from GHCR, skipping the build ste
 
 ## Custom Domain Setup
 
-### Setup Steps
+### IDE + Docs (GitHub Pages)
+
+1. **Configure GitHub Pages custom domain:**
+
+   - GitHub → Repository → Settings → Pages
+   - Set custom domain (e.g., `hardcaml.tg3.dev`)
+   - GitHub will provide DNS instructions
+
+2. **Update DNS:**
+   - Add the CNAME record as instructed by GitHub
+   - Wait for DNS propagation
+
+### API (Railway)
 
 1. **Add custom domain in Railway:**
 
    - Railway Dashboard → Service → Settings → Domains
    - Click **Generate Domain** or **Add Custom Domain**
    - Copy the provided CNAME target
+   - Use a subdomain like `hardcaml.tg3.dev`
 
-2. **Configure DNS in Cloudflare:**
+2. **Configure DNS:**
 
-   - Cloudflare Dashboard → DNS → Records
    - Add a CNAME record:
-     - Name: `hardcaml` (or your subdomain)
+     - Name: `api` (or your subdomain)
      - Target: (paste the Railway CNAME target)
-     - Proxy status: Proxied (orange cloud)
+     - Proxy status: Proxied (orange cloud) if using Cloudflare
    - SSL/TLS mode should be set to **Full** (SSL/TLS → Overview → Full)
 
-3. **Wait for propagation:**
+3. **Update API base URL:**
+
+   - Update `PUBLIC_API_BASE_URL` in GitHub Actions secrets to match your Railway domain
+   - Redeploy the docs site
+
+4. **Wait for propagation:**
    - Railway will automatically provision SSL certificates
    - DNS propagation typically takes a few minutes
 
-The application will be accessible at your custom domain once DNS propagates and Railway provisions the certificate.
+The IDE will be accessible at your GitHub Pages domain, and it will make API calls to your Railway domain.

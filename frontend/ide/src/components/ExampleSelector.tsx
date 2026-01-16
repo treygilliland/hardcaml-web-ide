@@ -140,6 +140,9 @@ export function ExampleSelector({
             )}
             {(Object.keys(categoryLabels) as ExampleCategory[]).map(
               (category) => {
+                // Hide n2t stubs section (keep n2t_solutions visible)
+                if (category === "n2t") return null;
+
                 const items = filteredByCategory[category];
                 if (items.length === 0) return null;
 
@@ -157,11 +160,11 @@ export function ExampleSelector({
                         onClick={() => handleSelect(key)}
                         type="button"
                       >
-                        <span className={styles.itemName}>
-                          {example.name}
-                        </span>
+                        <span className={styles.itemName}>{example.name}</span>
                         {example.difficulty && (
-                          <span className={DIFFICULTY_CLASS_MAP[example.difficulty]}>
+                          <span
+                            className={DIFFICULTY_CLASS_MAP[example.difficulty]}
+                          >
                             {example.difficulty}
                           </span>
                         )}

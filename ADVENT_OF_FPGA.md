@@ -1,6 +1,10 @@
 # Advent of FPGA
 
-Advent of Code solutions implemented in Hardcaml (Day 1, Day 2, Day 12).
+This repo contains my submission for [Jane Street's Advent of FPGA](https://blog.janestreet.com/advent-of-fpga-challenge-2025/).
+
+As someone relatively new to FPGAs/HDLs and Ocaml, this was super fun to try and work through.
+
+I was able to implement solutions for Day 1, 2, and 12, and instructions for running them can be found in this guide.
 
 ## Solutions
 
@@ -22,11 +26,13 @@ Each directory contains:
 - **dune-project**: Dune project configuration
 - **dune**: Dune build configuration
 
+> NOTE: The solutions for other days are currently placeholders for future implementation.
+
 ## Method 1: Web IDE
 
 The easiest way to view and run the solutions is through the Hardcaml Web IDE.
 
-You can view the production version at `ide.hardcaml.tg3.dev/ide` OR run it yourself from this directory with `make dev`.
+You can use the production version at `ide.hardcaml.tg3.dev/ide` OR run it yourself from this directory with `make dev` / `make up`.
 
 ### Running a Solution
 
@@ -41,11 +47,14 @@ You can view the production version at `ide.hardcaml.tg3.dev/ide` OR run it your
    - **Waveform**: ASCII visualization of signal values over time
    - **Output**: Test results showing passed/failed tests and the final answer
 
-5. Try out other inputs by editing `input.txt` and updating the expected answer in `test.ml`!
+5. You can try out other inputs by editing `input.txt` and updating the expected answer in `test.ml`!
 
 ## Method 2: Direct OCaml (Local)
 
 If you have OCaml, opam, and dune installed locally, you can run the solutions directly.
+You can also use the `Dockerfile.backend.base` for the toolchain if you don't want to install on your local.
+
+> I followed the installation instructions [here](https://github.com/janestreet/hardcaml_template_project/tree/with-extensions).
 
 ### Prerequisites
 
@@ -97,6 +106,7 @@ day1_part1/
 ├── circuit.ml          # Circuit implementation
 ├── circuit.mli         # Circuit interface
 ├── test.ml             # Test harness (reads input.txt)
+├── generate_verilog.ml # Verilog generation script
 ├── input.txt           # Input data
 ├── harness_utils.ml    # Test utilities
 ├── dune-project        # Dune project file
@@ -111,10 +121,25 @@ All files for a solution are in the root directory. The test harness automatical
 
 All methods produce similar output:
 
-- **PASS/FAIL lines**: Individual test assertions
 - **Waveform**: ASCII visualization between `===WAVEFORM_START===` and `===WAVEFORM_END===`
 - **Test Summary**: Final count of passed/failed tests after `===TEST_SUMMARY===`
 - **Final Answer**: The solution to the Advent of Code puzzle (displayed in test output)
+
+> For all of the AoC solutions, the waveform will be too narrow to show anything meaningful. You can modify the tests to make it wider as needed.
+
+## Generating Verilog (Optional)
+
+Each solution can generate Verilog RTL. For example, to generate Verilog for day1_part1:
+
+```bash
+cd hardcaml/aoc/day1_part1
+dune build generate_verilog.exe
+dune exec ./generate_verilog.exe
+```
+
+This generates `day1_part1.v` containing the Verilog code.
+
+I have not tested this code or synthesized it myself, but would love to at some point!
 
 ## Troubleshooting
 
@@ -129,7 +154,12 @@ All methods produce similar output:
 - Ensure you're in the correct solution directory (e.g., `hardcaml/aoc/day1_part1`)
 - Check that dependencies are installed: `opam install hardcaml hardcaml-waveterm hardcaml-test-harness core`
 - Check dune output for compilation errors
-- Ensure `input.txt` exists in the solution directory (it's automatically copied to the test directory during build)
+
+### Verilog Generation Issues
+
+- Ensure the circuit library builds successfully: `dune build`
+- Verify `generate_verilog.ml` exists in the solution directory
+- Check that the generated `.v` file is created in the current directory (not `_build/`)
 
 ## Additional Resources
 

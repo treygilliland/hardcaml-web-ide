@@ -19,22 +19,23 @@ If you want to write OCaml and run tests directly (without the web UI), the fast
 
 The runnable dune project is `build-cache/` (mounted in Docker and also copied into `/opt/build-cache` inside the backend image).
 
-It defines:
+It uses a **flat layout** (all files in root, no `src/` or `test/` subdirectories):
 
-- `user_circuit` (`build-cache/src/dune`): your circuit modules (compiled as a library)
-- `user_test` (`build-cache/test/dune`): your tests (a library with `(inline_tests)` via `ppx_expect`)
-- `n2t_chips` (`build-cache/lib/n2t_chips/`): prebuilt Nand2Tetris “library chips” + helpers
+- `dune`: defines `user_circuit` (your circuit modules) and `user_test` (your tests with `(inline_tests)`)
+- Circuit files (`.ml`, `.mli`) and `test.ml` are written directly to the root
+- `harness_utils.ml`: test utilities (copied from templates)
+- `n2t_chips` (`lib/n2t_chips/`): prebuilt Nand2Tetris "library chips" + helpers (for N2T projects)
 
-The Web IDE backend uses the same structure: it copies `/opt/build-cache` into a fresh temp dir, writes your `src/` + `test/` files, then runs `dune build @runtest --auto-promote`.
+The Web IDE backend uses `setup_project` from `api/compiler.py` to create a consistent flat layout.
 
-If you want to test “through the backend” (same temp-dir isolation + output parsing the IDE uses), run `api/test_runner.py` as described in [`../api/README.md`](../api/README.md).
+To run examples locally (CLI alternative to the web IDE), use `api/hardcaml_runner.py` as described in [`../api/README.md`](../api/README.md).
 
 ## Example manifest
 
 All examples (standard, AOC, and N2T) are managed through a unified manifest system:
 
 - `examples_manifest.py`: Single source of truth for loading and listing examples
-  - Used by both `dev_runner.py` (for local development) and `api/test_runner.py` (for API testing)
+  - Used by `api/hardcaml_runner.py` (CLI runner) and the web IDE (for loading examples)
   - Provides consistent example loading across all code paths
   - Handles standard examples, AOC examples, and N2T chips (with stub/solution variants)
 
@@ -68,7 +69,7 @@ let hierarchical scope =
 ;;
 ```
 
-## Quickstart (recommended): run dune tests inside Docker
+## Quickstart: run tests inside Docker
 
 From `hardcaml-web-ide/`:
 
@@ -77,13 +78,22 @@ make dev
 docker compose -f docker-compose.dev.yml exec backend bash
 ```
 
-Inside the container, the fastest workflow is to **stage an example** into `/opt/build-cache` and run dune:
+Inside the container, use `hardcaml_runner.py` to run examples (CLI alternative to the web IDE):
 
 ```bash
-uv run python /hardcaml/dev_runner.py --list
-uv run python /hardcaml/dev_runner.py counter
-uv run python /hardcaml/dev_runner.py day1_part1
-uv run python /hardcaml/dev_runner.py n2t_alu
+# List available examples
+uv run python /api/hardcaml_runner.py --list
+
+# Run a specific example
+uv run python /api/hardcaml_runner.py counter
+uv run python /api/hardcaml_runner.py day1_part1
+uv run python /api/hardcaml_runner.py n2t_alu
+
+# Run all examples
+uv run python /api/hardcaml_runner.py
+
+# Verbose output
+uv run python /api/hardcaml_runner.py -v counter
 ```
 
 ## Iterate on an existing example
@@ -95,27 +105,27 @@ Examples live in:
 
 These are volume-mounted from `hardcaml-web-ide/hardcaml/`.
 
-### What the dev runner does
+### What hardcaml_runner does
 
-`/hardcaml/dev_runner.py <example_id>`:
+`api/hardcaml_runner.py` is a CLI alternative to the web IDE:
 
 - loads the example using the unified `examples_manifest.py` module
-- clears previously-staged `*.ml`/`*.mli` from `/opt/build-cache/src`
-- writes the selected example’s circuit modules into `/opt/build-cache/src`
-- writes the selected example’s `test.ml` to `/opt/build-cache/test/test.ml`
-- for AoC examples with `input.txt`, it injects the input by replacing `INPUT_DATA` in `test.ml`
-- runs `dune build @runtest --auto-promote` (pass `--no-run` to only stage files)
+- uses the same `compile_and_run` function as the web IDE API
+- creates an isolated temp directory with flat layout (matching web IDE)
+- runs `dune build @runtest` and parses the output
+- returns test results with the same format as the web IDE
 
-The dev runner shares the same example loading logic as the API test runner, ensuring consistent behavior between local development and automated testing.
+This ensures complete consistency between CLI and web IDE - you get identical results whether you use the web IDE or the CLI runner.
 
-## N2T stubs vs solutions (dev runner)
+## Using the API directly
 
-By default, `n2t_<chip>` stages from `n2t/solutions/<chip>.ml`.
-
-To stage the **student stub** instead:
+You can also use the API endpoint directly for testing:
 
 ```bash
-uv run python /hardcaml/dev_runner.py --use-stub n2t_alu
+# Start the API server
+docker compose -f docker-compose.dev.yml exec backend uv run python /api/main.py
+
+# Then use curl or the web IDE to POST to /compile
 ```
 
 ## Writing tests that work well in the Web IDE
