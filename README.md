@@ -12,6 +12,8 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 
 The [Hardcaml](https://github.com/janestreet/hardcaml) library and logo are developed by [Jane Street](https://www.janestreet.com/) and are also licensed under the MIT License.
 
+Nand2Tetris course content and solutions are based on materials from the [Nand2Tetris](https://www.nand2tetris.org/) course, which are licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License](https://creativecommons.org/licenses/by-nc-sa/3.0/).
+
 ## Quick Start
 
 ```bash

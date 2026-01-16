@@ -29,8 +29,11 @@ if (process.env.DEBUG_PATHS) {
   console.log("[astro.config] __dirname:", __dirname);
   console.log("[astro.config] process.cwd():", process.cwd());
   console.log("[astro.config] Environment variables:", {
-    VITE_PUBLIC_POSTHOG_KEY: process.env.VITE_PUBLIC_POSTHOG_KEY ? process.env.VITE_PUBLIC_POSTHOG_KEY.substring(0, 15) + "..." : "<not set>",
-    VITE_PUBLIC_POSTHOG_HOST: process.env.VITE_PUBLIC_POSTHOG_HOST || "<not set>",
+    VITE_PUBLIC_POSTHOG_KEY: process.env.VITE_PUBLIC_POSTHOG_KEY
+      ? process.env.VITE_PUBLIC_POSTHOG_KEY.substring(0, 15) + "..."
+      : "<not set>",
+    VITE_PUBLIC_POSTHOG_HOST:
+      process.env.VITE_PUBLIC_POSTHOG_HOST || "<not set>",
     VITE_POSTHOG_ENABLED: process.env.VITE_POSTHOG_ENABLED || "<not set>",
   });
 }
@@ -115,9 +118,15 @@ export default defineConfig({
     // Vite will also automatically read .env files during build
     // See: https://docs.astro.build/en/guides/environment-variables/#in-the-astro-config-file
     define: {
-      "import.meta.env.VITE_PUBLIC_POSTHOG_KEY": JSON.stringify(process.env.VITE_PUBLIC_POSTHOG_KEY || ""),
-      "import.meta.env.VITE_PUBLIC_POSTHOG_HOST": JSON.stringify(process.env.VITE_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com"),
-      "import.meta.env.VITE_POSTHOG_ENABLED": JSON.stringify(process.env.VITE_POSTHOG_ENABLED || ""),
+      "import.meta.env.VITE_PUBLIC_POSTHOG_KEY": JSON.stringify(
+        process.env.VITE_PUBLIC_POSTHOG_KEY || ""
+      ),
+      "import.meta.env.VITE_PUBLIC_POSTHOG_HOST": JSON.stringify(
+        process.env.VITE_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com"
+      ),
+      "import.meta.env.VITE_POSTHOG_ENABLED": JSON.stringify(
+        process.env.VITE_POSTHOG_ENABLED || ""
+      ),
     },
     resolve: {
       alias: [

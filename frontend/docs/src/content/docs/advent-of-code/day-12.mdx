@@ -1,6 +1,5 @@
 ---
-title: "Day 12: Shape Counting"
-description: Count regions where shapes fit within a grid
+title: "Day 12"
 ---
 
 ## Problem
@@ -8,6 +7,7 @@ description: Count regions where shapes fit within a grid
 Count regions where the total shape area fits in the grid.
 
 Each shape is 9 cells (3×3), so the condition is:
+
 ```
 total_count * 9 <= width * height
 ```
@@ -15,9 +15,10 @@ total_count * 9 <= width * height
 ## Example
 
 Given problems:
-- width=10, height=10, total_count=11 → 11 * 9 = 99 ≤ 100 ✓
-- width=5, height=5, total_count=3 → 3 * 9 = 27 ≤ 25 ✗
-- width=10, height=10, total_count=12 → 12 * 9 = 108 > 100 ✗
+
+- width=10, height=10, total_count=11 → 11 \* 9 = 99 ≤ 100 ✓
+- width=5, height=5, total_count=3 → 3 \* 9 = 27 ≤ 25 ✗
+- width=10, height=10, total_count=12 → 12 \* 9 = 108 > 100 ✗
 
 Count = 1 (only the first one fits)
 
@@ -117,14 +118,16 @@ Cyclesim.cycle sim;
 ### Bit Width Selection
 
 Choose bit widths carefully:
+
 - `width` and `height`: 7 bits (0-127)
 - `total_count`: 10 bits (0-1023)
-- `compute_width`: 14 bits (for 127 * 127 = 16129)
+- `compute_width`: 14 bits (for 127 \* 127 = 16129)
 - `result_bits`: 16 bits (for counting up to 65535 problems)
 
 ### Multiplication
 
 Hardware multipliers are expensive but necessary here. The circuit computes:
+
 - `grid_area = width * height`
 - `shape_area = total_count * 9`
 

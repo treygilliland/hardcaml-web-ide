@@ -3,11 +3,13 @@ title: Advent of Code Overview
 description: Solving Advent of Code problems with Hardcaml
 ---
 
-This section demonstrates how to solve [Advent of Code](https://adventofcode.com/) problems using Hardcaml. These examples show how hardware design principles can be applied to algorithmic challenges.
+This section demonstrates how to solve [Advent of Code](https://adventofcode.com/) problems using Hardcaml.
+These examples show how hardware design principles can be applied to algorithmic challenges.
 
 ## What is Advent of Code?
 
-Advent of Code is an annual programming competition with daily puzzles throughout December. Each problem presents an algorithmic challenge that can be solved with software, but we're solving them with **hardware circuits** instead!
+Advent of Code is an annual programming competition with daily puzzles throughout December.
+Each problem presents an algorithmic challenge are typically solved with software, but we're solving them with **hardware** instead!
 
 ## Why Hardcaml for AoC?
 
@@ -27,77 +29,6 @@ Each AoC problem is implemented as a Hardcaml circuit with:
 - **Combinational logic** - Process inputs and compute results
 - **Output interface** - Final answer or running totals
 
-## Available Problems
-
-### [Day 1: Dial Rotation](/advent-of-code/day-1)
-A dial with positions 0-99 rotates left or right based on commands. Count how many times it lands on position 0.
-
-**Key concepts**: Modular arithmetic, state machines, counters
-
-### [Day 2: Mirror Numbers](/advent-of-code/day-2)
-Find numbers where the first half of digits equals the second half (e.g., 1212).
-
-**Key concepts**: Digit extraction, pattern matching, comparisons
-
-### [Day 3: Digit Processing](/advent-of-code/day-3)
-Process lines of digits to find maximum values in specific ranges and compute a sum.
-
-**Key concepts**: Sequential processing, maximum tracking, multi-cycle computations
-
-### [Day 12: Shape Counting](/advent-of-code/day-12)
-Count regions where shapes of a given area can fit within a grid.
-
-**Key concepts**: Area calculations, comparisons, accumulation
-
-## Common Patterns
-
-### State Machines
-
-Most AoC problems use state machines to process input streams:
-
-```ocaml
-let spec = Reg_spec.create ~clock:i.clock ~clear:i.clear () in
-let open Always in
-
-let%hw_var state = Variable.reg spec ~width:state_bits in
-let%hw_var accumulator = Variable.reg spec ~width:acc_bits in
-
-compile
-  [ when_ i.start
-      [ state <-- initial_state
-      ; accumulator <-- zero acc_bits
-      ]
-  ; when_ i.input_valid
-      [ (* Process input *)
-        state <-- next_state
-        ; accumulator <-- accumulator.value +: computed_value
-      ]
-  ];
-```
-
-### Modular Arithmetic
-
-Many problems require modulo operations. Since hardware doesn't have native division, use repeated subtraction:
-
-```ocaml
-let mod_100 ~width x =
-  let hundred = of_int_trunc ~width 100 in
-  let sub_if_ge y = mux2 (y >=: hundred) (y -: hundred) y in
-  Fn.apply_n_times ~n:9 sub_if_ge x
-;;
-```
-
-### Digit Processing
-
-When working with digits, extract them from packed representations:
-
-```ocaml
-let get_digit ~digits ~index =
-  let start_bit = (max_digits - 1 - index) * digit_bits in
-  select digits ~high:(start_bit + digit_bits - 1) ~low:start_bit
-;;
-```
-
 ## Getting Started
 
 1. Open the [IDE](/ide/)
@@ -115,7 +46,6 @@ let get_digit ~digits ~index =
 
 ## Next Steps
 
-- [Day 1: Dial Rotation](/advent-of-code/day-1) - Start with the simplest problem
-- [Day 2: Mirror Numbers](/advent-of-code/day-2) - Learn digit manipulation
-- [Day 3: Digit Processing](/advent-of-code/day-3) - Complex state tracking
-- [Day 12: Shape Counting](/advent-of-code/day-12) - Area calculations
+- [Day 1](/advent-of-code/day-1)
+- [Day 2](/advent-of-code/day-2)
+- [Day 12](/advent-of-code/day-12)

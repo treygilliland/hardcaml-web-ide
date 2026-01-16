@@ -16,11 +16,11 @@ frontend/
 
 ## Packages
 
-| Package | Purpose | Consumers |
-|---------|---------|-----------|
-| `@hardcaml/ui` | Shared React components, hooks, API client | ide, docs |
-| `@hardcaml/ide` | Main IDE application | docs (integrated) |
-| `@hardcaml/docs` | Astro Starlight documentation with integrated IDE | standalone |
+| Package          | Purpose                                           | Consumers         |
+| ---------------- | ------------------------------------------------- | ----------------- |
+| `@hardcaml/ui`   | Shared React components, hooks, API client        | ide, docs         |
+| `@hardcaml/ide`  | Main IDE application                              | docs (integrated) |
+| `@hardcaml/docs` | Astro Starlight documentation with integrated IDE | standalone        |
 
 ## Current Architecture
 
@@ -38,11 +38,13 @@ frontend/
 The IDE package (`frontend/ide/`) is structured to be easily split out if needed:
 
 1. **Standalone configs are preserved:**
+
    - `ide/vite.config.ts` - Vite configuration for standalone dev server
    - `ide/index.html` - Standalone entry point
    - `ide/package.json` - Already has build scripts configured
 
 2. **To run IDE standalone:**
+
    ```bash
    pnpm --filter ide dev
    ```
@@ -119,6 +121,7 @@ The IDE is integrated into the docs site and accessible at the `/ide` route. The
 ### Analytics (PostHog)
 
 PostHog analytics is configured via environment variables. During Docker builds:
+
 1. Root `.env` file → Docker build args (via `docker-compose.yml`)
 2. Dockerfile creates `.env` in `frontend/docs/` from build args
 3. Vite reads `.env` during build + `astro.config.mjs` injects via `define`
@@ -129,6 +132,7 @@ Set `VITE_PUBLIC_POSTHOG_KEY`, `VITE_PUBLIC_POSTHOG_HOST`, and `VITE_POSTHOG_ENA
 ### Adding a New Page
 
 1. **Create the content file** in `docs/src/content/docs/` following the directory structure:
+
    ```
    docs/src/content/docs/
    ├── getting-started/
@@ -138,6 +142,7 @@ Set `VITE_PUBLIC_POSTHOG_KEY`, `VITE_PUBLIC_POSTHOG_HOST`, and `VITE_POSTHOG_ENA
    ```
 
 2. **Add frontmatter** to your `.mdx` file:
+
    ```mdx
    ---
    title: Your Page Title
@@ -146,6 +151,7 @@ Set `VITE_PUBLIC_POSTHOG_KEY`, `VITE_PUBLIC_POSTHOG_HOST`, and `VITE_POSTHOG_ENA
    ```
 
 3. **Update the sidebar** in `docs/astro.config.mjs`:
+
    ```javascript
    sidebar: [
      {
@@ -168,6 +174,7 @@ Set `VITE_PUBLIC_POSTHOG_KEY`, `VITE_PUBLIC_POSTHOG_HOST`, and `VITE_POSTHOG_ENA
 ### Sidebar Configuration
 
 The sidebar in `astro.config.mjs` is manually configured because Starlight doesn't auto-generate navigation from file structure. This gives us control over:
+
 - Section organization and ordering
 - Custom labels (can differ from page titles)
 - Collapsible sections

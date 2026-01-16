@@ -1,15 +1,16 @@
 ---
-title: "Day 2: Mirror Numbers"
-description: Find numbers where first half of digits equals second half
+title: "Day 2"
 ---
 
 ## Problem
 
 Find numbers where:
+
 - The digit count is **even**
 - The **first half** of digits equals the **second half**
 
 Examples:
+
 - `1212` → "12" == "12" ✓
 - `123456` → "123" != "456" ✗
 - `1221` → "12" == "21" ✗ (not equal)
@@ -66,6 +67,7 @@ let get_digit ~digits ~index =
 ```
 
 For a 4-digit number like `1212` stored at indices 6-9:
+
 - First half: digits at indices 6, 7
 - Second half: digits at indices 8, 9
 
@@ -79,7 +81,7 @@ let check_mirror_for_length ~digits ~digit_count ~n =
   else
     let offset = max_digits - n in
     let half = n / 2 in
-    let matches = 
+    let matches =
       List.init half ~f:(fun i ->
         let d1 = get_digit ~digits ~index:(offset + i) in
         let d2 = get_digit ~digits ~index:(offset + i + half) in
@@ -112,7 +114,7 @@ compile
       ; match_count <-- zero 32
       ]
   ; when_ number_valid
-      [ when_ is_match 
+      [ when_ is_match
           [ sum <-- sum.value +: value_extended
           ; match_count <-- match_count.value +: one 32
           ]
